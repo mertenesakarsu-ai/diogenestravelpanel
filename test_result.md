@@ -196,11 +196,11 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
-          comment: "Backend servisi çalışıyor. MongoDB bağlantısı aktif."
+          comment: "Backend servisi çalışıyor. MongoDB bağlantısı aktif. Operations endpoint'i eklendi (/api/operations)."
 
 metadata:
   created_by: "main_agent"
