@@ -135,11 +135,11 @@ frontend:
     file: "/app/frontend/src/pages/Operations.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
-          comment: "Operations.jsx dosyası temiz kod olarak yeniden oluşturuldu. Operasyon yönetimi sayfası çalışıyor."
+          comment: "Operations.jsx dosyası yeniden oluşturuldu. Operasyon departmanı menüye eklendi. Günlük transfer ve operasyon yönetimi sayfası çalışıyor."
   
   - task: "Reservations.jsx dosyası yeniden oluşturuldu"
     implemented: true
@@ -152,6 +152,42 @@ frontend:
         - working: true
           agent: "main"
           comment: "Reservations.jsx dosyası temiz kod olarak yeniden oluşturuldu. Rezervasyon listesi sayfası çalışıyor."
+
+  - task: "Layout.jsx güncellendi - Menü düzenlendi"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Layout.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Sol menüden Admin Paneli kaldırıldı, sadece üst sağ köşede buton olarak bırakıldı. Operasyon departmanı menüye eklendi. Yönetim departmanı zaten vardı."
+
+  - task: "App.js güncellendi - Routes eklendi"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Operations route'u eklendi. Tüm departmanlar için route yapılandırması tamamlandı."
+
+  - task: "Management.jsx - Yönetim Departmanı"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Management.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Yönetim departmanı zaten mevcut. Tüm departmanların verilerini arayıp kontrol edebilme özelliği var."
 
 backend:
   - task: "Backend servisi"
