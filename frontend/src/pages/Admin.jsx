@@ -12,6 +12,11 @@ const Admin = () => {
     mongodb: { connected: true, records: 1247 }
   });
 
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadType, setUploadType] = useState("flights");
+  const [uploadProgress, setUploadProgress] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
+
   const mockUsers = [
     { id: 1, name: "Admin User", email: "admin@diogenes.com", role: "admin", status: "active" },
     { id: 2, name: "Rezervasyon Manager", email: "reservation@diogenes.com", role: "reservation", status: "active" },
@@ -25,6 +30,51 @@ const Admin = () => {
     { id: 3, user: "flight@diogenes.com", action: "IMPORT_EXCEL", entity: "flights", entityId: "batch_001", time: "2024-12-15 11:45" },
     { id: 4, user: "reservation@diogenes.com", action: "UPDATE", entity: "reservations", entityId: "DG2024-003", time: "2024-12-15 10:20" },
   ];
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadFile(file);
+      setUploadError(null);
+      setUploadProgress(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!uploadFile) {
+      setUploadError("Lütfen bir dosya seçin");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", uploadFile);
+
+    try {
+      setUploadProgress("Yükleniyor...");
+      setUploadError(null);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/${uploadType}/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setUploadProgress(`Başarıyla yüklendi! ${response.data.count} kayıt eklendi.`);
+      setUploadFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById("file-upload");
+      if (fileInput) fileInput.value = "";
+      
+    } catch (error) {
+      setUploadError(error.response?.data?.detail || "Yükleme başarısız oldu");
+      setUploadProgress(null);
+    }
+  };
 
   return (
     <div className="space-y-6" data-testid="admin-page">
