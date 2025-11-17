@@ -174,27 +174,198 @@ const Flights = () => {
         </div>
       </div>
 
-      {/* Excel Upload Section */}
+      {/* Excel Compare Section */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">Excel / .bak Dosyası Yükle</h3>
-            <p className="text-sm text-slate-500 mt-1">Uçuş verilerini yükleyip karşılaştırın</p>
+            <h3 className="text-lg font-bold text-slate-800">Excel Karşılaştırma</h3>
+            <p className="text-sm text-slate-500 mt-1">Excel dosyasını veritabanı ile karşılaştırın</p>
           </div>
-          <Button 
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
-            data-testid="upload-excel-btn"
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Dosya Yükle
-          </Button>
+          {compareResult && (
+            <Button 
+              onClick={resetCompare}
+              variant="outline"
+              size="sm"
+              data-testid="reset-compare-btn"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Sıfırla
+            </Button>
+          )}
         </div>
 
-        <div className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-cyan-400 transition-colors cursor-pointer">
-          <Upload className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium mb-2">Excel veya .bak dosyasını sürükleyin</p>
-          <p className="text-sm text-slate-500">veya tıklayarak seçin</p>
-        </div>
+        {!compareResult ? (
+          <div>
+            <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-cyan-400 transition-colors">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                  <FileSpreadsheet className="w-8 h-8 text-purple-600" />
+                </div>
+                
+                <div>
+                  <label htmlFor="compare-file-upload" className="cursor-pointer">
+                    <span className="text-purple-600 hover:text-purple-700 font-semibold">
+                      Excel dosyası seçin
+                    </span>
+                    <span className="text-slate-600"> veya sürükleyin</span>
+                  </label>
+                  <input
+                    id="compare-file-upload"
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <p className="text-sm text-slate-500 mt-2">Excel dosyası (.xlsx, .xls)</p>
+                </div>
+
+                {uploadFile && (
+                  <div className="flex items-center gap-3 px-4 py-2 bg-slate-100 rounded-lg">
+                    <FileSpreadsheet className="w-5 h-5 text-slate-600" />
+                    <span className="font-medium text-slate-800">{uploadFile.name}</span>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleCompare}
+                  disabled={!uploadFile || isComparing}
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-8"
+                >
+                  {isComparing ? "Karşılaştırılıyor..." : "Karşılaştır"}
+                </Button>
+              </div>
+            </div>
+
+            {compareError && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-red-800">Hata!</p>
+                  <p className="text-sm text-red-700">{compareError}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-green-600 mb-1">Yeni Kayıtlar</p>
+                    <p className="text-3xl font-bold text-green-800">{compareResult.summary.new}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-green-200 flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-green-700" />
+                  </div>
+                </div>
+                <p className="text-xs text-green-600 mt-2">Veritabanında yok</p>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-600 mb-1">Güncellenen</p>
+                    <p className="text-3xl font-bold text-blue-800">{compareResult.summary.updated}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-blue-200 flex items-center justify-center">
+                    <AlertCircle className="w-6 h-6 text-blue-700" />
+                  </div>
+                </div>
+                <p className="text-xs text-blue-600 mt-2">Farklılık var</p>
+              </div>
+
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-orange-600 mb-1">Eksik Kayıtlar</p>
+                    <p className="text-3xl font-bold text-orange-800">{compareResult.summary.missing}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-orange-200 flex items-center justify-center">
+                    <XCircle className="w-6 h-6 text-orange-700" />
+                  </div>
+                </div>
+                <p className="text-xs text-orange-600 mt-2">Excel'de yok</p>
+              </div>
+            </div>
+
+            {/* New Flights */}
+            {compareResult.new_flights && compareResult.new_flights.length > 0 && (
+              <div className="border border-green-200 rounded-lg overflow-hidden">
+                <div className="bg-green-50 px-4 py-3 border-b border-green-200">
+                  <h4 className="font-bold text-green-900">Yeni Uçuşlar (Veritabanında Yok)</h4>
+                </div>
+                <div className="divide-y divide-green-100">
+                  {compareResult.new_flights.map((flight, idx) => (
+                    <div key={idx} className="p-4 hover:bg-green-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <span className="font-bold text-slate-800">{flight.flightCode}</span>
+                          <span className="text-slate-600">{flight.from} → {flight.to}</span>
+                          <span className="text-sm text-slate-500">{flight.date}</span>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          flight.hasPNR ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {flight.hasPNR ? 'PNR Var' : 'PNR Yok'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Updated Flights */}
+            {compareResult.updated_flights && compareResult.updated_flights.length > 0 && (
+              <div className="border border-blue-200 rounded-lg overflow-hidden">
+                <div className="bg-blue-50 px-4 py-3 border-b border-blue-200">
+                  <h4 className="font-bold text-blue-900">Güncellenmiş Uçuşlar (PNR Farklı)</h4>
+                </div>
+                <div className="divide-y divide-blue-100">
+                  {compareResult.updated_flights.map((flight, idx) => (
+                    <div key={idx} className="p-4 hover:bg-blue-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-4 mb-2">
+                            <span className="font-bold text-slate-800">{flight.flightCode}</span>
+                            <span className="text-sm text-slate-500">{flight.date}</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className="text-red-600">Eski PNR: {flight.oldPNR || "Yok"}</span>
+                            <span className="text-slate-400">→</span>
+                            <span className="text-green-600">Yeni PNR: {flight.newPNR || "Yok"}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Missing Flights */}
+            {compareResult.missing_flights && compareResult.missing_flights.length > 0 && (
+              <div className="border border-orange-200 rounded-lg overflow-hidden">
+                <div className="bg-orange-50 px-4 py-3 border-b border-orange-200">
+                  <h4 className="font-bold text-orange-900">Eksik Uçuşlar (Excel'de Yok)</h4>
+                </div>
+                <div className="divide-y divide-orange-100">
+                  {compareResult.missing_flights.map((flight, idx) => (
+                    <div key={idx} className="p-4 hover:bg-orange-50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <span className="font-bold text-slate-800">{flight.flightCode}</span>
+                        <span className="text-slate-600">{flight.from} → {flight.to}</span>
+                        <span className="text-sm text-slate-500">{flight.date}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Flights List */}
