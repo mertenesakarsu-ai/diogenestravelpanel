@@ -130,34 +130,317 @@ class HealthStatus(BaseModel):
     total_logs: int
     status: str
 
-# Add your routes to the router instead of directly to app
+# ==================== ROUTES ====================
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Diogenes Travel Panel API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
+# ===== FLIGHTS ENDPOINTS =====
+@api_router.get("/flights", response_model=List[Flight])
+async def get_flights():
+    flights = await db.flights.find({}, {"_id": 0}).to_list(1000)
+    for flight in flights:
+        if 'created_at' in flight and isinstance(flight['created_at'], str):
+            flight['created_at'] = datetime.fromisoformat(flight['created_at'])
+        if 'updated_at' in flight and isinstance(flight['updated_at'], str):
+            flight['updated_at'] = datetime.fromisoformat(flight['updated_at'])
+    return flights
+
+@api_router.post("/flights", response_model=Flight)
+async def create_flight(flight: FlightCreate):
+    flight_obj = Flight(**flight.model_dump())
+    doc = flight_obj.model_dump(by_alias=True)
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    await db.flights.insert_one(doc)
     
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
+    # Log the action
+    await log_action("system", "CREATE", "flights", flight_obj.id, f"Created flight {flight_obj.flightCode}")
+    
+    return flight_obj
+
+@api_router.put("/flights/{flight_id}", response_model=Flight)
+async def update_flight(flight_id: str, flight: FlightCreate):
+    flight_obj = Flight(id=flight_id, **flight.model_dump())
+    flight_obj.updated_at = datetime.now(timezone.utc)
+    doc = flight_obj.model_dump(by_alias=True)
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.flights.update_one({"id": flight_id}, {"$set": doc})
+    
+    # Log the action
+    await log_action("system", "UPDATE", "flights", flight_id, f"Updated flight {flight_obj.flightCode}")
+    
+    return flight_obj
+
+@api_router.delete("/flights/{flight_id}")
+async def delete_flight(flight_id: str):
+    result = await db.flights.delete_one({"id": flight_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Flight not found")
+    
+    # Log the action
+    await log_action("system", "DELETE", "flights", flight_id, f"Deleted flight {flight_id}")
+    
+    return {"message": "Flight deleted successfully"}
+
+@api_router.post("/flights/upload")
+async def upload_flights(file: UploadFile = File(...)):
+    """Upload Excel or BAK file to add flights to database"""
+    try:
+        contents = await file.read()
+        
+        # Read Excel file
+        if file.filename.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(io.BytesIO(contents))
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format. Please upload Excel file.")
+        
+        # Expected columns: flightCode, airline, from, to, date, time, direction, passengers, hasPNR, pnr
+        flights_added = 0
+        for _, row in df.iterrows():
+            flight_data = {
+                "flightCode": str(row.get('flightCode', '')),
+                "airline": str(row.get('airline', '')),
+                "from": str(row.get('from', '')),
+                "to": str(row.get('to', '')),
+                "date": str(row.get('date', '')),
+                "time": str(row.get('time', '')),
+                "direction": str(row.get('direction', 'arrival')),
+                "passengers": int(row.get('passengers', 0)),
+                "hasPNR": bool(row.get('hasPNR', False)),
+                "pnr": str(row.get('pnr', '')),
+                "daysUntilFlight": int(row.get('daysUntilFlight', 0))
+            }
+            
+            flight = Flight(**flight_data)
+            doc = flight.model_dump(by_alias=True)
+            doc['created_at'] = doc['created_at'].isoformat()
+            doc['updated_at'] = doc['updated_at'].isoformat()
+            
+            await db.flights.insert_one(doc)
+            flights_added += 1
+        
+        # Log the action
+        await log_action("admin", "IMPORT_EXCEL", "flights", "batch", f"Imported {flights_added} flights from {file.filename}")
+        
+        return {"message": f"Successfully imported {flights_added} flights", "count": flights_added}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+@api_router.post("/flights/compare")
+async def compare_flights(file: UploadFile = File(...)):
+    """Compare uploaded Excel with database flights"""
+    try:
+        contents = await file.read()
+        
+        if file.filename.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(io.BytesIO(contents))
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format")
+        
+        # Get existing flights
+        existing_flights = await db.flights.find({}, {"_id": 0}).to_list(1000)
+        existing_codes = {f['flightCode']: f for f in existing_flights}
+        
+        new_flights = []
+        updated_flights = []
+        missing_flights = []
+        
+        # Check uploaded flights
+        for _, row in df.iterrows():
+            flight_code = str(row.get('flightCode', ''))
+            if flight_code in existing_codes:
+                # Check for differences
+                existing = existing_codes[flight_code]
+                if (existing.get('pnr') != str(row.get('pnr', '')) or 
+                    existing.get('hasPNR') != bool(row.get('hasPNR', False))):
+                    updated_flights.append({
+                        "flightCode": flight_code,
+                        "oldPNR": existing.get('pnr', ''),
+                        "newPNR": str(row.get('pnr', '')),
+                        "date": str(row.get('date', ''))
+                    })
+            else:
+                new_flights.append({
+                    "flightCode": flight_code,
+                    "from": str(row.get('from', '')),
+                    "to": str(row.get('to', '')),
+                    "date": str(row.get('date', '')),
+                    "hasPNR": bool(row.get('hasPNR', False))
+                })
+        
+        # Check for flights in DB but not in upload
+        uploaded_codes = set(df['flightCode'].astype(str).tolist())
+        for code, flight in existing_codes.items():
+            if code not in uploaded_codes:
+                missing_flights.append({
+                    "flightCode": code,
+                    "date": flight.get('date', ''),
+                    "from": flight.get('from', ''),
+                    "to": flight.get('to', '')
+                })
+        
+        return {
+            "summary": {
+                "new": len(new_flights),
+                "updated": len(updated_flights),
+                "missing": len(missing_flights)
+            },
+            "new_flights": new_flights,
+            "updated_flights": updated_flights,
+            "missing_flights": missing_flights
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error comparing files: {str(e)}")
+
+# ===== USERS ENDPOINTS =====
+@api_router.get("/users", response_model=List[User])
+async def get_users():
+    users = await db.users.find({}, {"_id": 0}).to_list(1000)
+    for user in users:
+        if 'created_at' in user and isinstance(user['created_at'], str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+    return users
+
+@api_router.post("/users", response_model=User)
+async def create_user(user: UserCreate):
+    user_obj = User(**user.model_dump())
+    doc = user_obj.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.users.insert_one(doc)
+    
+    await log_action("admin", "CREATE", "users", user_obj.id, f"Created user {user_obj.email}")
+    
+    return user_obj
+
+@api_router.put("/users/{user_id}", response_model=User)
+async def update_user(user_id: str, user: UserCreate):
+    user_obj = User(id=user_id, **user.model_dump())
+    doc = user_obj.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    
+    await db.users.update_one({"id": user_id}, {"$set": doc})
+    await log_action("admin", "UPDATE", "users", user_id, f"Updated user {user_obj.email}")
+    
+    return user_obj
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(user_id: str):
+    result = await db.users.delete_one({"id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    await log_action("admin", "DELETE", "users", user_id, f"Deleted user {user_id}")
+    
+    return {"message": "User deleted successfully"}
+
+# ===== LOGS ENDPOINTS =====
+@api_router.get("/logs", response_model=List[SystemLog])
+async def get_logs(limit: int = 100):
+    logs = await db.logs.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
+    for log in logs:
+        if 'timestamp' in log and isinstance(log['timestamp'], str):
+            log['timestamp'] = datetime.fromisoformat(log['timestamp'])
+    return logs
+
+# ===== RESERVATIONS ENDPOINTS =====
+@api_router.get("/reservations", response_model=List[Reservation])
+async def get_reservations():
+    reservations = await db.reservations.find({}, {"_id": 0}).to_list(1000)
+    for reservation in reservations:
+        if 'created_at' in reservation and isinstance(reservation['created_at'], str):
+            reservation['created_at'] = datetime.fromisoformat(reservation['created_at'])
+    return reservations
+
+@api_router.post("/reservations", response_model=Reservation)
+async def create_reservation(reservation: ReservationCreate):
+    reservation_obj = Reservation(**reservation.model_dump())
+    doc = reservation_obj.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.reservations.insert_one(doc)
+    
+    await log_action("system", "CREATE", "reservations", reservation_obj.id, f"Created reservation {reservation_obj.voucherNo}")
+    
+    return reservation_obj
+
+# ===== SEARCH ENDPOINT (for Management Department) =====
+@api_router.get("/search")
+async def search_passenger(query: str = Query(..., min_length=2)):
+    """Search for passenger across all systems"""
+    results = {
+        "reservations": [],
+        "flights": []
+    }
+    
+    # Search in reservations
+    reservations = await db.reservations.find({
+        "$or": [
+            {"leader_name": {"$regex": query, "$options": "i"}},
+            {"leader_passport": {"$regex": query, "$options": "i"}},
+            {"voucherNo": {"$regex": query, "$options": "i"}}
+        ]
+    }, {"_id": 0}).to_list(100)
+    
+    results["reservations"] = reservations
+    
+    # Search in flights (by PNR or flight code)
+    flights = await db.flights.find({
+        "$or": [
+            {"pnr": {"$regex": query, "$options": "i"}},
+            {"flightCode": {"$regex": query, "$options": "i"}}
+        ]
+    }, {"_id": 0}).to_list(100)
+    
+    results["flights"] = flights
+    
+    return results
+
+# ===== HEALTH CHECK =====
+@api_router.get("/health", response_model=HealthStatus)
+async def health_check():
+    try:
+        # Count documents in collections
+        total_flights = await db.flights.count_documents({})
+        total_reservations = await db.reservations.count_documents({})
+        total_users = await db.users.count_documents({})
+        total_logs = await db.logs.count_documents({})
+        
+        return HealthStatus(
+            database="connected",
+            total_flights=total_flights,
+            total_reservations=total_reservations,
+            total_users=total_users,
+            total_logs=total_logs,
+            status="healthy"
+        )
+    except Exception as e:
+        return HealthStatus(
+            database="error",
+            total_flights=0,
+            total_reservations=0,
+            total_users=0,
+            total_logs=0,
+            status="unhealthy"
+        )
+
+# ===== HELPER FUNCTIONS =====
+async def log_action(user: str, action: str, entity: str, entity_id: str, details: str = ""):
+    """Log system actions"""
+    log = SystemLog(
+        user=user,
+        action=action,
+        entity=entity,
+        entityId=entity_id,
+        details=details
+    )
+    doc = log.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+    await db.logs.insert_one(doc)
 
 # Include the router in the main app
 app.include_router(api_router)
