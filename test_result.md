@@ -189,6 +189,30 @@ frontend:
           agent: "main"
           comment: "Yönetim departmanı zaten mevcut. Tüm departmanların verilerini arayıp kontrol edebilme özelliği var."
 
+  - task: "Admin.jsx - Veri Yükleme Sekmesi Eklendi"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Admin.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Admin paneline 'Veri Yükleme' sekmesi eklendi. Excel (.xlsx, .xls) ve .bak dosyaları yükleme özelliği. Uçuşlar, Rezervasyonlar ve Operasyonlar için veri yükleme desteği."
+
+  - task: "Flights.jsx - Excel Karşılaştırma Özelliği"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Flights.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Excel karşılaştırma özelliği eklendi. Yüklenen Excel veritabanı ile karşılaştırılıyor. Yeni kayıtlar (veritabanında yok), güncellenmiş kayıtlar (PNR farklı) ve eksik kayıtlar (Excel'de yok) gösteriliyor."
+
 backend:
   - task: "Backend servisi"
     implemented: true
