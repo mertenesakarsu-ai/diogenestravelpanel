@@ -30,9 +30,9 @@ const Layout = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
     { icon: Calendar, label: "Rezervasyon", path: "/reservations" },
-    { icon: Truck, label: "Operasyon", path: "/operations" },
-    { icon: Plane, label: "Uçak", path: "/flights" },
-    { icon: Settings, label: "Yönetim", path: "/admin" },
+    { icon: Truck, label: "Yönetim Departmanı", path: "/management" },
+    { icon: Plane, label: "Uçak Departmanı", path: "/flights" },
+    { icon: Settings, label: "Admin Paneli", path: "/admin" },
   ];
 
   const getPageTitle = () => {
