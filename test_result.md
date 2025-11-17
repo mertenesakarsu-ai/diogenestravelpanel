@@ -257,3 +257,16 @@ agent_communication:
       - Yönetim Departmanı
       
       Admin Paneli sadece üst sağ köşede buton olarak erişilebilir."
+    - agent: "main"
+      message: "✅ Yeni özellikler eklendi:
+      1. Admin Paneline 'Veri Yükleme' sekmesi eklendi
+         - Excel (.xlsx, .xls) ve .bak dosya desteği
+         - Uçuşlar, Rezervasyonlar ve Operasyonlar için veri yükleme
+         - Başarı/hata mesajları ile kullanıcı geri bildirimi
+      
+      2. Uçak Departmanına Excel Karşılaştırma özelliği eklendi
+         - Yüklenen Excel dosyası veritabanı ile karşılaştırılıyor
+         - Yeni kayıtlar (veritabanında yok) - Yeşil
+         - Güncellenmiş kayıtlar (PNR farklı) - Mavi
+         - Eksik kayıtlar (Excel'de yok) - Turuncu
+         - Her kategori için detaylı liste gösterimi"
