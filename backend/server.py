@@ -368,6 +368,21 @@ async def create_reservation(reservation: ReservationCreate):
     
     return reservation_obj
 
+# ===== OPERATIONS ENDPOINTS =====
+@api_router.get("/operations")
+async def get_operations(date: Optional[str] = None, type: str = "all"):
+    """Get operations for a specific date"""
+    query = {}
+    
+    if date:
+        query["date"] = date
+    
+    if type != "all":
+        query["type"] = type
+    
+    operations = await db.operations.find(query, {"_id": 0}).to_list(1000)
+    return operations
+
 # ===== SEARCH ENDPOINT (for Management Department) =====
 @api_router.get("/search")
 async def search_passenger(query: str = Query(..., min_length=2)):
