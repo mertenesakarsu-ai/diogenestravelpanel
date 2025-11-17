@@ -218,3 +218,18 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: "Frontend sayfalarındaki sözdizimi hataları düzeltildi. Tüm dosyalar escape karakterlerle yazılmıştı. Admin, Flights, Operations ve Reservations sayfaları yeniden oluşturuldu ve test edildi. Tüm sayfalar başarıyla yükleniyor."
+    - agent: "main"
+      message: "✅ Kullanıcı talepleri tamamlandı:
+      1. Operations departmanı (Operasyon) yeniden eklendi ve menüde görünüyor
+      2. Admin Paneli sol menüden kaldırıldı, sadece üst sağ köşede buton olarak bırakıldı
+      3. Yönetim departmanı zaten mevcut ve çalışıyor
+      4. Backend'e /api/operations endpoint'i eklendi
+      
+      Güncel menü yapısı:
+      - Dashboard
+      - Rezervasyon
+      - Operasyon (yeni eklendi)
+      - Uçak Departmanı
+      - Yönetim Departmanı
+      
+      Admin Paneli sadece üst sağ köşede buton olarak erişilebilir."
