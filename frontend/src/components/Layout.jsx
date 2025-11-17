@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -24,6 +24,8 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [language, setLanguage] = useState("TR");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -32,6 +34,11 @@ const Layout = () => {
     { icon: Plane, label: "Uçak", path: "/flights" },
     { icon: Settings, label: "Yönetim", path: "/admin" },
   ];
+
+  const getPageTitle = () => {
+    const item = menuItems.find(item => item.path === location.pathname);
+    return item ? item.label : "Dashboard";
+  };
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-cyan-50">
@@ -72,12 +79,13 @@ const Layout = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = index === 0;
+            const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
+                onClick={() => navigate(item.path)}
                 data-testid={`menu-item-${item.label.toLowerCase()}`}
                 className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
                   isActive
@@ -152,12 +160,16 @@ const Layout = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = index === 0;
+            const isActive = location.pathname === item.path;
             return (
               <button
                 key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setMobileMenuOpen(false);
+                }}
                 className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive
                     ? "bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg"
@@ -189,7 +201,7 @@ const Layout = () => {
               <Menu className="w-6 h-6 text-slate-700" />
             </Button>
             <div>
-              <h2 className="text-xl lg:text-2xl font-bold text-slate-800">Dashboard</h2>
+              <h2 className="text-xl lg:text-2xl font-bold text-slate-800">{getPageTitle()}</h2>
               <p className="text-xs lg:text-sm text-slate-500">Hoş geldiniz! İşte bugünün özeti</p>
             </div>
           </div>
@@ -221,6 +233,7 @@ const Layout = () => {
             </DropdownMenu>
 
             <Button
+              onClick={() => navigate('/admin')}
               className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white shadow-lg shadow-cyan-200 transition-all hidden sm:flex"
               data-testid="admin-panel-btn"
             >
