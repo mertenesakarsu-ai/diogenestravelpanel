@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Upload, AlertCircle, CheckCircle, XCircle, FileSpreadsheet, Search, Filter } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Upload, AlertCircle, CheckCircle, XCircle, FileSpreadsheet, Search, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,12 +10,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { mockFlights } from "@/lib/mockFlightData";
+import axios from "axios";
 
 const Flights = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPNR, setFilterPNR] = useState("all");
+  const [uploadFile, setUploadFile] = useState(null);
+  const [compareResult, setCompareResult] = useState(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [compareError, setCompareError] = useState(null);
+  const [flights, setFlights] = useState([]);
 
-  const filteredFlights = mockFlights.filter(flight => {
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights`);
+      setFlights(response.data.length > 0 ? response.data : mockFlights);
+    } catch (error) {
+      console.error("Failed to fetch flights:", error);
+      setFlights(mockFlights);
+    }
+  };
+
+  const filteredFlights = flights.filter(flight => {
     const matchesSearch = flight.flightCode.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesPNR = filterPNR === "all" || 
                       (filterPNR === "with" && flight.hasPNR) ||
@@ -23,7 +43,55 @@ const Flights = () => {
     return matchesSearch && matchesPNR;
   });
 
-  const pendingTickets = mockFlights.filter(f => !f.hasPNR && f.daysUntilFlight <= 7);
+  const pendingTickets = flights.filter(f => !f.hasPNR && f.daysUntilFlight <= 7);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadFile(file);
+      setCompareError(null);
+      setCompareResult(null);
+    }
+  };
+
+  const handleCompare = async () => {
+    if (!uploadFile) {
+      setCompareError("Lütfen bir Excel dosyası seçin");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", uploadFile);
+
+    try {
+      setIsComparing(true);
+      setCompareError(null);
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/flights/compare`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setCompareResult(response.data);
+    } catch (error) {
+      setCompareError(error.response?.data?.detail || "Karşılaştırma başarısız oldu");
+    } finally {
+      setIsComparing(false);
+    }
+  };
+
+  const resetCompare = () => {
+    setUploadFile(null);
+    setCompareResult(null);
+    setCompareError(null);
+    const fileInput = document.getElementById("compare-file-upload");
+    if (fileInput) fileInput.value = "";
+  };
 
   return (
     <div className="space-y-6" data-testid="flights-page">
