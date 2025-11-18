@@ -536,7 +536,19 @@ async def get_logs(limit: int = 100):
 
 # ===== RESERVATIONS ENDPOINTS =====
 @api_router.get("/reservations", response_model=List[Reservation])
-async def get_reservations():
+async def get_reservations(x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('reservations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view reservations")
+    
     reservations = await db.reservations.find({}, {"_id": 0}).to_list(1000)
     for reservation in reservations:
         if 'created_at' in reservation and isinstance(reservation['created_at'], str):
@@ -544,18 +556,30 @@ async def get_reservations():
     return reservations
 
 @api_router.post("/reservations", response_model=Reservation)
-async def create_reservation(reservation: ReservationCreate):
+async def create_reservation(reservation: ReservationCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('reservations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to create reservations")
+    
     reservation_obj = Reservation(**reservation.model_dump())
     doc = reservation_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.reservations.insert_one(doc)
     
-    await log_action("system", "CREATE", "reservations", reservation_obj.id, f"Created reservation {reservation_obj.voucherNo}")
+    await log_action(user.get('email', 'system'), "CREATE", "reservations", reservation_obj.id, f"Created reservation {reservation_obj.voucherNo}")
     
     return reservation_obj
 
 @api_router.post("/reservations/upload")
-async def upload_reservations(file: UploadFile = File(...)):
+async def upload_reservations(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Upload Excel file to add reservations to database"""
     try:
         contents = await file.read()
