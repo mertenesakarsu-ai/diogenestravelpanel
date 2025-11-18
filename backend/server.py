@@ -686,6 +686,43 @@ async def delete_user(user_id: str, x_user_id: Optional[str] = Header(None)):
     
     return {"message": "User deleted successfully"}
 
+@api_router.patch("/users/{user_id}/profile-picture")
+async def update_profile_picture(
+    user_id: str, 
+    profile_picture: str = Body(..., embed=True),
+    x_user_id: Optional[str] = Header(None)
+):
+    """Update user's profile picture - users can only update their own picture"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Users can only update their own profile picture (except admin can update anyone's)
+    if current_user.get('id') != user_id and current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="You can only update your own profile picture")
+    
+    # Update profile picture
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"profile_picture": profile_picture}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": user_id})
+    if updated_user:
+        updated_user['_id'] = str(updated_user['_id'])
+        await log_action(current_user.get('email', 'user'), "UPDATE", "users", user_id, "Updated profile picture")
+        return {"message": "Profile picture updated successfully", "profile_picture": profile_picture}
+    
+    raise HTTPException(status_code=500, detail="Failed to update profile picture")
+
+
 # ===== LOGS ENDPOINTS =====
 @api_router.get("/logs", response_model=List[SystemLog])
 async def get_logs(limit: int = 100, x_user_id: Optional[str] = Header(None)):
