@@ -19,12 +19,8 @@ const Admin = () => {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [uploadError, setUploadError] = useState(null);
 
-  const mockUsers = [
-    { id: 1, name: "Admin User", email: "admin@diogenes.com", role: "admin", status: "active" },
-    { id: 2, name: "Rezervasyon Manager", email: "reservation@diogenes.com", role: "reservation", status: "active" },
-    { id: 3, name: "Operasyon Manager", email: "operation@diogenes.com", role: "operation", status: "active" },
-    { id: 4, name: "Uçak Manager", email: "flight@diogenes.com", role: "flight", status: "active" },
-  ];
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   const mockLogs = [
     { id: 1, user: "admin@diogenes.com", action: "CREATE", entity: "reservations", entityId: "DG2024-005", time: "2024-12-15 14:30" },
