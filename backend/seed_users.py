@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import uuid
+from datetime import datetime, timezone
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent
