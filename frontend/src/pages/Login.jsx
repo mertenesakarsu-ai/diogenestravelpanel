@@ -151,16 +151,6 @@ const Login = () => {
               )}
             </Button>
           </form>
-
-          {/* Helper Text */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-            <p className="text-xs text-slate-600">
-              <strong>Test Hesapları:</strong><br />
-              admin@diogenes.com / admin123<br />
-              reservation@diogenes.com / reservation123<br />
-              operation@diogenes.com / operation123
-            </p>
-          </div>
         </div>
 
         {/* Footer */}
