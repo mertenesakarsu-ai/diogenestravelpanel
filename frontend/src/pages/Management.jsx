@@ -14,7 +14,7 @@ const Management = () => {
     
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/search?query=${searchQuery}`);
+      const response = await api.get(`/api/search?query=${searchQuery}`);
       setSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
