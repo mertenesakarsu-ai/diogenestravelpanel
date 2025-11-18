@@ -27,18 +27,14 @@ const generateWeeklyData = () => {
   return data;
 };
 
-// Get today's date in Turkish format
+// Get today's date in Turkish format (DD.MM.YYYY)
 export const getTodayDate = () => {
   const today = new Date();
-  const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
-  const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-  
-  const dayName = days[today.getDay()];
-  const day = today.getDate();
-  const month = months[today.getMonth()];
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
   const year = today.getFullYear();
   
-  return `${dayName}, ${day} ${month} ${year}`;
+  return `${day}.${month}.${year}`;
 };
 
 export const mockDashboardData = {
