@@ -84,7 +84,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   // Get unique destinations for filter
   const uniqueDestinations = [...new Set(allReservations.map(r => r.destination))];
 
-  // Filter reservations based on search, status, destination, and date range
+  // Filter reservations based on search, status, destination, agency, and date range
   const filteredReservations = allReservations.filter(reservation => {
     // Search filter
     const searchLower = searchQuery.toLowerCase();
@@ -93,6 +93,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
       reservation.agency.toLowerCase().includes(searchLower) ||
       reservation.hotel.toLowerCase().includes(searchLower) ||
       reservation.destination.toLowerCase().includes(searchLower) ||
+      reservation.sourceAgency.toLowerCase().includes(searchLower) ||
       reservation.note.toLowerCase().includes(searchLower);
 
     // Status filter
@@ -101,13 +102,16 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     // Destination filter
     const matchesDestination = destinationFilter === 'ALL' || reservation.destination === destinationFilter;
 
+    // Source Agency filter
+    const matchesAgency = agencyFilter === 'ALL' || reservation.sourceAgency === agencyFilter;
+
     // Date range filter - using applied dates
     const reservationCheckIn = new Date(reservation.checkIn);
     const start = appliedStartDate ? new Date(appliedStartDate) : null;
     const end = appliedEndDate ? new Date(appliedEndDate) : null;
     const matchesDateRange = (!start || reservationCheckIn >= start) && (!end || reservationCheckIn <= end);
 
-    return matchesSearch && matchesStatus && matchesDestination && matchesDateRange;
+    return matchesSearch && matchesStatus && matchesDestination && matchesAgency && matchesDateRange;
   });
 
   const getStatusBadge = (status) => {
