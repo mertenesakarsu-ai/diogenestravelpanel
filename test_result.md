@@ -322,6 +322,38 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ DEPARTMAN BAZLI YETKİLENDİRME SİSTEMİ TAMAMLANDI:
+      
+      BACKEND DEĞİŞİKLİKLER:
+      1. Permission sistemi eklendi - PERMISSIONS dictionary ile rol bazlı yetkiler
+      2. Tüm API endpoint'lerine x-user-id header kontrolü eklendi
+      3. Her endpoint için permission kontrolü (read, create, update, delete, upload)
+      4. /api/users/init endpoint'i - Default kullanıcıları oluşturma
+      5. /api/users/{user_id}/permissions - Kullanıcı yetkilerini görüntüleme
+      
+      YETKİ YAPISI:
+      - admin: Tüm departmanlara tam erişim (CRUD + upload)
+      - flight: Sadece Uçak Departmanı (CRUD + upload)
+      - reservation: Sadece Rezervasyon Departmanı (CRUD + upload)
+      - operation: Sadece Operasyon Departmanı (CRUD + upload)
+      - management: Tüm departmanları görüntüleme (sadece read)
+      
+      FRONTEND DEĞİŞİKLİKLER:
+      1. AuthContext oluşturuldu - Kullanıcı state yönetimi
+      2. Login sayfası - Dropdown ile kullanıcı seçimi
+      3. Protected Routes - Sayfa erişim kontrolü
+      4. API interceptor - Otomatik x-user-id header ekleme
+      5. Layout menüsü - Kullanıcı rolüne göre filtreleme
+      6. Logout fonksiyonu eklendi
+      
+      SAYFA ERİŞİM KONTROLLERI:
+      - Kullanıcılar sadece kendi departmanlarının sayfalarını görebilir
+      - Admin her sayfaya erişebilir
+      - Management tüm departmanları görüntüleyebilir
+      - Dashboard herkese açık
+      
+      Test edilmeye hazır!"
+    - agent: "main"
       message: "Frontend sayfalarındaki sözdizimi hataları düzeltildi. Tüm dosyalar escape karakterlerle yazılmıştı. Admin, Flights, Operations ve Reservations sayfaları yeniden oluşturuldu ve test edildi. Tüm sayfalar başarıyla yükleniyor."
     - agent: "main"
       message: "✅ Kullanıcı talepleri tamamlandı:
