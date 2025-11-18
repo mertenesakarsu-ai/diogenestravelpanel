@@ -1,0 +1,117 @@
+{
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "timestamp": "2025-11-18T09:47:38.158916"
+  },
+  "results": [
+    {
+      "test": "Initialize Users",
+      "success": true,
+      "message": "Users initialization: Users already initialized",
+      "timestamp": "2025-11-18T09:47:32.725713",
+      "response_data": {
+        "message": "Users already initialized",
+        "count": 5
+      }
+    },
+    {
+      "test": "Login Success - Admin",
+      "success": true,
+      "message": "Admin login successful: Admin User (admin)",
+      "timestamp": "2025-11-18T09:47:33.769592",
+      "response_data": {
+        "id": "aef2f268-c297-47a2-aabf-49ff8685982c",
+        "name": "Admin User",
+        "email": "admin@diogenes.com",
+        "role": "admin",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.141442Z"
+      }
+    },
+    {
+      "test": "Login Wrong Password",
+      "success": true,
+      "message": "Correctly rejected wrong password with 401",
+      "timestamp": "2025-11-18T09:47:34.662298",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Nonexistent Email",
+      "success": true,
+      "message": "Correctly rejected non-existent email with 401",
+      "timestamp": "2025-11-18T09:47:34.729118",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Empty Credentials",
+      "success": true,
+      "message": "Correctly rejected empty credentials with 401",
+      "timestamp": "2025-11-18T09:47:34.795096",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Success - Reservation",
+      "success": true,
+      "message": "Reservation login successful: Rezervasyon Manager (reservation)",
+      "timestamp": "2025-11-18T09:47:35.550227",
+      "response_data": {
+        "id": "dc15012a-bf1f-4a60-8855-254a4bef81a2",
+        "name": "Rezervasyon Manager",
+        "email": "reservation@diogenes.com",
+        "role": "reservation",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.170348Z"
+      }
+    },
+    {
+      "test": "Login Success - Operation",
+      "success": true,
+      "message": "Operation login successful: Operasyon Manager (operation)",
+      "timestamp": "2025-11-18T09:47:36.703440",
+      "response_data": {
+        "id": "0b25f4c4-f431-4a0d-8c22-9a2923d1bdec",
+        "name": "Operasyon Manager",
+        "email": "operation@diogenes.com",
+        "role": "operation",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.171875Z"
+      }
+    },
+    {
+      "test": "Login Success - Flight",
+      "success": true,
+      "message": "Flight login successful: U\u00e7ak Manager (flight)",
+      "timestamp": "2025-11-18T09:47:37.223033",
+      "response_data": {
+        "id": "ddb21d1f-843a-43af-9e17-77944e26535b",
+        "name": "U\u00e7ak Manager",
+        "email": "flight@diogenes.com",
+        "role": "flight",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.173277Z"
+      }
+    },
+    {
+      "test": "Login Success - Management",
+      "success": true,
+      "message": "Management login successful: Y\u00f6netim Manager (management)",
+      "timestamp": "2025-11-18T09:47:38.154322",
+      "response_data": {
+        "id": "301e4a4c-a40c-4189-bbdb-43d9926f0fdf",
+        "name": "Y\u00f6netim Manager",
+        "email": "management@diogenes.com",
+        "role": "management",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.174452Z"
+      }
+    }
+  ]
+}
