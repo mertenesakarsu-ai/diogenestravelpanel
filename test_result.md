@@ -123,7 +123,7 @@ frontend:
           agent: "main"
           comment: "Email placeholder @diogenestravel.com olarak güncellendi. Test kullanıcı bilgileri bölümü tamamen kaldırıldı. Daha temiz ve profesyonel görünüm."
 
-  - task: "Admin.jsx dosyası düzeltildi"
+  - task: "Admin.jsx - Kullanıcı Yönetimi İşlevselliği"
     implemented: true
     working: true
     file: "/app/frontend/src/pages/Admin.jsx"
@@ -134,6 +134,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Admin.jsx dosyasındaki sözdizimi hataları düzeltildi. Dosya escape karakterlerle yazılmıştı, temiz kod olarak yeniden oluşturuldu."
+        - working: true
+          agent: "main"
+          comment: "Kullanıcı yönetimi tam işlevsel hale getirildi: Yeni Kullanıcı Ekle butonu aktif, Düzenle butonu her kullanıcı için çalışıyor, Sil butonu eklendi. Kullanıcılar API'den gerçek zamanlı yükleniyor. Modal formlar ile CRUD operasyonları. Email adresleri @diogenestravel.com olarak güncellendi."
   
   - task: "Flights.jsx dosyası düzeltildi"
     implemented: true
