@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
 
 const ReservationMonitor = ({ isOpen, onClose }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [destinationFilter, setDestinationFilter] = useState('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [selectedPax, setSelectedPax] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -22,28 +28,28 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
-  // Dummy reservation data - 20 rows
-  const reservations = [
-    { time: '08:00', agency: 'Skyline Tours', passenger: 'John Smith', service: 'Hotel + Transfer', destination: 'Antalya', checkIn: '2025-01-15', checkOut: '2025-01-22', nights: 7, room: 'Deluxe', board: 'All Inclusive', pax: 2, status: 'CONFIRMED', note: 'Airport pickup required' },
-    { time: '08:30', agency: 'Blue Wave Travel', passenger: 'Emma Johnson', service: 'Hotel Only', destination: 'Bodrum', checkIn: '2025-01-16', checkOut: '2025-01-20', nights: 4, room: 'Standard', board: 'Half Board', pax: 4, status: 'OPTION', note: 'Special diet request' },
-    { time: '09:00', agency: 'Golden Tours', passenger: 'Michael Brown', service: 'Full Package', destination: 'İstanbul', checkIn: '2025-01-18', checkOut: '2025-01-25', nights: 7, room: 'Suite', board: 'Breakfast', pax: 2, status: 'CONFIRMED', note: 'Anniversary celebration' },
-    { time: '09:15', agency: 'Sunrise Travel', passenger: 'Sarah Davis', service: 'Hotel + Transfer', destination: 'Fethiye', checkIn: '2025-01-20', checkOut: '2025-01-27', nights: 7, room: 'Family Room', board: 'All Inclusive', pax: 5, status: 'CONFIRMED', note: '' },
-    { time: '09:45', agency: 'Dream Holidays', passenger: 'David Wilson', service: 'Hotel Only', destination: 'Marmaris', checkIn: '2025-01-17', checkOut: '2025-01-24', nights: 7, room: 'Standard', board: 'Full Board', pax: 2, status: 'CANCELLED', note: 'Customer cancelled' },
-    { time: '10:00', agency: 'Paradise Tours', passenger: 'Lisa Anderson', service: 'Full Package', destination: 'Kaş', checkIn: '2025-01-19', checkOut: '2025-01-23', nights: 4, room: 'Deluxe', board: 'All Inclusive', pax: 3, status: 'CONFIRMED', note: 'Honeymoon package' },
-    { time: '10:30', agency: 'Ocean View Travel', passenger: 'Robert Taylor', service: 'Hotel + Transfer', destination: 'Çeşme', checkIn: '2025-01-21', checkOut: '2025-01-28', nights: 7, room: 'Superior', board: 'Half Board', pax: 2, status: 'OPTION', note: 'Waiting for confirmation' },
-    { time: '11:00', agency: 'Sunny Days Tours', passenger: 'Jennifer Martinez', service: 'Hotel Only', destination: 'Alanya', checkIn: '2025-01-16', checkOut: '2025-01-30', nights: 14, room: 'Standard', board: 'All Inclusive', pax: 6, status: 'CONFIRMED', note: 'Large family group' },
-    { time: '11:30', agency: 'Crystal Travel', passenger: 'William Garcia', service: 'Full Package', destination: 'Kuşadası', checkIn: '2025-01-22', checkOut: '2025-01-26', nights: 4, room: 'Suite', board: 'Breakfast', pax: 2, status: 'CONFIRMED', note: 'VIP treatment requested' },
-    { time: '12:00', agency: 'Elite Holidays', passenger: 'Mary Rodriguez', service: 'Hotel + Transfer', destination: 'Side', checkIn: '2025-01-18', checkOut: '2025-01-25', nights: 7, room: 'Deluxe', board: 'Full Board', pax: 4, status: 'OPTION', note: 'Price negotiation pending' },
-    { time: '12:30', agency: 'Adventure Travel', passenger: 'James Lee', service: 'Hotel Only', destination: 'Kalkan', checkIn: '2025-01-20', checkOut: '2025-01-24', nights: 4, room: 'Standard', board: 'Half Board', pax: 2, status: 'CONFIRMED', note: '' },
-    { time: '13:00', agency: 'Royal Tours', passenger: 'Patricia White', service: 'Full Package', destination: 'Göcek', checkIn: '2025-01-23', checkOut: '2025-01-30', nights: 7, room: 'Villa', board: 'All Inclusive', pax: 8, status: 'CONFIRMED', note: 'Corporate group booking' },
-    { time: '13:30', agency: 'Magic Travel', passenger: 'Christopher Harris', service: 'Hotel + Transfer', destination: 'Belek', checkIn: '2025-01-17', checkOut: '2025-01-21', nights: 4, room: 'Superior', board: 'All Inclusive', pax: 3, status: 'CANCELLED', note: 'Medical reasons' },
-    { time: '14:00', agency: 'Horizon Tours', passenger: 'Barbara Martin', service: 'Hotel Only', destination: 'Didim', checkIn: '2025-01-19', checkOut: '2025-01-26', nights: 7, room: 'Deluxe', board: 'Full Board', pax: 2, status: 'CONFIRMED', note: 'Wheelchair accessible room' },
-    { time: '14:30', agency: 'Prestige Travel', passenger: 'Daniel Thompson', service: 'Full Package', destination: 'Kemer', checkIn: '2025-01-24', checkOut: '2025-01-31', nights: 7, room: 'Suite', board: 'All Inclusive', pax: 2, status: 'OPTION', note: 'Payment pending' },
-    { time: '15:00', agency: 'Pearl Holidays', passenger: 'Nancy Martinez', service: 'Hotel + Transfer', destination: 'Ölüdeniz', checkIn: '2025-01-21', checkOut: '2025-01-28', nights: 7, room: 'Family Room', board: 'Half Board', pax: 5, status: 'CONFIRMED', note: 'Kids club required' },
-    { time: '15:30', agency: 'Diamond Tours', passenger: 'Paul Jackson', service: 'Hotel Only', destination: 'Dalyan', checkIn: '2025-01-18', checkOut: '2025-01-22', nights: 4, room: 'Standard', board: 'Breakfast', pax: 2, status: 'CONFIRMED', note: '' },
-    { time: '16:00', agency: 'Sapphire Travel', passenger: 'Karen White', service: 'Full Package', destination: 'Turgutreis', checkIn: '2025-01-25', checkOut: '2025-02-01', nights: 7, room: 'Deluxe', board: 'All Inclusive', pax: 4, status: 'CONFIRMED', note: 'Spa package included' },
-    { time: '16:30', agency: 'Emerald Tours', passenger: 'Mark Lewis', service: 'Hotel + Transfer', destination: 'Çıralı', checkIn: '2025-01-20', checkOut: '2025-01-27', nights: 7, room: 'Superior', board: 'Full Board', pax: 3, status: 'OPTION', note: 'Upgrade consideration' },
-    { time: '17:00', agency: 'Ruby Holidays', passenger: 'Betty Walker', service: 'Hotel Only', destination: 'Patara', checkIn: '2025-01-22', checkOut: '2025-01-29', nights: 7, room: 'Villa', board: 'All Inclusive', pax: 6, status: 'CONFIRMED', note: 'Beach front villa' },
+  // Dummy reservation data - 20 rows with updated structure
+  const allReservations = [
+    { date: '2025-01-15', agency: 'Skyline Tours', passenger: 'John Smith', hotel: 'Grand Seaside Hotel', stars: 5, destination: 'Antalya', checkIn: '2025-01-15', checkOut: '2025-01-22', nights: 7, room: 'Deluxe', board: 'All Inclusive', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Airport pickup required' },
+    { date: '2025-01-16', agency: 'Blue Wave Travel', passenger: 'Emma Johnson', hotel: 'Bodrum Paradise Resort', stars: 4, destination: 'Bodrum', checkIn: '2025-01-16', checkOut: '2025-01-20', nights: 4, room: 'Standard', board: 'Half Board', paxAdults: 2, paxChildren: 2, paxInfants: 0, status: 'OPTION', note: 'Special diet request' },
+    { date: '2025-01-18', agency: 'Golden Tours', passenger: 'Michael Brown', hotel: 'Istanbul Palace Hotel', stars: 5, destination: 'İstanbul', checkIn: '2025-01-18', checkOut: '2025-01-25', nights: 7, room: 'Suite', board: 'Breakfast', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Anniversary celebration' },
+    { date: '2025-01-20', agency: 'Sunrise Travel', passenger: 'Sarah Davis', hotel: 'Fethiye Beach Resort', stars: 4, destination: 'Fethiye', checkIn: '2025-01-20', checkOut: '2025-01-27', nights: 7, room: 'Family Room', board: 'All Inclusive', paxAdults: 2, paxChildren: 3, paxInfants: 0, status: 'CONFIRMED', note: '' },
+    { date: '2025-01-17', agency: 'Dream Holidays', passenger: 'David Wilson', hotel: 'Marmaris Bay Hotel', stars: 3, destination: 'Marmaris', checkIn: '2025-01-17', checkOut: '2025-01-24', nights: 7, room: 'Standard', board: 'Full Board', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CANCELLED', note: 'Customer cancelled' },
+    { date: '2025-01-19', agency: 'Paradise Tours', passenger: 'Lisa Anderson', hotel: 'Kaş Boutique Hotel', stars: 4, destination: 'Kaş', checkIn: '2025-01-19', checkOut: '2025-01-23', nights: 4, room: 'Deluxe', board: 'All Inclusive', paxAdults: 2, paxChildren: 1, paxInfants: 0, status: 'CONFIRMED', note: 'Honeymoon package' },
+    { date: '2025-01-21', agency: 'Ocean View Travel', passenger: 'Robert Taylor', hotel: 'Çeşme Grand Resort', stars: 5, destination: 'Çeşme', checkIn: '2025-01-21', checkOut: '2025-01-28', nights: 7, room: 'Superior', board: 'Half Board', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'OPTION', note: 'Waiting for confirmation' },
+    { date: '2025-01-16', agency: 'Sunny Days Tours', passenger: 'Jennifer Martinez', hotel: 'Alanya Beach Club', stars: 4, destination: 'Alanya', checkIn: '2025-01-16', checkOut: '2025-01-30', nights: 14, room: 'Standard', board: 'All Inclusive', paxAdults: 2, paxChildren: 3, paxInfants: 1, status: 'CONFIRMED', note: 'Large family group' },
+    { date: '2025-01-22', agency: 'Crystal Travel', passenger: 'William Garcia', hotel: 'Kuşadası Premium Hotel', stars: 5, destination: 'Kuşadası', checkIn: '2025-01-22', checkOut: '2025-01-26', nights: 4, room: 'Suite', board: 'Breakfast', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'VIP treatment requested' },
+    { date: '2025-01-18', agency: 'Elite Holidays', passenger: 'Mary Rodriguez', hotel: 'Side Star Resort', stars: 4, destination: 'Side', checkIn: '2025-01-18', checkOut: '2025-01-25', nights: 7, room: 'Deluxe', board: 'Full Board', paxAdults: 2, paxChildren: 2, paxInfants: 0, status: 'OPTION', note: 'Price negotiation pending' },
+    { date: '2025-01-20', agency: 'Adventure Travel', passenger: 'James Lee', hotel: 'Kalkan View Hotel', stars: 3, destination: 'Kalkan', checkIn: '2025-01-20', checkOut: '2025-01-24', nights: 4, room: 'Standard', board: 'Half Board', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: '' },
+    { date: '2025-01-23', agency: 'Royal Tours', passenger: 'Patricia White', hotel: 'Göcek Luxury Resort', stars: 5, destination: 'Göcek', checkIn: '2025-01-23', checkOut: '2025-01-30', nights: 7, room: 'Villa', board: 'All Inclusive', paxAdults: 4, paxChildren: 3, paxInfants: 1, status: 'CONFIRMED', note: 'Corporate group booking' },
+    { date: '2025-01-17', agency: 'Magic Travel', passenger: 'Christopher Harris', hotel: 'Belek Golf Resort', stars: 5, destination: 'Belek', checkIn: '2025-01-17', checkOut: '2025-01-21', nights: 4, room: 'Superior', board: 'All Inclusive', paxAdults: 2, paxChildren: 1, paxInfants: 0, status: 'CANCELLED', note: 'Medical reasons' },
+    { date: '2025-01-19', agency: 'Horizon Tours', passenger: 'Barbara Martin', hotel: 'Didim Sunset Hotel', stars: 4, destination: 'Didim', checkIn: '2025-01-19', checkOut: '2025-01-26', nights: 7, room: 'Deluxe', board: 'Full Board', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Wheelchair accessible room' },
+    { date: '2025-01-24', agency: 'Prestige Travel', passenger: 'Daniel Thompson', hotel: 'Kemer Marina Resort', stars: 5, destination: 'Kemer', checkIn: '2025-01-24', checkOut: '2025-01-31', nights: 7, room: 'Suite', board: 'All Inclusive', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'OPTION', note: 'Payment pending' },
+    { date: '2025-01-21', agency: 'Pearl Holidays', passenger: 'Nancy Martinez', hotel: 'Ölüdeniz Beach Hotel', stars: 4, destination: 'Ölüdeniz', checkIn: '2025-01-21', checkOut: '2025-01-28', nights: 7, room: 'Family Room', board: 'Half Board', paxAdults: 2, paxChildren: 3, paxInfants: 0, status: 'CONFIRMED', note: 'Kids club required' },
+    { date: '2025-01-18', agency: 'Diamond Tours', passenger: 'Paul Jackson', hotel: 'Dalyan Riverside Hotel', stars: 3, destination: 'Dalyan', checkIn: '2025-01-18', checkOut: '2025-01-22', nights: 4, room: 'Standard', board: 'Breakfast', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: '' },
+    { date: '2025-01-25', agency: 'Sapphire Travel', passenger: 'Karen White', hotel: 'Turgutreis Spa Resort', stars: 5, destination: 'Turgutreis', checkIn: '2025-01-25', checkOut: '2025-02-01', nights: 7, room: 'Deluxe', board: 'All Inclusive', paxAdults: 2, paxChildren: 2, paxInfants: 0, status: 'CONFIRMED', note: 'Spa package included' },
+    { date: '2025-01-20', agency: 'Emerald Tours', passenger: 'Mark Lewis', hotel: 'Çıralı Eco Resort', stars: 4, destination: 'Çıralı', checkIn: '2025-01-20', checkOut: '2025-01-27', nights: 7, room: 'Superior', board: 'Full Board', paxAdults: 2, paxChildren: 1, paxInfants: 0, status: 'OPTION', note: 'Upgrade consideration' },
+    { date: '2025-01-22', agency: 'Ruby Holidays', passenger: 'Betty Walker', hotel: 'Patara Beach Villa', stars: 5, destination: 'Patara', checkIn: '2025-01-22', checkOut: '2025-01-29', nights: 7, room: 'Villa', board: 'All Inclusive', paxAdults: 3, paxChildren: 2, paxInfants: 1, status: 'CONFIRMED', note: 'Beach front villa' },
   ];
 
   const getStatusBadge = (status) => {
