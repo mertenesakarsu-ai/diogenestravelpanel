@@ -451,7 +451,7 @@ const Layout = () => {
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-slate-600"}`} />
-                <span className={`font-medium text-sm ${isActive ? "text-white" : "text-slate-700"}`}>
+                <span className={`font-medium text-xs ${isActive ? "text-white" : "text-slate-700"}`}>
                   {item.label}
                 </span>
               </button>
