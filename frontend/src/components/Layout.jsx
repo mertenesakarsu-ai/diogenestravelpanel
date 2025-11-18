@@ -42,10 +42,10 @@ const Layout = () => {
 
   const allMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/", page: "dashboard" },
-    { icon: Calendar, label: "Rezervasyon", path: "/reservations", page: "reservations" },
-    { icon: Truck, label: "Operasyon", path: "/operations", page: "operations" },
+    { icon: Calendar, label: "Rezervasyon Departmanı", path: "/reservations", page: "reservations" },
+    { icon: Truck, label: "Operasyon Departmanı", path: "/operations", page: "operations" },
     { icon: Plane, label: "Uçak Departmanı", path: "/flights", page: "flights" },
-    { icon: Settings, label: "Yönetim", path: "/management", page: "management" },
+    { icon: Settings, label: "Yönetim Departmanı", path: "/management", page: "management" },
   ];
 
   // Filter menu items based on user permissions
