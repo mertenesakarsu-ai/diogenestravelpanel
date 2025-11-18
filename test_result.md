@@ -303,7 +303,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tüm sayfalar test edildi ve çalışıyor"
+    - "Backend API testleri tamamlandı - tüm endpoint'ler çalışıyor"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
