@@ -81,8 +81,8 @@ async def seed_users():
         
         # Update all users to have created_at if missing
         result = await users_collection.update_many(
-            {"created_at": {"$exists": False}},
-            {"$set": {"created_at": None}}
+            {"$or": [{"created_at": {"$exists": False}}, {"created_at": None}]},
+            {"$set": {"created_at": datetime.now(timezone.utc)}}
         )
         print(f"✅ Updated {result.modified_count} users with created_at field")
         
