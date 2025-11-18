@@ -137,7 +137,114 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-cyan-50">
+    <>
+      {/* Profile Picture Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-slate-800">Profil Resmini Güncelle</h3>
+              <button
+                onClick={() => {
+                  setShowProfileModal(false);
+                  setProfileImage(null);
+                  setProfileImagePreview(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Image Preview */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${getRoleBadgeColor(user?.role || 'admin')} flex items-center justify-center shadow-lg overflow-hidden`}>
+                    {profileImagePreview ? (
+                      <img 
+                        src={profileImagePreview} 
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : user?.profile_picture ? (
+                      <img 
+                        src={user.profile_picture} 
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-16 h-16 text-white" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* File Upload */}
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-cyan-400 transition-colors">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center">
+                    <UploadIcon className="w-6 h-6 text-cyan-600" />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="profile-image-upload" className="cursor-pointer">
+                      <span className="text-cyan-600 hover:text-cyan-700 font-semibold">
+                        Resim seçmek için tıklayın
+                      </span>
+                    </label>
+                    <input
+                      id="profile-image-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfileImageChange}
+                      className="hidden"
+                    />
+                    <p className="text-sm text-slate-500 mt-1">PNG, JPG, JPEG (max 2MB)</p>
+                  </div>
+
+                  {profileImage && (
+                    <div className="text-sm text-slate-600 bg-slate-100 px-4 py-2 rounded-lg">
+                      {profileImage.name}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs text-blue-800">
+                  <strong>Not:</strong> Sadece profil resminizi değiştirebilirsiniz. İsim ve diğer bilgiler değiştirilemez.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleSaveProfileImage}
+                  disabled={!profileImagePreview}
+                  className="flex-1 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+                >
+                  Kaydet
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowProfileModal(false);
+                    setProfileImage(null);
+                    setProfileImagePreview(null);
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  İptal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-cyan-50">
       <aside
         data-testid="sidebar"
         className={`hidden lg:flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out ${
