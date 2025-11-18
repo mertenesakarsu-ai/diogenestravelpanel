@@ -241,6 +241,18 @@ frontend:
           comment: "Excel karşılaştırma özelliği aktif. /api/flights/compare endpoint'i çalışıyor."
 
 backend:
+  - task: "Login API Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "/api/login endpoint'i oluşturuldu. Email ve şifre ile authentication. Bcrypt ile şifre doğrulama. User modelinde password field'ı eklendi."
+
   - task: "Backend servisi"
     implemented: true
     working: true
