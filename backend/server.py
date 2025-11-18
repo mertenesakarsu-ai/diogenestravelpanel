@@ -626,7 +626,7 @@ async def upload_reservations(file: UploadFile = File(...), x_user_id: Optional[
             reservations_added += 1
         
         # Log the action
-        await log_action("admin", "IMPORT_EXCEL", "reservations", "batch", f"Imported {reservations_added} reservations from {file.filename}")
+        await log_action(user.get('email', 'admin'), "IMPORT_EXCEL", "reservations", "batch", f"Imported {reservations_added} reservations from {file.filename}")
         
         return {"message": f"Successfully imported {reservations_added} reservations", "count": reservations_added}
     
