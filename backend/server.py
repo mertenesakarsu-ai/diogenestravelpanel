@@ -160,6 +160,90 @@ class HealthStatus(BaseModel):
     total_logs: int
     status: str
 
+# ==================== PERMISSION SYSTEM ====================
+
+# Role-based permissions mapping
+PERMISSIONS = {
+    "admin": {
+        "flights": ["read", "create", "update", "delete", "upload"],
+        "reservations": ["read", "create", "update", "delete", "upload"],
+        "operations": ["read", "create", "update", "delete", "upload"],
+        "users": ["read", "create", "update", "delete"],
+        "logs": ["read"],
+        "management": ["read"]
+    },
+    "flight": {
+        "flights": ["read", "create", "update", "delete", "upload"],
+        "reservations": [],
+        "operations": [],
+        "users": [],
+        "logs": [],
+        "management": []
+    },
+    "reservation": {
+        "flights": [],
+        "reservations": ["read", "create", "update", "delete", "upload"],
+        "operations": [],
+        "users": [],
+        "logs": [],
+        "management": []
+    },
+    "operation": {
+        "flights": [],
+        "reservations": [],
+        "operations": ["read", "create", "update", "delete", "upload"],
+        "users": [],
+        "logs": [],
+        "management": []
+    },
+    "management": {
+        "flights": ["read"],
+        "reservations": ["read"],
+        "operations": ["read"],
+        "users": [],
+        "logs": [],
+        "management": ["read"]
+    }
+}
+
+async def get_current_user(x_user_id: Optional[str] = Header(None)) -> Optional[Dict]:
+    """Get current user from header"""
+    if not x_user_id:
+        return None
+    
+    user = await db.users.find_one({"id": x_user_id}, {"_id": 0})
+    return user
+
+def check_permission(resource: str, action: str):
+    """Decorator to check if user has permission for an action"""
+    def decorator(func):
+        async def wrapper(*args, **kwargs):
+            # Get user from kwargs or headers
+            x_user_id = kwargs.get('x_user_id')
+            if not x_user_id:
+                raise HTTPException(status_code=401, detail="Authentication required")
+            
+            user = await get_current_user(x_user_id)
+            if not user:
+                raise HTTPException(status_code=401, detail="User not found")
+            
+            user_role = user.get('role', '')
+            
+            # Check if user has permission
+            if user_role not in PERMISSIONS:
+                raise HTTPException(status_code=403, detail="Invalid role")
+            
+            role_permissions = PERMISSIONS[user_role]
+            if resource not in role_permissions or action not in role_permissions[resource]:
+                raise HTTPException(
+                    status_code=403, 
+                    detail=f"You don't have permission to {action} {resource}"
+                )
+            
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 # ==================== ROUTES ====================
 
 @api_router.get("/")
