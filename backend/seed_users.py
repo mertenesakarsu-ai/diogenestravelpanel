@@ -105,7 +105,7 @@ async def seed_users():
             "role": user_data["role"],
             "status": "active",
             "profile_picture": None,
-            "created_at": None
+            "created_at": datetime.now(timezone.utc)
         }
         
         # Insert user
