@@ -116,6 +116,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Login sayfası tamamen yeniden yazıldı. Kullanıcı dropdown yerine email ve şifre ile giriş yapılıyor. Göster/gizle butonu, hata mesajları ve test hesapları eklendi."
+        - working: true
+          agent: "main"
+          comment: "Giriş ekranındaki logo güncellendi. Google Drive'dan özel Diogenes Travel logosu indirildi ve Shield icon yerine kullanıldı. Logo /app/frontend/public/images/logo.png konumuna kaydedildi."
 
   - task: "Admin.jsx dosyası düzeltildi"
     implemented: true
