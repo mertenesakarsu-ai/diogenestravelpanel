@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { mockFlights } from "@/lib/mockFlightData";
-import axios from "axios";
+import api from "@/utils/api";
+import { useAuth } from "@/context/AuthContext";
 
 const Flights = () => {
   const [searchTerm, setSearchTerm] = useState("");
