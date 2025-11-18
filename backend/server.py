@@ -914,7 +914,7 @@ async def health_check():
             total_logs=total_logs,
             status="healthy"
         )
-    except Exception as e:
+    except Exception:
         return HealthStatus(
             database="error",
             total_flights=0,
