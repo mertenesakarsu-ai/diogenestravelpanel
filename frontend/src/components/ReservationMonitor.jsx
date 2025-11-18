@@ -312,8 +312,8 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                     <td className="px-4 py-4 text-base text-slate-700">{reservation.hotel}</td>
                     <td className="px-4 py-4 text-center text-lg">{renderStars(reservation.stars)}</td>
                     <td className="px-4 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{reservation.checkIn}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{reservation.checkOut}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{formatDate(reservation.checkIn)}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{formatDate(reservation.checkOut)}</td>
                     <td className="px-4 py-4 text-base text-center font-semibold text-slate-700">{reservation.nights}</td>
                     <td className="px-4 py-4 text-base text-slate-600">{reservation.room}</td>
                     <td className="px-4 py-4 text-base text-slate-600">{reservation.board}</td>
