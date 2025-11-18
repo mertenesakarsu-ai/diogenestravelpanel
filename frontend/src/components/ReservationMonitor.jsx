@@ -225,7 +225,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             {/* Destination Filter */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -243,8 +243,14 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
               </select>
             </div>
 
-            {/* Clear Filters Button */}
-            <div className="flex items-end">
+            {/* Action Buttons */}
+            <div className="flex items-end gap-3 md:col-span-2">
+              <button
+                onClick={handleApplyFilters}
+                className="px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white rounded-lg transition-all text-base font-medium shadow-md"
+              >
+                Filtre Uygula
+              </button>
               <button
                 onClick={handleClearFilters}
                 className="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition-colors text-base font-medium"
