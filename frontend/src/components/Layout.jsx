@@ -341,7 +341,7 @@ const Layout = () => {
                   } transition-colors`}
                 />
                 {sidebarOpen && (
-                  <span className={`font-medium text-sm ${
+                  <span className={`font-medium text-xs ${
                     isActive ? "text-white" : "text-slate-700"
                   }`}>
                     {item.label}
