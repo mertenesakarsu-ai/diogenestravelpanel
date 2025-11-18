@@ -212,6 +212,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Excel karşılaştırma özelliği eklendi. Yüklenen Excel veritabanı ile karşılaştırılıyor. Yeni kayıtlar (veritabanında yok), güncellenmiş kayıtlar (PNR farklı) ve eksik kayıtlar (Excel'de yok) gösteriliyor."
+        - working: true
+          agent: "main"
+          comment: "Excel karşılaştırma özelliği aktif. /api/flights/compare endpoint'i çalışıyor."
 
 backend:
   - task: "Backend servisi"
