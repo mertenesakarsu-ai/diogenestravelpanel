@@ -581,6 +581,18 @@ async def create_reservation(reservation: ReservationCreate, x_user_id: Optional
 @api_router.post("/reservations/upload")
 async def upload_reservations(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Upload Excel file to add reservations to database"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'upload' not in PERMISSIONS[user_role].get('reservations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to upload reservations")
+    
     try:
         contents = await file.read()
         
