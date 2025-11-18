@@ -398,7 +398,7 @@ async def upload_flights(file: UploadFile = File(...), x_user_id: Optional[str] 
             flights_added += 1
         
         # Log the action
-        await log_action("admin", "IMPORT_EXCEL", "flights", "batch", f"Imported {flights_added} flights from {file.filename}")
+        await log_action(user.get('email', 'admin'), "IMPORT_EXCEL", "flights", "batch", f"Imported {flights_added} flights from {file.filename}")
         
         return {"message": f"Successfully imported {flights_added} flights", "count": flights_added}
     
