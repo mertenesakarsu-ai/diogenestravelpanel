@@ -212,8 +212,24 @@ const Layout = () => {
           <div className="p-4 border-t border-slate-200">
             <div className="p-3 rounded-xl bg-slate-50 space-y-3">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleBadgeColor(user.role)} flex items-center justify-center shadow-lg`}>
-                  <User className="w-5 h-5 text-white" />
+                <div className="relative group">
+                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleBadgeColor(user.role)} flex items-center justify-center shadow-lg overflow-hidden`}>
+                    {user.profile_picture ? (
+                      <img 
+                        src={user.profile_picture} 
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 text-white" />
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setShowProfileModal(true)}
+                    className="absolute -bottom-1 -right-1 w-5 h-5 bg-cyan-500 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Camera className="w-3 h-3 text-white" />
+                  </button>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800 truncate">{user.name}</p>
