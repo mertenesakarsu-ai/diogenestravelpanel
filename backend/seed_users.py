@@ -68,7 +68,25 @@ async def seed_users():
     # Check if users already exist
     existing_count = await users_collection.count_documents({})
     if existing_count > 0:
-        print(f"⚠️  Database already has {existing_count} users. Skipping seed.")
+        print(f"⚠️  Database already has {existing_count} users.")
+        print("🔄 Updating existing users with missing fields...")
+        
+        # Update all users to have status='active' if missing
+        result = await users_collection.update_many(
+            {"status": {"$exists": False}},
+            {"$set": {"status": "active"}}
+        )
+        print(f"✅ Updated {result.modified_count} users with active status")
+        
+        # Update all users to have created_at if missing
+        result = await users_collection.update_many(
+            {"created_at": {"$exists": False}},
+            {"$set": {"created_at": None}}
+        )
+        print(f"✅ Updated {result.modified_count} users with created_at field")
+        
+        client.close()
+        print("\n✅ Update complete!")
         return
     
     print("🌱 Seeding users...")
