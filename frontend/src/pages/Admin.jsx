@@ -388,10 +388,14 @@ const Admin = () => {
       {/* Admin Tabs */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-6">
+          <TabsList className="grid w-full max-w-5xl grid-cols-6 mb-6">
             <TabsTrigger value="users" data-testid="users-tab">
               <Users className="w-4 h-4 mr-2" />
               Kullanıcılar
+            </TabsTrigger>
+            <TabsTrigger value="packages" data-testid="packages-tab">
+              <Package className="w-4 h-4 mr-2" />
+              Paketler
             </TabsTrigger>
             <TabsTrigger value="upload" data-testid="upload-tab">
               <Upload className="w-4 h-4 mr-2" />
