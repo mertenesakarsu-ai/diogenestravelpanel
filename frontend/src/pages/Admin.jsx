@@ -40,6 +40,11 @@ const Admin = () => {
     status: 'active'
   });
 
+  // Backup state
+  const [backupProgress, setBackupProgress] = useState(null);
+  const [backupError, setBackupError] = useState(null);
+  const [lastBackup, setLastBackup] = useState(null);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
