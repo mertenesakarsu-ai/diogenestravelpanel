@@ -342,6 +342,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Login sistemi testi tamamlandı - tüm senaryolar başarılı"
     - "Backend API testleri tamamlandı - tüm endpoint'ler çalışıyor"
   stuck_tasks: []
   test_all: false
