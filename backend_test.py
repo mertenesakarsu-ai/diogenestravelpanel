@@ -481,6 +481,25 @@ class BackendTester:
         
         # Test basic endpoints first
         self.test_health_endpoint()
+        
+        print("\n" + "-" * 40)
+        print("LOGIN SYSTEM TESTS")
+        print("-" * 40)
+        
+        # Initialize users first
+        self.test_initialize_users()
+        
+        # Test login functionality
+        self.test_login_success_admin()
+        self.test_login_wrong_password()
+        self.test_login_nonexistent_email()
+        self.test_login_empty_credentials()
+        self.test_login_all_users()
+        
+        print("\n" + "-" * 40)
+        print("BASIC ENDPOINT TESTS")
+        print("-" * 40)
+        
         self.test_get_flights()
         self.test_get_reservations()
         self.test_get_operations()
