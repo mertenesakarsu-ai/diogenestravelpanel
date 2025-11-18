@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import axios from "axios";
+import api from "@/utils/api";
+import { useAuth } from "@/context/AuthContext";
 
 const Operations = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
