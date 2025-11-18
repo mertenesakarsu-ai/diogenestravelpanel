@@ -14,6 +14,7 @@ import api from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
 
 const Flights = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPNR, setFilterPNR] = useState("all");
   const [uploadFile, setUploadFile] = useState(null);
