@@ -75,6 +75,7 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     email: str
+    password: str  # hashed password
     role: str  # "admin", "reservation", "operation", "flight"
     status: str = "active"  # "active", "inactive"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -82,8 +83,21 @@ class User(BaseModel):
 class UserCreate(BaseModel):
     name: str
     email: str
+    password: str
     role: str
     status: str = "active"
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    name: str
+    email: str
+    role: str
+    status: str
+    created_at: datetime
 
 # Log Models
 class SystemLog(BaseModel):
