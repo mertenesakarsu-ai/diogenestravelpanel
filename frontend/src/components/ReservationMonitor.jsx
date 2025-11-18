@@ -131,6 +131,9 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
         <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white px-8 py-6 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold tracking-wide">RESERVATION MONITOR</h1>
+            <span className="text-sm bg-slate-600 px-4 py-2 rounded-lg">
+              {filteredReservations.length} Rezervasyon
+            </span>
           </div>
           
           <div className="flex items-center gap-6">
@@ -148,57 +151,218 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* Filters Section */}
+        <div className="bg-white px-8 py-5 border-b border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* Search */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Search className="w-4 h-4 inline mr-2" />
+                Arama
+              </label>
+              <input
+                type="text"
+                placeholder="Yolcu, acente, otel, destinasyon..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base"
+              />
+            </div>
+
+            {/* Date Range */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <CalendarIcon className="w-4 h-4 inline mr-2" />
+                Başlangıç Tarihi
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <CalendarIcon className="w-4 h-4 inline mr-2" />
+                Bitiş Tarihi
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Filter className="w-4 h-4 inline mr-2" />
+                Durum
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base bg-white"
+              >
+                <option value="ALL">Tümü</option>
+                <option value="CONFIRMED">Onaylı</option>
+                <option value="OPTION">Opsiyon</option>
+                <option value="CANCELLED">İptal</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {/* Destination Filter */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Destinasyon
+              </label>
+              <select
+                value={destinationFilter}
+                onChange={(e) => setDestinationFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base bg-white"
+              >
+                <option value="ALL">Tüm Destinasyonlar</option>
+                {uniqueDestinations.map(dest => (
+                  <option key={dest} value={dest}>{dest}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Clear Filters Button */}
+            <div className="flex items-end">
+              <button
+                onClick={handleClearFilters}
+                className="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition-colors text-base font-medium"
+              >
+                Filtreleri Temizle
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Table Container */}
         <div className="flex-1 overflow-auto bg-white m-4 rounded-xl shadow-inner">
           <table className="w-full">
             <thead className="sticky top-0 bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md z-10">
               <tr>
-                <th className="px-4 py-4 text-left text-base font-semibold">Time</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Agency</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Passenger</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Service</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Destination</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Check-in</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Check-out</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Nights</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Room</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Board</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Pax</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Status</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Note</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Tarih</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Acente</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Yolcu</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Otel</th>
+                <th className="px-4 py-4 text-center text-base font-semibold">⭐</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Destinasyon</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Giriş</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Çıkış</th>
+                <th className="px-4 py-4 text-center text-base font-semibold">Gece</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Oda</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Pansiyon</th>
+                <th className="px-4 py-4 text-center text-base font-semibold">Kişi</th>
+                <th className="px-4 py-4 text-center text-base font-semibold">Durum</th>
+                <th className="px-4 py-4 text-left text-base font-semibold">Not</th>
               </tr>
             </thead>
             <tbody>
-              {reservations.map((reservation, index) => (
-                <tr 
-                  key={index}
-                  className={`border-b border-slate-200 hover:bg-cyan-50 transition-colors ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
-                  }`}
-                >
-                  <td className="px-4 py-4 text-base font-semibold text-slate-700">{reservation.time}</td>
-                  <td className="px-4 py-4 text-base text-slate-700">{reservation.agency}</td>
-                  <td className="px-4 py-4 text-base font-medium text-slate-800">{reservation.passenger}</td>
-                  <td className="px-4 py-4 text-base text-slate-600">{reservation.service}</td>
-                  <td className="px-4 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
-                  <td className="px-4 py-4 text-base text-slate-600">{reservation.checkIn}</td>
-                  <td className="px-4 py-4 text-base text-slate-600">{reservation.checkOut}</td>
-                  <td className="px-4 py-4 text-base text-center font-semibold text-slate-700">{reservation.nights}</td>
-                  <td className="px-4 py-4 text-base text-slate-600">{reservation.room}</td>
-                  <td className="px-4 py-4 text-base text-slate-600">{reservation.board}</td>
-                  <td className="px-4 py-4 text-base text-center font-semibold text-slate-700">{reservation.pax}</td>
-                  <td className="px-4 py-4 text-center">
-                    <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusBadge(reservation.status)}`}>
-                      {reservation.status}
-                    </span>
+              {filteredReservations.length === 0 ? (
+                <tr>
+                  <td colSpan="14" className="px-4 py-12 text-center text-slate-500 text-lg">
+                    Filtrelere uygun rezervasyon bulunamadı
                   </td>
-                  <td className="px-4 py-4 text-base text-slate-500 italic">{reservation.note || '-'}</td>
                 </tr>
-              ))}
+              ) : (
+                filteredReservations.map((reservation, index) => (
+                  <tr 
+                    key={index}
+                    className={`border-b border-slate-200 hover:bg-cyan-50 transition-colors ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
+                    }`}
+                  >
+                    <td className="px-4 py-4 text-base font-semibold text-slate-700">{reservation.date}</td>
+                    <td className="px-4 py-4 text-base text-slate-700">{reservation.agency}</td>
+                    <td className="px-4 py-4 text-base font-medium text-slate-800">{reservation.passenger}</td>
+                    <td className="px-4 py-4 text-base text-slate-700">{reservation.hotel}</td>
+                    <td className="px-4 py-4 text-center text-lg">{renderStars(reservation.stars)}</td>
+                    <td className="px-4 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{reservation.checkIn}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{reservation.checkOut}</td>
+                    <td className="px-4 py-4 text-base text-center font-semibold text-slate-700">{reservation.nights}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{reservation.room}</td>
+                    <td className="px-4 py-4 text-base text-slate-600">{reservation.board}</td>
+                    <td 
+                      className="px-4 py-4 text-center cursor-help"
+                      title={`${reservation.paxAdults} Yetişkin, ${reservation.paxChildren} Çocuk, ${reservation.paxInfants} Bebek`}
+                      onClick={() => setSelectedPax(reservation)}
+                    >
+                      <div className="text-base font-semibold text-slate-700">
+                        {getTotalPax(reservation.paxAdults, reservation.paxChildren, reservation.paxInfants)}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">
+                        {formatPax(reservation.paxAdults, reservation.paxChildren, reservation.paxInfants)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusBadge(reservation.status)}`}>
+                        {reservation.status === 'CONFIRMED' ? 'ONAYLI' : reservation.status === 'OPTION' ? 'OPSİYON' : 'İPTAL'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-base text-slate-500 italic">{reservation.note || '-'}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Pax Detail Modal */}
+      {selectedPax && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={() => setSelectedPax(null)}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl p-6 max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-slate-800">Kişi Detayları</h3>
+              <button
+                onClick={() => setSelectedPax(null)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                <span className="text-slate-700 font-medium">Yetişkin:</span>
+                <span className="text-lg font-bold text-blue-700">{selectedPax.paxAdults}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                <span className="text-slate-700 font-medium">Çocuk:</span>
+                <span className="text-lg font-bold text-green-700">{selectedPax.paxChildren}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                <span className="text-slate-700 font-medium">Bebek:</span>
+                <span className="text-lg font-bold text-purple-700">{selectedPax.paxInfants}</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-slate-100 rounded-lg border-2 border-slate-300">
+                <span className="text-slate-800 font-bold">Toplam:</span>
+                <span className="text-xl font-bold text-slate-900">
+                  {getTotalPax(selectedPax.paxAdults, selectedPax.paxChildren, selectedPax.paxInfants)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
