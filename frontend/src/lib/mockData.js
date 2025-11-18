@@ -1,13 +1,13 @@
-// Helper function to generate real-time dates
+// Helper function to generate real-time dates (yesterday + next 5 days)
 const generateWeeklyData = () => {
   const data = [];
   const today = new Date();
   const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
   
-  // Generate data for last 7 days (yesterday and 6 days before)
-  for (let i = 7; i >= 1; i--) {
+  // Start from yesterday (-1) and go to next 5 days (+5) = 7 days total
+  for (let i = -1; i <= 5; i++) {
     const date = new Date(today);
-    date.setDate(today.getDate() - i);
+    date.setDate(today.getDate() + i);
     
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -25,6 +25,20 @@ const generateWeeklyData = () => {
   }
   
   return data;
+};
+
+// Get today's date in Turkish format
+export const getTodayDate = () => {
+  const today = new Date();
+  const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+  const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+  
+  const dayName = days[today.getDay()];
+  const day = today.getDate();
+  const month = months[today.getMonth()];
+  const year = today.getFullYear();
+  
+  return `${dayName}, ${day} ${month} ${year}`;
 };
 
 export const mockDashboardData = {
