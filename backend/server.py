@@ -455,6 +455,60 @@ async def get_operations(date: Optional[str] = None, type: str = "all"):
     operations = await db.operations.find(query, {"_id": 0}).to_list(1000)
     return operations
 
+@api_router.post("/operations", response_model=Operation)
+async def create_operation(operation: OperationCreate):
+    operation_obj = Operation(**operation.model_dump())
+    doc = operation_obj.model_dump(by_alias=True)
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.operations.insert_one(doc)
+    
+    await log_action("system", "CREATE", "operations", operation_obj.id, f"Created operation {operation_obj.flightCode}")
+    
+    return operation_obj
+
+@api_router.post("/operations/upload")
+async def upload_operations(file: UploadFile = File(...)):
+    """Upload Excel file to add operations to database"""
+    try:
+        contents = await file.read()
+        
+        # Read Excel file
+        if file.filename.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(io.BytesIO(contents))
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format. Please upload Excel file.")
+        
+        # Expected columns: flightCode, type, from, to, date, time, passengers, hotel, transferTime, notes
+        operations_added = 0
+        for _, row in df.iterrows():
+            operation_data = {
+                "flightCode": str(row.get('flightCode', '')),
+                "type": str(row.get('type', 'transfer')),
+                "from": str(row.get('from', '')),
+                "to": str(row.get('to', '')),
+                "date": str(row.get('date', '')),
+                "time": str(row.get('time', '')),
+                "passengers": int(row.get('passengers', 0)),
+                "hotel": str(row.get('hotel', '')),
+                "transferTime": str(row.get('transferTime', '')),
+                "notes": str(row.get('notes', ''))
+            }
+            
+            operation = Operation(**operation_data)
+            doc = operation.model_dump(by_alias=True)
+            doc['created_at'] = doc['created_at'].isoformat()
+            
+            await db.operations.insert_one(doc)
+            operations_added += 1
+        
+        # Log the action
+        await log_action("admin", "IMPORT_EXCEL", "operations", "batch", f"Imported {operations_added} operations from {file.filename}")
+        
+        return {"message": f"Successfully imported {operations_added} operations", "count": operations_added}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
 # ===== SEARCH ENDPOINT (for Management Department) =====
 @api_router.get("/search")
 async def search_passenger(query: str = Query(..., min_length=2)):
