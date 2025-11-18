@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
+import JourneyTimeline from './JourneyTimeline';
 
 const ReservationMonitor = ({ isOpen, onClose }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [destinationFilter, setDestinationFilter] = useState('ALL');
+  const [agencyFilter, setAgencyFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [appliedStartDate, setAppliedStartDate] = useState('');
   const [appliedEndDate, setAppliedEndDate] = useState('');
   const [selectedPax, setSelectedPax] = useState(null);
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
+  const [showJourneyTimeline, setShowJourneyTimeline] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
