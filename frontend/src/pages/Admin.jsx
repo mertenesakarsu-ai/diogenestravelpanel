@@ -513,6 +513,102 @@ const Admin = () => {
             </div>
           </TabsContent>
 
+          {/* Backup Tab */}
+          <TabsContent value="backup" className="space-y-6">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 mb-2">Veri Yedekleme</h3>
+                <p className="text-sm text-slate-600">Tüm sistem verilerinizi .bak dosyası olarak yedekleyin</p>
+              </div>
+
+              {/* Backup Info Card */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                    <HardDrive className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-bold text-slate-800 mb-2">Tam Yedekleme</h4>
+                    <p className="text-sm text-slate-600 mb-4">
+                      Tüm uçuş, rezervasyon, operasyon ve kullanıcı verileriniz güvenli bir .bak dosyasına kaydedilir.
+                    </p>
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+                      <span className="px-3 py-1 bg-white rounded-full border border-blue-200">
+                        ✓ Uçuşlar
+                      </span>
+                      <span className="px-3 py-1 bg-white rounded-full border border-blue-200">
+                        ✓ Rezervasyonlar
+                      </span>
+                      <span className="px-3 py-1 bg-white rounded-full border border-blue-200">
+                        ✓ Operasyonlar
+                      </span>
+                      <span className="px-3 py-1 bg-white rounded-full border border-blue-200">
+                        ✓ Kullanıcılar
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Last Backup Info */}
+              {lastBackup && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    <strong>Son Yedekleme:</strong> {lastBackup}
+                  </p>
+                </div>
+              )}
+
+              {/* Backup Button */}
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleBackupData}
+                  disabled={backupProgress === "Yedekleme başlatılıyor..."}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-12 py-6 text-lg h-auto"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  {backupProgress === "Yedekleme başlatılıyor..." ? "Yedekleniyor..." : "Yedekleme Oluştur"}
+                </Button>
+              </div>
+
+              {/* Success Message */}
+              {backupProgress && backupProgress !== "Yedekleme başlatılıyor..." && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-green-800">Başarılı!</p>
+                    <p className="text-sm text-green-700">{backupProgress}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {backupError && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-800">Hata!</p>
+                    <p className="text-sm text-red-700">{backupError}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Info Box */}
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  Önemli Notlar:
+                </h4>
+                <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
+                  <li>Yedekleme dosyası güvenli bir yerde saklanmalıdır</li>
+                  <li>Düzenli yedekleme yapmanız önerilir (günlük/haftalık)</li>
+                  <li>Yedekleme dosyası tüm sistem verilerini içerir</li>
+                  <li>Büyük veri setlerinde yedekleme birkaç dakika sürebilir</li>
+                </ul>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-4">
             <div className="flex justify-between items-center mb-4">
