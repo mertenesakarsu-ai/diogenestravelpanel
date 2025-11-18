@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
+import ReservationMonitor from "@/components/ReservationMonitor";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
