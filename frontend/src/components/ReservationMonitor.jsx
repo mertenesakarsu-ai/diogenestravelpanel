@@ -341,7 +341,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
             <tbody>
               {filteredReservations.length === 0 ? (
                 <tr>
-                  <td colSpan="14" className="px-4 py-12 text-center text-slate-500 text-lg">
+                  <td colSpan="15" className="px-4 py-12 text-center text-slate-500 text-lg">
                     Filtrelere uygun rezervasyon bulunamadı
                   </td>
                 </tr>
@@ -349,25 +349,35 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                 filteredReservations.map((reservation, index) => (
                   <tr 
                     key={index}
-                    className={`border-b border-slate-200 hover:bg-cyan-50 transition-colors ${
+                    onClick={() => handleReservationClick(reservation.id)}
+                    className={`border-b border-slate-200 hover:bg-cyan-100 transition-colors cursor-pointer ${
                       index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
                     }`}
+                    title="Yolcu yolculuğunu görüntülemek için tıklayın"
                   >
-                    <td className="px-4 py-4 text-base font-semibold text-slate-700">{reservation.date}</td>
-                    <td className="px-4 py-4 text-base text-slate-700">{reservation.agency}</td>
-                    <td className="px-4 py-4 text-base font-medium text-slate-800">{reservation.passenger}</td>
-                    <td className="px-4 py-4 text-base text-slate-700">{reservation.hotel}</td>
-                    <td className="px-4 py-4 text-center text-lg">{renderStars(reservation.stars)}</td>
-                    <td className="px-4 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{formatDate(reservation.checkIn)}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{formatDate(reservation.checkOut)}</td>
-                    <td className="px-4 py-4 text-base text-center font-semibold text-slate-700">{reservation.nights}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{reservation.room}</td>
-                    <td className="px-4 py-4 text-base text-slate-600">{reservation.board}</td>
+                    <td className="px-3 py-4 text-base font-semibold text-slate-700">{reservation.date}</td>
+                    <td className="px-3 py-4">
+                      <span className={`px-3 py-1.5 rounded-full text-sm font-bold ${getAgencyBadgeColor(reservation.sourceAgency)}`}>
+                        {reservation.sourceAgency}
+                      </span>
+                    </td>
+                    <td className="px-3 py-4 text-base text-slate-700">{reservation.agency}</td>
+                    <td className="px-3 py-4 text-base font-medium text-slate-800">{reservation.passenger}</td>
+                    <td className="px-3 py-4 text-base text-slate-700">{reservation.hotel}</td>
+                    <td className="px-3 py-4 text-center text-lg">{renderStars(reservation.stars)}</td>
+                    <td className="px-3 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
+                    <td className="px-3 py-4 text-base text-slate-600">{formatDate(reservation.checkIn)}</td>
+                    <td className="px-3 py-4 text-base text-slate-600">{formatDate(reservation.checkOut)}</td>
+                    <td className="px-3 py-4 text-base text-center font-semibold text-slate-700">{reservation.nights}</td>
+                    <td className="px-3 py-4 text-base text-slate-600">{reservation.room}</td>
+                    <td className="px-3 py-4 text-base text-slate-600">{reservation.board}</td>
                     <td 
-                      className="px-4 py-4 text-center cursor-help"
+                      className="px-3 py-4 text-center cursor-help"
                       title={`${reservation.paxAdults} Yetişkin, ${reservation.paxChildren} Çocuk, ${reservation.paxInfants} Bebek`}
-                      onClick={() => setSelectedPax(reservation)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPax(reservation);
+                      }}
                     >
                       <div className="text-base font-semibold text-slate-700">
                         {getTotalPax(reservation.paxAdults, reservation.paxChildren, reservation.paxInfants)}
@@ -376,12 +386,12 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                         {formatPax(reservation.paxAdults, reservation.paxChildren, reservation.paxInfants)}
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusBadge(reservation.status)}`}>
+                    <td className="px-3 py-4 text-center">
+                      <span className={`px-3 py-1.5 rounded-full text-sm font-bold ${getStatusBadge(reservation.status)}`}>
                         {reservation.status === 'CONFIRMED' ? 'ONAYLI' : reservation.status === 'OPTION' ? 'OPSİYON' : 'İPTAL'}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-base text-slate-500 italic">{reservation.note || '-'}</td>
+                    <td className="px-3 py-4 text-base text-slate-500 italic">{reservation.note || '-'}</td>
                   </tr>
                 ))
               )}
