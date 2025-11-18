@@ -376,40 +376,65 @@ const Admin = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full" data-testid="users-table">
-                <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Ad Soyad</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Email</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Rol</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Durum</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {mockUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-slate-800">{user.name}</span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-700">{user.email}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Aktif
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Button variant="ghost" size="sm">Düzenle</Button>
-                      </td>
+              {loadingUsers ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600 mx-auto"></div>
+                  <p className="text-slate-600 mt-2">Kullanıcılar yükleniyor...</p>
+                </div>
+              ) : (
+                <table className="w-full" data-testid="users-table">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Ad Soyad</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Email</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Rol</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Durum</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">İşlemler</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {users.map((user) => (
+                      <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <span className="font-semibold text-slate-800">{user.name}</span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-700">{user.email}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {user.status === 'active' ? 'Aktif' : 'Pasif'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => openEditUserModal(user)}
+                            >
+                              Düzenle
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteUser(user.id)}
+                            >
+                              Sil
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </TabsContent>
 
