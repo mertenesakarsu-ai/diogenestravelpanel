@@ -189,6 +189,18 @@ frontend:
           agent: "main"
           comment: "Yönetim departmanı zaten mevcut. Tüm departmanların verilerini arayıp kontrol edebilme özelliği var."
 
+  - task: "Dashboard.jsx - Gerçek Zamanlı Tarihler"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Dashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Dashboard grafiği güncellendi. Artık güncel tarihten bir gün öncesi ve önceki 6 günü (toplamda son 7 gün) gerçek zamanlı olarak gösteriyor. Başlık 'Son 7 Gün (Dünden geriye)' olarak değiştirildi."
+
   - task: "Admin.jsx - Veri Yükleme Sekmesi Eklendi"
     implemented: true
     working: true
