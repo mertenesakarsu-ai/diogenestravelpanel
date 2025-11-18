@@ -141,6 +141,38 @@ const Layout = () => {
     return item ? item.label : "Dashboard";
   };
 
+  const handleApplyDateRange = () => {
+    if (dateRange.startDate && dateRange.endDate) {
+      setSelectedDateRange({
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate
+      });
+      setMonitorMenuOpen(false);
+      // Tarihleri console'a yazdır (sonra kullanılabilir)
+      console.log('Seçilen tarih aralığı:', {
+        startDate: formatDateTurkish(dateRange.startDate),
+        endDate: formatDateTurkish(dateRange.endDate)
+      });
+    } else {
+      alert('Lütfen başlangıç ve bitiş tarihlerini seçin');
+    }
+  };
+
+  const handleClearDateRange = () => {
+    setDateRange({ startDate: '', endDate: '' });
+    setSelectedDateRange(null);
+    console.log('Tarih aralığı temizlendi');
+  };
+
+  const formatDateTurkish = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <>
       {/* Profile Picture Modal */}
