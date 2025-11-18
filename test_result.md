@@ -249,6 +249,18 @@ frontend:
           agent: "main"
           comment: "Excel karşılaştırma özelliği aktif. /api/flights/compare endpoint'i çalışıyor."
 
+  - task: "Layout.jsx - Monitör Butonu ve Tarih Aralığı Seçimi"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Layout.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Panelin sağ üst köşesine Monitör butonu eklendi. Tüm sayfalarda görünüyor. Butona tıklandığında açılan menüde tarih aralığı seçimi yapılabiliyor. Başlangıç ve bitiş tarihi seçenekleri. Tarih formatı GG/AA/YYYY. 'Uygula' ve 'Temizle' butonları. Seçilen tarih aralığı state'te saklanıyor ve console'a yazdırılıyor. Aktif tarih aralığı olduğunda buton üzerinde mavi nokta gösteriliyor."
+
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
     implemented: true
