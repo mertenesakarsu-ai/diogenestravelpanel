@@ -91,6 +91,90 @@ const Admin = () => {
     }
   };
 
+  // Load users
+  const loadUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const response = await api.get('/api/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadUsers();
+  }, []);
+
+  // Open modal for new user
+  const openNewUserModal = () => {
+    setEditingUser(null);
+    setUserForm({
+      name: '',
+      email: '',
+      password: '',
+      role: 'reservation',
+      status: 'active'
+    });
+    setShowUserModal(true);
+  };
+
+  // Open modal for editing user
+  const openEditUserModal = (user) => {
+    setEditingUser(user);
+    setUserForm({
+      name: user.name,
+      email: user.email,
+      password: '', // Don't pre-fill password
+      role: user.role,
+      status: user.status
+    });
+    setShowUserModal(true);
+  };
+
+  // Save user (create or update)
+  const handleSaveUser = async () => {
+    try {
+      if (editingUser) {
+        // Update existing user
+        const updateData = {
+          name: userForm.name,
+          email: userForm.email,
+          role: userForm.role,
+          status: userForm.status
+        };
+        // Only include password if it's provided
+        if (userForm.password) {
+          updateData.password = userForm.password;
+        }
+        await api.put(`/api/users/${editingUser.id}`, updateData);
+      } else {
+        // Create new user
+        await api.post('/api/users', userForm);
+      }
+      setShowUserModal(false);
+      loadUsers(); // Reload users list
+    } catch (error) {
+      console.error('Error saving user:', error);
+      alert(error.response?.data?.detail || 'Kullanıcı kaydedilirken hata oluştu');
+    }
+  };
+
+  // Delete user
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
+      try {
+        await api.delete(`/api/users/${userId}`);
+        loadUsers(); // Reload users list
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert(error.response?.data?.detail || 'Kullanıcı silinirken hata oluştu');
+      }
+    }
+  };
+
   return (
     <div className="space-y-6" data-testid="admin-page">
       {/* Database Status */}
