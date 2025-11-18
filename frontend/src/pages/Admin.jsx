@@ -8,6 +8,7 @@ import api from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
 
 const Admin = () => {
+  const { hasPermission } = useAuth();
   const [dbStatus] = useState({
     postgresql: { connected: false, records: 0 },
     mongodb: { connected: true, records: 1247 }
