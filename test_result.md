@@ -199,7 +199,7 @@ frontend:
     status_history:
         - working: true
           agent: "main"
-          comment: "Dashboard grafiği güncellendi. Artık güncel tarihten bir gün öncesi ve önceki 6 günü (toplamda son 7 gün) gerçek zamanlı olarak gösteriyor. Başlık 'Son 7 Gün (Dünden geriye)' olarak değiştirildi."
+          comment: "Dashboard grafiği güncellendi. Artık DÜN ve ÖNÜMÜZDEKİ 5 GÜN (toplam 7 gün) gerçek zamanlı olarak gösteriyor. Bugünün tarihi (Pazartesi, 13 Ocak 2025 formatında) tablonun üstünde görünüyor."
 
   - task: "Admin.jsx - Veri Yükleme Sekmesi Eklendi"
     implemented: true
