@@ -182,7 +182,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 <CalendarIcon className="w-4 h-4 inline mr-2" />
-                Başlangıç Tarihi
+                Giriş Tarihi
               </label>
               <input
                 type="date"
@@ -195,7 +195,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 <CalendarIcon className="w-4 h-4 inline mr-2" />
-                Bitiş Tarihi
+                Çıkış Tarihi
               </label>
               <input
                 type="date"
