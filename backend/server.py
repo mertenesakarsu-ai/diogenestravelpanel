@@ -612,7 +612,7 @@ async def initialize_users():
     
     return {"message": f"Initialized {len(default_users)} users", "count": len(default_users)}
 
-@api_router.post("/users", response_model=User)
+@api_router.post("/users", response_model=UserResponse)
 async def create_user(user: UserCreate, x_user_id: Optional[str] = Header(None)):
     # Check permission - only admin can create users
     if not x_user_id:
@@ -626,7 +626,11 @@ async def create_user(user: UserCreate, x_user_id: Optional[str] = Header(None))
     if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('users', []):
         raise HTTPException(status_code=403, detail="You don't have permission to create users")
     
-    user_obj = User(**user.model_dump())
+    # Hash password before storing
+    user_data = user.model_dump()
+    user_data['password'] = pwd_context.hash(user_data['password'])
+    
+    user_obj = User(**user_data)
     doc = user_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.users.insert_one(doc)
