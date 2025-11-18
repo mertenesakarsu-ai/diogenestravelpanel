@@ -26,7 +26,7 @@ const Operations = () => {
   const fetchOperations = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/operations`, {
+      const response = await api.get('/api/operations', {
         params: { date: selectedDate, type: filterType }
       });
       setOperations(response.data || []);
