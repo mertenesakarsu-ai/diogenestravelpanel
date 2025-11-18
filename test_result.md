@@ -228,6 +228,57 @@ backend:
         - working: true
           agent: "main"
           comment: "Backend servisi çalışıyor. MongoDB bağlantısı aktif. Operations endpoint'i eklendi (/api/operations)."
+        - working: true
+          agent: "main"
+          comment: "Backend'e yeni endpoint'ler eklendi: /api/reservations/upload, /api/operations/upload, /api/operations POST. Operation model eklendi."
+  
+  - task: "Excel Upload - Flights"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "/api/flights/upload endpoint'i çalışıyor. Excel dosyasından uçuş verisi yükleme aktif."
+  
+  - task: "Excel Upload - Reservations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "/api/reservations/upload endpoint'i eklendi ve aktif. Excel dosyasından rezervasyon verisi yükleme özelliği."
+  
+  - task: "Excel Upload - Operations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "/api/operations/upload endpoint'i eklendi ve aktif. Excel dosyasından operasyon verisi yükleme özelliği."
+  
+  - task: "Excel Compare - Flights"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "/api/flights/compare endpoint'i çalışıyor. Excel dosyasını veritabanı ile karşılaştırma özelliği aktif."
 
 metadata:
   created_by: "main_agent"
