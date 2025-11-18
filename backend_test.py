@@ -333,6 +333,144 @@ class BackendTester:
         except Exception as e:
             self.log_test("Flights Compare", False, f"Error: {str(e)}")
 
+    def test_login_success_admin(self):
+        """Test POST /api/login with correct admin credentials"""
+        try:
+            login_data = {
+                "email": "admin@diogenes.com",
+                "password": "admin123"
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/login", json=login_data, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                expected_fields = ['id', 'name', 'email', 'role', 'status', 'created_at']
+                if all(field in data for field in expected_fields):
+                    if data['email'] == 'admin@diogenes.com' and data['role'] == 'admin' and data['status'] == 'active':
+                        self.log_test("Login Success - Admin", True, f"Admin login successful: {data['name']} ({data['role']})", data)
+                    else:
+                        self.log_test("Login Success - Admin", False, f"Incorrect user data returned: {data}", data)
+                else:
+                    self.log_test("Login Success - Admin", False, f"Missing required fields in response: {data}", data)
+            else:
+                self.log_test("Login Success - Admin", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Login Success - Admin", False, f"Error: {str(e)}")
+
+    def test_login_wrong_password(self):
+        """Test POST /api/login with wrong password"""
+        try:
+            login_data = {
+                "email": "admin@diogenes.com",
+                "password": "wrongpassword"
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/login", json=login_data, timeout=10)
+            if response.status_code == 401:
+                data = response.json()
+                if 'detail' in data and 'Email veya şifre hatalı' in data['detail']:
+                    self.log_test("Login Wrong Password", True, "Correctly rejected wrong password with 401", data)
+                else:
+                    self.log_test("Login Wrong Password", False, f"Wrong error message: {data}", data)
+            else:
+                self.log_test("Login Wrong Password", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Login Wrong Password", False, f"Error: {str(e)}")
+
+    def test_login_nonexistent_email(self):
+        """Test POST /api/login with non-existent email"""
+        try:
+            login_data = {
+                "email": "nonexistent@diogenes.com",
+                "password": "anypassword"
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/login", json=login_data, timeout=10)
+            if response.status_code == 401:
+                data = response.json()
+                if 'detail' in data and 'Email veya şifre hatalı' in data['detail']:
+                    self.log_test("Login Nonexistent Email", True, "Correctly rejected non-existent email with 401", data)
+                else:
+                    self.log_test("Login Nonexistent Email", False, f"Wrong error message: {data}", data)
+            else:
+                self.log_test("Login Nonexistent Email", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Login Nonexistent Email", False, f"Error: {str(e)}")
+
+    def test_login_empty_credentials(self):
+        """Test POST /api/login with empty email and password"""
+        try:
+            login_data = {
+                "email": "",
+                "password": ""
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/login", json=login_data, timeout=10)
+            if response.status_code == 401:
+                data = response.json()
+                if 'detail' in data and 'Email veya şifre hatalı' in data['detail']:
+                    self.log_test("Login Empty Credentials", True, "Correctly rejected empty credentials with 401", data)
+                else:
+                    self.log_test("Login Empty Credentials", False, f"Wrong error message: {data}", data)
+            else:
+                self.log_test("Login Empty Credentials", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Login Empty Credentials", False, f"Error: {str(e)}")
+
+    def test_login_all_users(self):
+        """Test login for all default users"""
+        test_users = [
+            {"email": "reservation@diogenes.com", "password": "reservation123", "role": "reservation", "name": "Rezervasyon Manager"},
+            {"email": "operation@diogenes.com", "password": "operation123", "role": "operation", "name": "Operasyon Manager"},
+            {"email": "flight@diogenes.com", "password": "flight123", "role": "flight", "name": "Uçak Manager"},
+            {"email": "management@diogenes.com", "password": "management123", "role": "management", "name": "Yönetim Manager"}
+        ]
+        
+        for user in test_users:
+            try:
+                login_data = {
+                    "email": user["email"],
+                    "password": user["password"]
+                }
+                
+                response = self.session.post(f"{BACKEND_URL}/login", json=login_data, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    expected_fields = ['id', 'name', 'email', 'role', 'status', 'created_at']
+                    if all(field in data for field in expected_fields):
+                        if (data['email'] == user["email"] and 
+                            data['role'] == user["role"] and 
+                            data['status'] == 'active'):
+                            self.log_test(f"Login Success - {user['role'].title()}", True, 
+                                        f"{user['role'].title()} login successful: {data['name']} ({data['role']})", data)
+                        else:
+                            self.log_test(f"Login Success - {user['role'].title()}", False, 
+                                        f"Incorrect user data for {user['email']}: {data}", data)
+                    else:
+                        self.log_test(f"Login Success - {user['role'].title()}", False, 
+                                    f"Missing required fields for {user['email']}: {data}", data)
+                else:
+                    self.log_test(f"Login Success - {user['role'].title()}", False, 
+                                f"Login failed for {user['email']}: HTTP {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_test(f"Login Success - {user['role'].title()}", False, 
+                            f"Error testing {user['email']}: {str(e)}")
+
+    def test_initialize_users(self):
+        """Test POST /api/users/init to ensure default users exist"""
+        try:
+            response = self.session.post(f"{BACKEND_URL}/users/init", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if 'message' in data:
+                    self.log_test("Initialize Users", True, f"Users initialization: {data['message']}", data)
+                else:
+                    self.log_test("Initialize Users", False, f"Invalid response format: {data}", data)
+            else:
+                self.log_test("Initialize Users", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Initialize Users", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
