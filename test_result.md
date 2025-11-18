@@ -269,6 +269,21 @@ frontend:
         - working: true
           agent: "main"
           comment: "Menü öğelerinde 'Departmanı' kelimesi geri eklendi. Font boyutu text-sm'den text-xs'e (14px -> 12px) küçültülerek 'Rezervasyon Departmanı' yazısının tek satıra sığması sağlandı. Tüm departman isimleri artık 'Departmanı' ile birlikte düzgün görünüyor."
+        - working: true
+          agent: "main"
+          comment: "Monitör butonu güncellendi - artık tam ekran Reservation Monitor modal'ı açıyor. ReservationMonitor.jsx component'i oluşturuldu. Modal özellikleri: Tam ekran/büyük modal, dark overlay (tıklanabilir), X butonu ile kapatma, header bar (RESERVATION MONITOR + gerçek zamanlı saat), scrollable tablo (Time, Agency, Passenger, Service, Destination, Check-in, Check-out, Nights, Room, Board, Pax, Status, Note), 20 dummy rezervasyon verisi, status badges (CONFIRMED-yeşil, OPTION-sarı, CANCELLED-kırmızı), sticky header, alternating row colors, hover effects, büyük font boyutları (TV/büyük ekran için optimize). Test edildi ve başarıyla çalışıyor."
+
+  - task: "ReservationMonitor.jsx - Rezervasyon İzleme Dashboard Modal"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/ReservationMonitor.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Reservation Monitor modal component'i oluşturuldu. Monitör butonuna tıklandığında açılan tam ekran dashboard. 20 dummy rezervasyon verisi ile test edildi. Gerçek zamanlı saat gösterimi. Status badge'leri (CONFIRMED, OPTION, CANCELLED) farklı renklerde. Sticky table header. Modal overlay ve X butonu ile kapatma. Büyük ekran/TV görüntüleme için optimize edilmiş font boyutları ve tasarım. Test edildi ve tüm özellikler çalışıyor."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
