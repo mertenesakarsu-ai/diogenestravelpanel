@@ -108,12 +108,19 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     return '⭐'.repeat(count);
   };
 
+  const handleApplyFilters = () => {
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
+  };
+
   const handleClearFilters = () => {
     setSearchQuery('');
     setStatusFilter('ALL');
     setDestinationFilter('ALL');
     setStartDate('');
     setEndDate('');
+    setAppliedStartDate('');
+    setAppliedEndDate('');
   };
 
   if (!isOpen) return null;
