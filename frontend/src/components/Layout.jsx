@@ -33,6 +33,9 @@ const Layout = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [monitorMenuOpen, setMonitorMenuOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
+  const [selectedDateRange, setSelectedDateRange] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, canAccessPage, updateUser } = useAuth();
