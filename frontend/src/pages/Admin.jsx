@@ -23,11 +23,22 @@ const Admin = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
 
   const mockLogs = [
-    { id: 1, user: "admin@diogenes.com", action: "CREATE", entity: "reservations", entityId: "DG2024-005", time: "2024-12-15 14:30" },
-    { id: 2, user: "operation@diogenes.com", action: "UPDATE", entity: "flights", entityId: "TK1234", time: "2024-12-15 13:15" },
-    { id: 3, user: "flight@diogenes.com", action: "IMPORT_EXCEL", entity: "flights", entityId: "batch_001", time: "2024-12-15 11:45" },
-    { id: 4, user: "reservation@diogenes.com", action: "UPDATE", entity: "reservations", entityId: "DG2024-003", time: "2024-12-15 10:20" },
+    { id: 1, user: "admin@diogenestravel.com", action: "CREATE", entity: "reservations", entityId: "DG2024-005", time: "2024-12-15 14:30" },
+    { id: 2, user: "operation@diogenestravel.com", action: "UPDATE", entity: "flights", entityId: "TK1234", time: "2024-12-15 13:15" },
+    { id: 3, user: "flight@diogenestravel.com", action: "IMPORT_EXCEL", entity: "flights", entityId: "batch_001", time: "2024-12-15 11:45" },
+    { id: 4, user: "reservation@diogenestravel.com", action: "UPDATE", entity: "reservations", entityId: "DG2024-003", time: "2024-12-15 10:20" },
   ];
+  
+  // User management state
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userForm, setUserForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'reservation',
+    status: 'active'
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
