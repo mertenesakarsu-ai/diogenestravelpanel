@@ -351,6 +351,18 @@ async def delete_flight(flight_id: str, x_user_id: Optional[str] = Header(None))
 @api_router.post("/flights/upload")
 async def upload_flights(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Upload Excel or BAK file to add flights to database"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'upload' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to upload flights")
+    
     try:
         contents = await file.read()
         
