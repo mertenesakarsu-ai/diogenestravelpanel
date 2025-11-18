@@ -1,9 +1,9 @@
-import { Users, UserCheck, UserX, Clock, AlertCircle, TrendingUp } from "lucide-react";
+import { Users, UserCheck, UserX, Clock, AlertCircle, TrendingUp, Calendar } from "lucide-react";
 import StatCard from "@/components/StatCard";
 import ArrivalDepartureChart from "@/components/ArrivalDepartureChart";
 import TopHotels from "@/components/TopHotels";
 import TopProducts from "@/components/TopProducts";
-import { mockDashboardData } from "@/lib/mockData";
+import { mockDashboardData, getTodayDate } from "@/lib/mockData";
 
 const Dashboard = () => {
   const stats = mockDashboardData.stats;
