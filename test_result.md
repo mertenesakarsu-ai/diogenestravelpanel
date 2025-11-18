@@ -263,6 +263,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Monitör butonu ve tarih aralığı seçimi test edildi ve başarıyla çalışıyor. Kullanıcılar database'de initialize edildi. Login sistemi düzeltildi."
+        - working: true
+          agent: "main"
+          comment: "Menü öğeleri kısaltıldı. 'Rezervasyon Departmanı' -> 'Rezervasyon', 'Operasyon Departmanı' -> 'Operasyon', 'Yönetim Departmanı' -> 'Yönetim'. Tüm menü öğeleri artık tek satıra sığıyor ve daha temiz görünüyor."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
