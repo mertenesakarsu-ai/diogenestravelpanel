@@ -167,7 +167,7 @@ const Admin = () => {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-bold text-slate-800 mb-2">Veri Seti Yükleme</h3>
-                <p className="text-sm text-slate-600">Excel (.xlsx, .xls) veya SQL BAK dosyalarını sisteme yükleyin</p>
+                <p className="text-sm text-slate-600">Excel dosyalarını (.xlsx, .xls) sisteme yükleyin</p>
               </div>
 
               {/* Upload Type Selection */}
