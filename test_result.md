@@ -279,7 +279,7 @@ frontend:
     file: "/app/frontend/src/components/ReservationMonitor.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
@@ -287,6 +287,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Kullanıcı feedback'i doğrultusunda major güncellemeler yapıldı: 1) Time kolonu kaldırıldı, Date kolonu eklendi 2) Service kolonu kaldırıldı, yerine Hotel ve Stars (⭐ yıldız sayısı) eklendi 3) Pax detayları eklendi - tıklanabilir, modal açılıyor (2A + 1C formatında, Yetişkin/Çocuk/Bebek detayları) 4) Tarih aralığı seçici eklendi (Başlangıç - Bitiş tarihi) 5) Arama özelliği eklendi (yolcu, acente, otel, destinasyon, not araması) 6) Filtreler eklendi: Durum (Tümü/Onaylı/Opsiyon/İptal), Destinasyon (dropdown ile tüm destinasyonlar) 7) Filtreleri Temizle butonu eklendi 8) Filtrelenmiş rezervasyon sayısı başlıkta gösteriliyor 9) Türkçe dil desteği (kolon başlıkları, status badge'leri, filtreler). Tüm özellikler test edildi ve başarıyla çalışıyor."
+        - working: true
+          agent: "main"
+          comment: "Yetkilendirme ve filtreleme güncellemeleri: 1) Monitör butonu sadece admin, rezervasyon ve yönetim departmanı için görünür (uçak ve operasyon göremez) 2) Tarih etiketleri 'Başlangıç/Bitiş Tarihi'nden 'Giriş/Çıkış Tarihi'ne değiştirildi 3) 'Filtre Uygula' butonu eklendi - filtreler artık otomatik değil, butona tıklandığında uygulanıyor 4) Tarih filtreleme check-in tarihine göre yapılıyor. Test edilmeye hazır."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
