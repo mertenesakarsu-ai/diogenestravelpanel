@@ -723,6 +723,89 @@ async def update_profile_picture(
     raise HTTPException(status_code=500, detail="Failed to update profile picture")
 
 
+# ===== BACKUP ENDPOINTS =====
+@api_router.post("/backup/create")
+async def create_backup(x_user_id: Optional[str] = Header(None)):
+    """Create a backup of all data"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin can create backups
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only administrators can create backups")
+    
+    try:
+        # Collect all data
+        backup_data = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "version": "1.0",
+            "users": [],
+            "flights": [],
+            "reservations": [],
+            "operations": [],
+            "logs": []
+        }
+        
+        # Get all users
+        users = await db.users.find({}, {"_id": 0}).to_list(None)
+        for user in users:
+            if 'created_at' in user and isinstance(user['created_at'], datetime):
+                user['created_at'] = user['created_at'].isoformat()
+        backup_data["users"] = users
+        
+        # Get all flights
+        flights = await db.flights.find({}, {"_id": 0}).to_list(None)
+        for flight in flights:
+            if 'created_at' in flight and isinstance(flight['created_at'], datetime):
+                flight['created_at'] = flight['created_at'].isoformat()
+        backup_data["flights"] = flights
+        
+        # Get all reservations
+        reservations = await db.reservations.find({}, {"_id": 0}).to_list(None)
+        for reservation in reservations:
+            if 'created_at' in reservation and isinstance(reservation['created_at'], datetime):
+                reservation['created_at'] = reservation['created_at'].isoformat()
+        backup_data["reservations"] = reservations
+        
+        # Get all operations
+        operations = await db.operations.find({}, {"_id": 0}).to_list(None)
+        for operation in operations:
+            if 'created_at' in operation and isinstance(operation['created_at'], datetime):
+                operation['created_at'] = operation['created_at'].isoformat()
+        backup_data["operations"] = operations
+        
+        # Get recent logs
+        logs = await db.logs.find({}, {"_id": 0}).sort("timestamp", -1).limit(1000).to_list(1000)
+        for log in logs:
+            if 'timestamp' in log and isinstance(log['timestamp'], datetime):
+                log['timestamp'] = log['timestamp'].isoformat()
+        backup_data["logs"] = logs
+        
+        # Convert to JSON
+        import json
+        backup_json = json.dumps(backup_data, indent=2, ensure_ascii=False)
+        
+        # Log the action
+        await log_action(current_user.get('email', 'admin'), "BACKUP", "system", "full_backup", "Created full system backup")
+        
+        # Return as file download
+        from fastapi.responses import Response
+        return Response(
+            content=backup_json,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f"attachment; filename=diogenes_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.bak"
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Backup creation failed: {str(e)}")
+
+
 # ===== LOGS ENDPOINTS =====
 @api_router.get("/logs", response_model=List[SystemLog])
 async def get_logs(limit: int = 100, x_user_id: Optional[str] = Header(None)):
