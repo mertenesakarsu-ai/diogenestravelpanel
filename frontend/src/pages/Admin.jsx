@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Database, Users, FileText, Settings, CheckCircle, XCircle, Activity, Upload, FileSpreadsheet, AlertCircle, X } from "lucide-react";
+import { Database, Users, FileText, Settings, CheckCircle, XCircle, Activity, Upload, FileSpreadsheet, AlertCircle, X, Download, HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
