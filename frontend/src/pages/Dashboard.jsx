@@ -59,8 +59,8 @@ const Dashboard = () => {
       }}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg lg:text-xl font-bold text-slate-800">Önümüzdeki 7 Gün</h3>
-            <p className="text-sm text-slate-500 mt-1">Geliş ve Gidiş Grafiği</p>
+            <h3 className="text-lg lg:text-xl font-bold text-slate-800">Son 7 Gün</h3>
+            <p className="text-sm text-slate-500 mt-1">Geliş ve Gidiş Grafiği (Dünden geriye)</p>
           </div>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
