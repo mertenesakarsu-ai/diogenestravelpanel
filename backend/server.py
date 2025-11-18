@@ -78,6 +78,7 @@ class User(BaseModel):
     password: str  # hashed password
     role: str  # "admin", "reservation", "operation", "flight"
     status: str = "active"  # "active", "inactive"
+    profile_picture: Optional[str] = None  # URL or base64 image
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class UserCreate(BaseModel):
