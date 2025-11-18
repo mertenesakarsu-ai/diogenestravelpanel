@@ -419,6 +419,36 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ MONİTÖR YETKİLENDİRME VE FİLTRE GÜNCELLEMELERİ TAMAMLANDI:
+      
+      DEĞİŞİKLİKLER:
+      1. Monitör Butonu Yetkilendirme (Layout.jsx):
+         - Sadece admin, reservation ve management rolü görebilir
+         - Flight ve operation departmanları için gizli
+         - Koşullu render: user?.role kontrolü ile
+      
+      2. Rezervasyon Monitör Filtreleme (ReservationMonitor.jsx):
+         - 'Başlangıç Tarihi' → 'Giriş Tarihi' olarak değiştirildi
+         - 'Bitiş Tarihi' → 'Çıkış Tarihi' olarak değiştirildi
+         - 'Filtre Uygula' butonu eklendi (cyan/teal gradient renk)
+         - Filtreler artık otomatik uygulanmıyor
+         - Sadece 'Filtre Uygula' butonuna tıklandığında aktif oluyor
+         - appliedStartDate ve appliedEndDate state'leri eklendi
+         - Filtreleme check-in tarihine göre yapılıyor
+      
+      3. Buton Düzeni:
+         - 'Filtre Uygula' butonu: Cyan-teal gradient, shadow efekti
+         - 'Filtreleri Temizle' butonu: Gri tonlarda
+         - İki buton yan yana, responsive tasarım
+      
+      YENİ KULLANICI DENEYİMİ:
+      - Admin/Rezervasyon/Yönetim: Monitör butonunu görebilir
+      - Uçak/Operasyon: Monitör butonu görünmez
+      - Kullanıcı tarih seçer → 'Filtre Uygula' tıklar → Filtre aktif olur
+      - 'Filtreleri Temizle' ile tüm filtreler sıfırlanır
+      
+      Frontend yeniden başlatıldı. Test edilmeye hazır!"
+    - agent: "main"
       message: "✅ EMAIL ADRESLERI VE KULLANICI YÖNETİMİ GÜNCELLEMESİ TAMAMLANDI:
       
       DEĞİŞİKLİKLER:
