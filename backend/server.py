@@ -121,6 +121,35 @@ class ReservationCreate(BaseModel):
     pax: int
     status: str = "pending"
 
+# Operation Models
+class Operation(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    flightCode: str
+    type: str  # "transfer", "tour", etc.
+    from_location: str = Field(alias="from")
+    to: str
+    date: str
+    time: str
+    passengers: int = 0
+    hotel: str = ""
+    transferTime: str = ""
+    notes: str = ""
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class OperationCreate(BaseModel):
+    flightCode: str
+    type: str
+    from_location: str = Field(alias="from")
+    to: str
+    date: str
+    time: str
+    passengers: int = 0
+    hotel: str = ""
+    transferTime: str = ""
+    notes: str = ""
+
 # Health Check Model
 class HealthStatus(BaseModel):
     database: str
