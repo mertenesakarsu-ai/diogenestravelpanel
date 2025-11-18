@@ -255,11 +255,14 @@ frontend:
     file: "/app/frontend/src/components/Layout.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "Panelin sağ üst köşesine Monitör butonu eklendi. Tüm sayfalarda görünüyor. Butona tıklandığında açılan menüde tarih aralığı seçimi yapılabiliyor. Başlangıç ve bitiş tarihi seçenekleri. Tarih formatı GG/AA/YYYY. 'Uygula' ve 'Temizle' butonları. Seçilen tarih aralığı state'te saklanıyor ve console'a yazdırılıyor. Aktif tarih aralığı olduğunda buton üzerinde mavi nokta gösteriliyor."
+        - working: true
+          agent: "main"
+          comment: "Monitör butonu ve tarih aralığı seçimi test edildi ve başarıyla çalışıyor. Kullanıcılar database'de initialize edildi. Login sistemi düzeltildi."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
