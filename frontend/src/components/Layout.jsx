@@ -10,7 +10,8 @@ import {
   User,
   Globe,
   Menu,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -26,17 +28,48 @@ const Layout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout, canAccessPage } = useAuth();
 
-  const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-    { icon: Calendar, label: "Rezervasyon Departmanı", path: "/reservations" },
-    { icon: Truck, label: "Operasyon Departmanı", path: "/operations" },
-    { icon: Plane, label: "Uçak Departmanı", path: "/flights" },
-    { icon: Settings, label: "Yönetim Departmanı", path: "/management" },
+  const allMenuItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/", page: "dashboard" },
+    { icon: Calendar, label: "Rezervasyon Departmanı", path: "/reservations", page: "reservations" },
+    { icon: Truck, label: "Operasyon Departmanı", path: "/operations", page: "operations" },
+    { icon: Plane, label: "Uçak Departmanı", path: "/flights", page: "flights" },
+    { icon: Settings, label: "Yönetim Departmanı", path: "/management", page: "management" },
   ];
 
+  // Filter menu items based on user permissions
+  const menuItems = allMenuItems.filter(item => canAccessPage(item.page));
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const getRoleBadgeColor = (role) => {
+    const colors = {
+      admin: 'from-purple-500 to-pink-500',
+      flight: 'from-blue-500 to-cyan-500',
+      reservation: 'from-green-500 to-emerald-500',
+      operation: 'from-orange-500 to-red-500',
+      management: 'from-indigo-500 to-purple-500'
+    };
+    return colors[role] || 'from-gray-500 to-gray-600';
+  };
+
+  const getRoleDisplayName = (role) => {
+    const names = {
+      admin: 'Yönetici',
+      flight: 'Uçak',
+      reservation: 'Rezervasyon',
+      operation: 'Operasyon',
+      management: 'Yönetim'
+    };
+    return names[role] || role;
+  };
+
   const getPageTitle = () => {
-    const item = menuItems.find(item => item.path === location.pathname);
+    const item = allMenuItems.find(item => item.path === location.pathname);
     return item ? item.label : "Dashboard";
   };
 
