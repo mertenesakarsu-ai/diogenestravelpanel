@@ -54,8 +54,8 @@ const Admin = () => {
       setUploadProgress("Yükleniyor...");
       setUploadError(null);
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/${uploadType}/upload`,
+      const response = await api.post(
+        `/api/${uploadType}/upload`,
         formData,
         {
           headers: {
