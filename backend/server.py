@@ -503,6 +503,36 @@ async def compare_flights(file: UploadFile = File(...), x_user_id: Optional[str]
         raise HTTPException(status_code=500, detail=f"Error comparing files: {str(e)}")
 
 # ===== USERS ENDPOINTS =====
+@api_router.post("/login", response_model=UserResponse)
+async def login(credentials: UserLogin):
+    """Login with email and password"""
+    # Find user by email
+    user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+    
+    # Verify password
+    if not pwd_context.verify(credentials.password, user.get('password', '')):
+        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+    
+    # Check if user is active
+    if user.get('status') != 'active':
+        raise HTTPException(status_code=403, detail="Kullanıcı hesabı aktif değil")
+    
+    # Convert created_at if needed
+    if 'created_at' in user and isinstance(user['created_at'], str):
+        user['created_at'] = datetime.fromisoformat(user['created_at'])
+    
+    # Return user without password
+    return {
+        "id": user["id"],
+        "name": user["name"],
+        "email": user["email"],
+        "role": user["role"],
+        "status": user["status"],
+        "created_at": user["created_at"]
+    }
+
 @api_router.get("/users", response_model=List[User])
 async def get_users(x_user_id: Optional[str] = Header(None)):
     # For login dropdown - allow unauthenticated access
