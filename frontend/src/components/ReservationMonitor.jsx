@@ -43,9 +43,23 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     return `${day}.${month}.${year}`;
   };
 
-  // Dummy reservation data - 20 rows with updated structure
+  // Source agencies
+  const sourceAgencies = ['THV', 'EURO TOURS', 'SELECT HOLIDAYS', 'AZURO'];
+
+  // Get agency badge color
+  const getAgencyBadgeColor = (agency) => {
+    const colors = {
+      'THV': 'bg-blue-500 text-white',
+      'EURO TOURS': 'bg-green-500 text-white',
+      'SELECT HOLIDAYS': 'bg-purple-500 text-white',
+      'AZURO': 'bg-orange-500 text-white'
+    };
+    return colors[agency] || 'bg-gray-500 text-white';
+  };
+
+  // Dummy reservation data - 20 rows with updated structure (including source agency and reservation IDs)
   const allReservations = [
-    { date: '15.01.2025', agency: 'Skyline Tours', passenger: 'John Smith', hotel: 'Grand Seaside Hotel', stars: 5, destination: 'Antalya', checkIn: '2025-01-15', checkOut: '2025-01-22', nights: 7, room: 'Deluxe', board: 'All Inclusive', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Airport pickup required' },
+    { id: 'res-001', date: '15.01.2025', sourceAgency: 'THV', agency: 'Skyline Tours', passenger: 'John Smith', hotel: 'Grand Seaside Hotel', stars: 5, destination: 'Antalya', checkIn: '2025-01-15', checkOut: '2025-01-22', nights: 7, room: 'Deluxe', board: 'All Inclusive', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Airport pickup required' },
     { date: '16.01.2025', agency: 'Blue Wave Travel', passenger: 'Emma Johnson', hotel: 'Bodrum Paradise Resort', stars: 4, destination: 'Bodrum', checkIn: '2025-01-16', checkOut: '2025-01-20', nights: 4, room: 'Standard', board: 'Half Board', paxAdults: 2, paxChildren: 2, paxInfants: 0, status: 'OPTION', note: 'Special diet request' },
     { date: '18.01.2025', agency: 'Golden Tours', passenger: 'Michael Brown', hotel: 'Istanbul Palace Hotel', stars: 5, destination: 'İstanbul', checkIn: '2025-01-18', checkOut: '2025-01-25', nights: 7, room: 'Suite', board: 'Breakfast', paxAdults: 2, paxChildren: 0, paxInfants: 0, status: 'CONFIRMED', note: 'Anniversary celebration' },
     { date: '20.01.2025', agency: 'Sunrise Travel', passenger: 'Sarah Davis', hotel: 'Fethiye Beach Resort', stars: 4, destination: 'Fethiye', checkIn: '2025-01-20', checkOut: '2025-01-27', nights: 7, room: 'Family Room', board: 'All Inclusive', paxAdults: 2, paxChildren: 3, paxInfants: 0, status: 'CONFIRMED', note: '' },
