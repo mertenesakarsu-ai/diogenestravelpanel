@@ -26,35 +26,35 @@ USERS = [
     {
         "id": str(uuid.uuid4()),
         "name": "Admin User",
-        "email": "admin@diogenes.com",
+        "email": "admin@diogenestravel.com",
         "password": "admin123",
         "role": "admin"
     },
     {
         "id": str(uuid.uuid4()),
         "name": "Uçak Personeli",
-        "email": "flight@diogenes.com",
+        "email": "flight@diogenestravel.com",
         "password": "flight123",
         "role": "flight"
     },
     {
         "id": str(uuid.uuid4()),
         "name": "Rezervasyon Personeli",
-        "email": "reservation@diogenes.com",
+        "email": "reservation@diogenestravel.com",
         "password": "reservation123",
         "role": "reservation"
     },
     {
         "id": str(uuid.uuid4()),
         "name": "Operasyon Personeli",
-        "email": "operation@diogenes.com",
+        "email": "operation@diogenestravel.com",
         "password": "operation123",
         "role": "operation"
     },
     {
         "id": str(uuid.uuid4()),
         "name": "Yönetim Personeli",
-        "email": "management@diogenes.com",
+        "email": "management@diogenestravel.com",
         "password": "management123",
         "role": "management"
     }
