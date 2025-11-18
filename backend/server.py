@@ -740,8 +740,20 @@ async def upload_operations(file: UploadFile = File(...), x_user_id: Optional[st
 
 # ===== SEARCH ENDPOINT (for Management Department) =====
 @api_router.get("/search")
-async def search_passenger(query: str = Query(..., min_length=2)):
+async def search_passenger(query: str = Query(..., min_length=2), x_user_id: Optional[str] = Header(None)):
     """Search for passenger across all systems"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('management', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to search across departments")
+    
     results = {
         "reservations": [],
         "flights": []
