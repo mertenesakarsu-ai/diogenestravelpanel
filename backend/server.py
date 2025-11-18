@@ -635,8 +635,20 @@ async def upload_reservations(file: UploadFile = File(...), x_user_id: Optional[
 
 # ===== OPERATIONS ENDPOINTS =====
 @api_router.get("/operations")
-async def get_operations(date: Optional[str] = None, type: str = "all"):
+async def get_operations(date: Optional[str] = None, type: str = "all", x_user_id: Optional[str] = Header(None)):
     """Get operations for a specific date"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('operations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view operations")
+    
     query = {}
     
     if date:
@@ -649,18 +661,30 @@ async def get_operations(date: Optional[str] = None, type: str = "all"):
     return operations
 
 @api_router.post("/operations", response_model=Operation)
-async def create_operation(operation: OperationCreate):
+async def create_operation(operation: OperationCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('operations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to create operations")
+    
     operation_obj = Operation(**operation.model_dump())
     doc = operation_obj.model_dump(by_alias=True)
     doc['created_at'] = doc['created_at'].isoformat()
     await db.operations.insert_one(doc)
     
-    await log_action("system", "CREATE", "operations", operation_obj.id, f"Created operation {operation_obj.flightCode}")
+    await log_action(user.get('email', 'system'), "CREATE", "operations", operation_obj.id, f"Created operation {operation_obj.flightCode}")
     
     return operation_obj
 
 @api_router.post("/operations/upload")
-async def upload_operations(file: UploadFile = File(...)):
+async def upload_operations(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Upload Excel file to add operations to database"""
     try:
         contents = await file.read()
