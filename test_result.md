@@ -266,6 +266,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Menü öğeleri kısaltıldı. 'Rezervasyon Departmanı' -> 'Rezervasyon', 'Operasyon Departmanı' -> 'Operasyon', 'Yönetim Departmanı' -> 'Yönetim'. Tüm menü öğeleri artık tek satıra sığıyor ve daha temiz görünüyor."
+        - working: true
+          agent: "main"
+          comment: "Menü öğelerinde 'Departmanı' kelimesi geri eklendi. Font boyutu text-sm'den text-xs'e (14px -> 12px) küçültülerek 'Rezervasyon Departmanı' yazısının tek satıra sığması sağlandı. Tüm departman isimleri artık 'Departmanı' ile birlikte düzgün görünüyor."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
