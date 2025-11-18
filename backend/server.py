@@ -540,30 +540,35 @@ async def initialize_users():
         {
             "name": "Admin User",
             "email": "admin@diogenes.com",
+            "password": pwd_context.hash("admin123"),
             "role": "admin",
             "status": "active"
         },
         {
             "name": "Rezervasyon Manager",
             "email": "reservation@diogenes.com",
+            "password": pwd_context.hash("reservation123"),
             "role": "reservation",
             "status": "active"
         },
         {
             "name": "Operasyon Manager",
             "email": "operation@diogenes.com",
+            "password": pwd_context.hash("operation123"),
             "role": "operation",
             "status": "active"
         },
         {
             "name": "Uçak Manager",
             "email": "flight@diogenes.com",
+            "password": pwd_context.hash("flight123"),
             "role": "flight",
             "status": "active"
         },
         {
             "name": "Yönetim Manager",
             "email": "management@diogenes.com",
+            "password": pwd_context.hash("management123"),
             "role": "management",
             "status": "active"
         }
