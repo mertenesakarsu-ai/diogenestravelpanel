@@ -176,7 +176,108 @@ const Admin = () => {
   };
 
   return (
-    <div className="space-y-6" data-testid="admin-page">
+    <>
+      {/* User Modal */}
+      {showUserModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-slate-800">
+                {editingUser ? 'Kullanıcıyı Düzenle' : 'Yeni Kullanıcı Ekle'}
+              </h3>
+              <button
+                onClick={() => setShowUserModal(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="user-name">Ad Soyad</Label>
+                <Input
+                  id="user-name"
+                  value={userForm.name}
+                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                  placeholder="Örn: Ahmet Yılmaz"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="user-email">Email</Label>
+                <Input
+                  id="user-email"
+                  type="email"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                  placeholder="ornek@diogenestravel.com"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="user-password">
+                  Şifre {editingUser && '(Boş bırakırsanız değişmez)'}
+                </Label>
+                <Input
+                  id="user-password"
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                  placeholder={editingUser ? 'Yeni şifre (opsiyonel)' : 'Şifre'}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="user-role">Rol</Label>
+                <select
+                  id="user-role"
+                  value={userForm.role}
+                  onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="reservation">Rezervasyon</option>
+                  <option value="operation">Operasyon</option>
+                  <option value="flight">Uçak Departmanı</option>
+                  <option value="management">Yönetim</option>
+                </select>
+              </div>
+
+              <div>
+                <Label htmlFor="user-status">Durum</Label>
+                <select
+                  id="user-status"
+                  value={userForm.status}
+                  onChange={(e) => setUserForm({ ...userForm, status: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                >
+                  <option value="active">Aktif</option>
+                  <option value="inactive">Pasif</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={handleSaveUser}
+                  className="flex-1 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+                >
+                  {editingUser ? 'Güncelle' : 'Ekle'}
+                </Button>
+                <Button
+                  onClick={() => setShowUserModal(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  İptal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6" data-testid="admin-page">
       {/* Database Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
