@@ -1,3 +1,32 @@
+// Helper function to generate real-time dates
+const generateWeeklyData = () => {
+  const data = [];
+  const today = new Date();
+  const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+  
+  // Generate data for last 7 days (yesterday and 6 days before)
+  for (let i = 7; i >= 1; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const dateStr = `${day} ${month}`;
+    
+    // Generate random but realistic data
+    const baseArrivals = 150 + Math.floor(Math.random() * 100);
+    const baseDepartures = 140 + Math.floor(Math.random() * 90);
+    
+    data.push({
+      date: dateStr,
+      arrivals: baseArrivals,
+      departures: baseDepartures
+    });
+  }
+  
+  return data;
+};
+
 export const mockDashboardData = {
   stats: {
     totalUpcomingPassengers: 2847,
@@ -7,15 +36,7 @@ export const mockDashboardData = {
     pendingTickets: 23
   },
   
-  weeklyData: [
-    { date: '15 Ara', arrivals: 145, departures: 132 },
-    { date: '16 Ara', arrivals: 178, departures: 156 },
-    { date: '17 Ara', arrivals: 156, departures: 142 },
-    { date: '18 Ara', arrivals: 198, departures: 167 },
-    { date: '19 Ara', arrivals: 223, departures: 189 },
-    { date: '20 Ara', arrivals: 245, departures: 212 },
-    { date: '21 Ara', arrivals: 267, departures: 234 }
-  ],
+  weeklyData: generateWeeklyData(),
   
   topHotels: [
     { name: 'Grand Hyatt Istanbul', location: 'İstanbul, Beyoğlu', guests: 487 },
