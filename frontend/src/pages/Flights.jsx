@@ -28,7 +28,7 @@ const Flights = () => {
 
   const fetchFlights = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights`);
+      const response = await api.get('/api/flights');
       setFlights(response.data.length > 0 ? response.data : mockFlights);
     } catch (error) {
       console.error("Failed to fetch flights:", error);
