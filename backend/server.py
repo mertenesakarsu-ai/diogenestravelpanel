@@ -486,12 +486,78 @@ async def compare_flights(file: UploadFile = File(...), x_user_id: Optional[str]
 
 # ===== USERS ENDPOINTS =====
 @api_router.get("/users", response_model=List[User])
-async def get_users():
+async def get_users(x_user_id: Optional[str] = Header(None)):
+    # For login dropdown - allow unauthenticated access
+    # In production, this should be protected or return limited info
     users = await db.users.find({}, {"_id": 0}).to_list(1000)
     for user in users:
         if 'created_at' in user and isinstance(user['created_at'], str):
             user['created_at'] = datetime.fromisoformat(user['created_at'])
     return users
+
+@api_router.get("/users/{user_id}/permissions")
+async def get_user_permissions(user_id: str):
+    """Get permissions for a specific user"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_role = user.get('role', '')
+    permissions = PERMISSIONS.get(user_role, {})
+    
+    return {
+        "user": user,
+        "permissions": permissions
+    }
+
+@api_router.post("/users/init")
+async def initialize_users():
+    """Initialize default users if they don't exist"""
+    # Check if users already exist
+    existing_count = await db.users.count_documents({})
+    if existing_count > 0:
+        return {"message": "Users already initialized", "count": existing_count}
+    
+    default_users = [
+        {
+            "name": "Admin User",
+            "email": "admin@diogenes.com",
+            "role": "admin",
+            "status": "active"
+        },
+        {
+            "name": "Rezervasyon Manager",
+            "email": "reservation@diogenes.com",
+            "role": "reservation",
+            "status": "active"
+        },
+        {
+            "name": "Operasyon Manager",
+            "email": "operation@diogenes.com",
+            "role": "operation",
+            "status": "active"
+        },
+        {
+            "name": "Uçak Manager",
+            "email": "flight@diogenes.com",
+            "role": "flight",
+            "status": "active"
+        },
+        {
+            "name": "Yönetim Manager",
+            "email": "management@diogenes.com",
+            "role": "management",
+            "status": "active"
+        }
+    ]
+    
+    for user_data in default_users:
+        user_obj = User(**user_data)
+        doc = user_obj.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.users.insert_one(doc)
+    
+    return {"message": f"Initialized {len(default_users)} users", "count": len(default_users)}
 
 @api_router.post("/users", response_model=User)
 async def create_user(user: UserCreate):
