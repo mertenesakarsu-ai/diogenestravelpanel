@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search, Users, Calendar, Plane, Hotel, MapPin, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import api from "@/utils/api";
 
 const Management = () => {
   const [searchQuery, setSearchQuery] = useState("");
