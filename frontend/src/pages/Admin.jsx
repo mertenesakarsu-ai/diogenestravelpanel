@@ -180,6 +180,46 @@ const Admin = () => {
     }
   };
 
+  // Backup all data
+  const handleBackupData = async () => {
+    try {
+      setBackupProgress("Yedekleme başlatılıyor...");
+      setBackupError(null);
+
+      // Call backend API to create backup
+      const response = await api.post('/api/backup/create', {}, {
+        responseType: 'blob' // Important for file download
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      link.setAttribute('download', `diogenes_backup_${timestamp}.bak`);
+      
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      setBackupProgress("Yedekleme başarıyla tamamlandı!");
+      setLastBackup(new Date().toLocaleString('tr-TR'));
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setBackupProgress(null);
+      }, 5000);
+
+    } catch (error) {
+      console.error('Error creating backup:', error);
+      setBackupError(error.response?.data?.detail || 'Yedekleme oluşturulurken hata oluştu');
+      setBackupProgress(null);
+    }
+  };
+
   return (
     <>
       {/* User Modal */}
