@@ -51,6 +51,64 @@ const Layout = () => {
     navigate('/login');
   };
 
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Dosya boyutu 2MB\'dan küçük olmalıdır');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Lütfen bir resim dosyası seçin');
+        return;
+      }
+
+      setProfileImage(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveProfileImage = async () => {
+    if (!profileImagePreview) {
+      alert('Lütfen bir resim seçin');
+      return;
+    }
+
+    try {
+      const api = (await import('@/utils/api')).default;
+      
+      // Send base64 image to backend
+      await api.patch(`/api/users/${user.id}/profile-picture`, {
+        profile_picture: profileImagePreview
+      });
+
+      // Update user in context
+      if (updateUser) {
+        updateUser({ ...user, profile_picture: profileImagePreview });
+      }
+
+      setShowProfileModal(false);
+      setProfileImage(null);
+      setProfileImagePreview(null);
+      
+      // Show success message (optional)
+      alert('Profil resmi güncellendi!');
+      
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      alert('Profil resmi güncellenirken hata oluştu');
+    }
+  };
+
   const getRoleBadgeColor = (role) => {
     const colors = {
       admin: 'from-purple-500 to-pink-500',
