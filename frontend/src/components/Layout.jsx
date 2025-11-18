@@ -26,9 +26,12 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [language, setLanguage] = useState("TR");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, canAccessPage } = useAuth();
+  const { user, logout, canAccessPage, updateUser } = useAuth();
 
   const allMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/", page: "dashboard" },
