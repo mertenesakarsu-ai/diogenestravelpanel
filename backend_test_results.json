@@ -1,16 +1,16 @@
 {
   "summary": {
     "total": 8,
-    "passed": 4,
-    "failed": 4,
-    "timestamp": "2025-11-18T07:40:00.536161"
+    "passed": 8,
+    "failed": 0,
+    "timestamp": "2025-11-18T07:40:15.414349"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-18T07:40:00.335617",
+      "timestamp": "2025-11-18T07:40:14.720509",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
@@ -24,7 +24,7 @@
       "test": "Get Flights",
       "success": true,
       "message": "Retrieved 0 flights",
-      "timestamp": "2025-11-18T07:40:00.348541",
+      "timestamp": "2025-11-18T07:40:14.769541",
       "response_data": {
         "count": 0
       }
@@ -33,7 +33,7 @@
       "test": "Get Reservations",
       "success": true,
       "message": "Retrieved 0 reservations",
-      "timestamp": "2025-11-18T07:40:00.400223",
+      "timestamp": "2025-11-18T07:40:14.778819",
       "response_data": {
         "count": 0
       }
@@ -42,38 +42,84 @@
       "test": "Get Operations",
       "success": true,
       "message": "Retrieved 0 operations",
-      "timestamp": "2025-11-18T07:40:00.414451",
+      "timestamp": "2025-11-18T07:40:14.787959",
       "response_data": {
         "count": 0
       }
     },
     {
       "test": "Flights Upload",
-      "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T07:40:00.519676",
-      "response_data": null
+      "success": true,
+      "message": "Successfully uploaded 3 flights",
+      "timestamp": "2025-11-18T07:40:15.252756",
+      "response_data": {
+        "message": "Successfully imported 3 flights",
+        "count": 3
+      }
     },
     {
       "test": "Reservations Upload",
-      "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T07:40:00.525592",
-      "response_data": null
+      "success": true,
+      "message": "Successfully uploaded 3 reservations",
+      "timestamp": "2025-11-18T07:40:15.307596",
+      "response_data": {
+        "message": "Successfully imported 3 reservations",
+        "count": 3
+      }
     },
     {
       "test": "Operations Upload",
-      "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T07:40:00.530701",
-      "response_data": null
+      "success": true,
+      "message": "Successfully uploaded 3 operations",
+      "timestamp": "2025-11-18T07:40:15.382144",
+      "response_data": {
+        "message": "Successfully imported 3 operations",
+        "count": 3
+      }
     },
     {
       "test": "Flights Compare",
-      "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T07:40:00.535686",
-      "response_data": null
+      "success": true,
+      "message": "Compare completed - New: 1, Updated: 1, Missing: 2",
+      "timestamp": "2025-11-18T07:40:15.414084",
+      "response_data": {
+        "summary": {
+          "new": 1,
+          "updated": 1,
+          "missing": 2
+        },
+        "new_flights": [
+          {
+            "flightCode": "NEW001",
+            "from": "Ankara",
+            "to": "Izmir",
+            "date": "2024-01-18",
+            "hasPNR": false
+          }
+        ],
+        "updated_flights": [
+          {
+            "flightCode": "TK1234",
+            "oldPNR": "ABC123",
+            "newPNR": "XYZ999",
+            "date": "2024-01-15"
+          }
+        ],
+        "missing_flights": [
+          {
+            "flightCode": "PC5678",
+            "date": "2024-01-16",
+            "from": "Antalya",
+            "to": "Istanbul"
+          },
+          {
+            "flightCode": "SU9012",
+            "date": "2024-01-17",
+            "from": "Izmir",
+            "to": "Antalya"
+          }
+        ]
+      }
     }
   ]
 }
