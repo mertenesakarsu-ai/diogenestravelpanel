@@ -34,6 +34,7 @@ const Layout = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [showReservationMonitor, setShowReservationMonitor] = useState(false);
   const [monitorMenuOpen, setMonitorMenuOpen] = useState(false);
   const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
   const [selectedDateRange, setSelectedDateRange] = useState(null);
