@@ -1136,6 +1136,182 @@ async def search_passenger(query: str = Query(..., min_length=2), x_user_id: Opt
     
     return results
 
+# ===== PACKAGE TOUR MANAGEMENT =====
+
+@api_router.get("/packages")
+async def get_all_packages(x_user_id: Optional[str] = Header(None)):
+    """Get all package tours"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    packages = await db.packages.find({}, {"_id": 0}).to_list(1000)
+    return packages
+
+@api_router.get("/packages/{package_id}")
+async def get_package(package_id: str, x_user_id: Optional[str] = Header(None)):
+    """Get a specific package tour by ID"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    package = await db.packages.find_one({"id": package_id}, {"_id": 0})
+    if not package:
+        raise HTTPException(status_code=404, detail="Package not found")
+    
+    return package
+
+@api_router.post("/packages")
+async def create_package(package: PackageCreate, x_user_id: Optional[str] = Header(None)):
+    """Create a new package tour"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin can create packages
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only administrators can create packages")
+    
+    # Check if package code already exists
+    existing = await db.packages.find_one({"package_code": package.package_code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Package code already exists")
+    
+    new_package = Package(**package.model_dump())
+    doc = new_package.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.packages.insert_one(doc)
+    await log_action(user['email'], "CREATE", "packages", new_package.id, f"Created package: {package.package_code}")
+    
+    return new_package
+
+@api_router.put("/packages/{package_id}")
+async def update_package(package_id: str, package: PackageCreate, x_user_id: Optional[str] = Header(None)):
+    """Update an existing package tour"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin can update packages
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only administrators can update packages")
+    
+    existing = await db.packages.find_one({"id": package_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Package not found")
+    
+    update_data = package.model_dump()
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.packages.update_one({"id": package_id}, {"$set": update_data})
+    await log_action(user['email'], "UPDATE", "packages", package_id, f"Updated package: {package.package_code}")
+    
+    return {"message": "Package updated successfully"}
+
+@api_router.delete("/packages/{package_id}")
+async def delete_package(package_id: str, x_user_id: Optional[str] = Header(None)):
+    """Delete a package tour"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin can delete packages
+    if user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Only administrators can delete packages")
+    
+    result = await db.packages.delete_one({"id": package_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Package not found")
+    
+    await log_action(user['email'], "DELETE", "packages", package_id, "Deleted package")
+    
+    return {"message": "Package deleted successfully"}
+
+@api_router.get("/reservations/{reservation_id}/journey")
+async def get_reservation_journey(reservation_id: str, x_user_id: Optional[str] = Header(None)):
+    """Get passenger journey timeline for a multi-leg reservation"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    # Get reservation
+    reservation = await db.reservations.find_one({"id": reservation_id}, {"_id": 0})
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    
+    # If no package, return simple single-leg journey
+    if not reservation.get('package_id'):
+        return {
+            "reservation": reservation,
+            "package": None,
+            "journey": [{
+                "step_number": 1,
+                "leg_type": "hotel",
+                "location": reservation.get('destination', 'N/A'),
+                "hotel_name": reservation.get('hotel', 'N/A'),
+                "check_in_date": reservation.get('arrivalDate', ''),
+                "check_out_date": reservation.get('departureDate', ''),
+                "duration_nights": 0,
+                "room_type": reservation.get('room_type'),
+                "board_type": reservation.get('board_type'),
+                "status": "confirmed" if reservation.get('status') == 'confirmed' else "pending"
+            }]
+        }
+    
+    # Get package details
+    package = await db.packages.find_one({"id": reservation['package_id']}, {"_id": 0})
+    if not package:
+        raise HTTPException(status_code=404, detail="Package not found")
+    
+    # Calculate dates for each leg based on reservation start date
+    from datetime import datetime, timedelta
+    start_date = datetime.strptime(reservation['arrivalDate'], "%Y-%m-%d")
+    
+    journey = []
+    current_date = start_date
+    
+    for leg in package.get('legs', []):
+        leg_data = leg.copy()
+        
+        if leg['leg_type'] in ['hotel', 'accommodation']:
+            leg_data['check_in_date'] = current_date.strftime("%d.%m.%Y")
+            checkout_date = current_date + timedelta(days=leg.get('duration_nights', 0))
+            leg_data['check_out_date'] = checkout_date.strftime("%d.%m.%Y")
+            current_date = checkout_date
+        else:
+            # Transfer or other types
+            leg_data['check_in_date'] = current_date.strftime("%d.%m.%Y")
+            leg_data['check_out_date'] = current_date.strftime("%d.%m.%Y")
+        
+        # Determine status based on current_leg
+        if leg['step_number'] < reservation.get('current_leg', 0):
+            leg_data['status'] = 'completed'
+        elif leg['step_number'] == reservation.get('current_leg', 0):
+            leg_data['status'] = 'in_progress'
+        else:
+            leg_data['status'] = 'pending'
+        
+        journey.append(leg_data)
+    
+    return {
+        "reservation": reservation,
+        "package": package,
+        "journey": journey
+    }
+
+@api_router.get("/source-agencies")
+async def get_source_agencies():
+    """Get list of source agencies"""
+    return SOURCE_AGENCIES
+
 # ===== HEALTH CHECK =====
 @api_router.get("/health", response_model=HealthStatus)
 async def health_check():
