@@ -629,7 +629,19 @@ async def delete_user(user_id: str, x_user_id: Optional[str] = Header(None)):
 
 # ===== LOGS ENDPOINTS =====
 @api_router.get("/logs", response_model=List[SystemLog])
-async def get_logs(limit: int = 100):
+async def get_logs(limit: int = 100, x_user_id: Optional[str] = Header(None)):
+    # Check permission - only admin can view logs
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('logs', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view logs")
+    
     logs = await db.logs.find({}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
     for log in logs:
         if 'timestamp' in log and isinstance(log['timestamp'], str):
