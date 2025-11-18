@@ -98,6 +98,7 @@ class UserResponse(BaseModel):
     email: str
     role: str
     status: str
+    profile_picture: Optional[str] = None
     created_at: datetime
 
 # Log Models
