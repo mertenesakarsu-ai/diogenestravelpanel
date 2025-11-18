@@ -84,7 +84,9 @@ async def seed_users():
             "email": user_data["email"],
             "password": hashed_password,
             "role": user_data["role"],
-            "profile_picture": None
+            "status": "active",
+            "profile_picture": None,
+            "created_at": None
         }
         
         # Insert user
