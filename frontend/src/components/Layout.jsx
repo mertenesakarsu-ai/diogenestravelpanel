@@ -508,16 +508,19 @@ const Layout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowReservationMonitor(true)}
-              className="border-slate-300 hover:border-cyan-400 hover:bg-cyan-50 transition-all"
-              data-testid="monitor-btn"
-            >
-              <Monitor className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Monitör</span>
-            </Button>
+            {/* Monitör butonu - sadece admin, reservation ve management için */}
+            {(user?.role === 'admin' || user?.role === 'reservation' || user?.role === 'management') && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowReservationMonitor(true)}
+                className="border-slate-300 hover:border-cyan-400 hover:bg-cyan-50 transition-all"
+                data-testid="monitor-btn"
+              >
+                <Monitor className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Monitör</span>
+              </Button>
+            )}
 
             {canAccessPage('admin') && (
               <Button
