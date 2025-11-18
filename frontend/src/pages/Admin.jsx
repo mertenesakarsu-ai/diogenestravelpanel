@@ -254,11 +254,11 @@ const Admin = () => {
 
               {/* Info Box */}
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">Dosya Format Gereksinimleri:</h4>
+                <h4 className="font-semibold text-blue-900 mb-2">Excel Kolon Gereksinimleri:</h4>
                 <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
                   <li><strong>Uçuşlar:</strong> flightCode, airline, from, to, date, time, direction, passengers, hasPNR, pnr</li>
-                  <li><strong>Rezervasyonlar:</strong> voucherNo, leader_name, leader_passport, product_code, hotel, arrivalDate, departureDate, pax</li>
-                  <li><strong>Operasyonlar:</strong> flightCode, type, from, to, date, time, passengers, hotel, transferTime</li>
+                  <li><strong>Rezervasyonlar:</strong> voucherNo, leader_name, leader_passport, product_code, product_name, hotel, arrivalDate, departureDate, pax, status</li>
+                  <li><strong>Operasyonlar:</strong> flightCode, type, from, to, date, time, passengers, hotel, transferTime, notes</li>
                 </ul>
               </div>
             </div>
