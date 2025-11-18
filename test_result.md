@@ -252,6 +252,9 @@ backend:
         - working: true
           agent: "main"
           comment: "/api/login endpoint'i oluşturuldu. Email ve şifre ile authentication. Bcrypt ile şifre doğrulama. User modelinde password field'ı eklendi."
+        - working: true
+          agent: "testing"
+          comment: "✅ Login sistemi testi tamamlandı. Tüm test senaryoları başarılı (9/9): 1) Admin giriş başarılı (admin@diogenes.com/admin123), 2) Yanlış şifre 401 hatası, 3) Var olmayan email 401 hatası, 4) Boş credentials 401 hatası, 5) Tüm kullanıcılar (reservation, operation, flight, management) başarılı giriş. Response formatı doğru: id, name, email, role, status, created_at alanları mevcut."
 
   - task: "Backend servisi"
     implemented: true
