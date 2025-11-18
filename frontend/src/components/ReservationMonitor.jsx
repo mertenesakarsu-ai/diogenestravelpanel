@@ -321,20 +321,21 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
           <table className="w-full">
             <thead className="sticky top-0 bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md z-10">
               <tr>
-                <th className="px-4 py-4 text-left text-base font-semibold">Tarih</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Acente</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Yolcu</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Otel</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">⭐</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Destinasyon</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Giriş</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Çıkış</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Gece</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Oda</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Pansiyon</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Kişi</th>
-                <th className="px-4 py-4 text-center text-base font-semibold">Durum</th>
-                <th className="px-4 py-4 text-left text-base font-semibold">Not</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Tarih</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Kaynak Acenta</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Acente</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Yolcu</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Otel</th>
+                <th className="px-3 py-4 text-center text-base font-semibold">⭐</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Destinasyon</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Giriş</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Çıkış</th>
+                <th className="px-3 py-4 text-center text-base font-semibold">Gece</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Oda</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Pansiyon</th>
+                <th className="px-3 py-4 text-center text-base font-semibold">Kişi</th>
+                <th className="px-3 py-4 text-center text-base font-semibold">Durum</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Not</th>
               </tr>
             </thead>
             <tbody>
