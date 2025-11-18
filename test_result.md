@@ -387,10 +387,11 @@ agent_communication:
       message: "✅ Dashboard Güncellendi - Gerçek Zamanlı Tarihler:
       
       YAPILAN DEĞİŞİKLİKLER:
-      1. mockData.js'de generateWeeklyData() fonksiyonu eklendi
-      2. Grafik artık güncel tarihten bir gün öncesi ve önceki 6 günü gösteriyor
-      3. Tarihler gerçek zamanlı olarak hesaplanıyor (dün, 2 gün önce, 3 gün önce...)
-      4. Ay isimleri Türkçe formatında (Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara)
-      5. Başlık 'Son 7 Gün (Dünden geriye)' olarak güncellendi
+      1. Grafik artık DÜN ve ÖNÜMÜZDEKİ 5 GÜN gösteriyor (toplam 7 gün)
+      2. Bugünün tarihi tablonun üstünde görünüyor (örn: Pazartesi, 13 Ocak 2025)
+      3. getTodayDate() fonksiyonu eklendi - Türkçe gün adı, ay adı ve yıl ile
+      4. Tarihler gerçek zamanlı hesaplanıyor (dün: -1, bugün: 0, yarın: +1, ... +5)
+      5. Başlık: 'Dün ve Önümüzdeki 5 Gün'
+      6. Bugünün tarihi renkli kutuda öne çıkıyor (Calendar ikonu ile)
       
-      Artık her sayfa yenilendiğinde grafik otomatik olarak güncel tarihleri gösterecek."
+      Her sayfa yenilendiğinde grafik ve tarih otomatik güncellenir."
