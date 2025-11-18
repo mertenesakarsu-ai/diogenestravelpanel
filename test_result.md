@@ -284,6 +284,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Reservation Monitor modal component'i oluşturuldu. Monitör butonuna tıklandığında açılan tam ekran dashboard. 20 dummy rezervasyon verisi ile test edildi. Gerçek zamanlı saat gösterimi. Status badge'leri (CONFIRMED, OPTION, CANCELLED) farklı renklerde. Sticky table header. Modal overlay ve X butonu ile kapatma. Büyük ekran/TV görüntüleme için optimize edilmiş font boyutları ve tasarım. Test edildi ve tüm özellikler çalışıyor."
+        - working: true
+          agent: "main"
+          comment: "Kullanıcı feedback'i doğrultusunda major güncellemeler yapıldı: 1) Time kolonu kaldırıldı, Date kolonu eklendi 2) Service kolonu kaldırıldı, yerine Hotel ve Stars (⭐ yıldız sayısı) eklendi 3) Pax detayları eklendi - tıklanabilir, modal açılıyor (2A + 1C formatında, Yetişkin/Çocuk/Bebek detayları) 4) Tarih aralığı seçici eklendi (Başlangıç - Bitiş tarihi) 5) Arama özelliği eklendi (yolcu, acente, otel, destinasyon, not araması) 6) Filtreler eklendi: Durum (Tümü/Onaylı/Opsiyon/İptal), Destinasyon (dropdown ile tüm destinasyonlar) 7) Filtreleri Temizle butonu eklendi 8) Filtrelenmiş rezervasyon sayısı başlıkta gösteriliyor 9) Türkçe dil desteği (kolon başlıkları, status badge'leri, filtreler). Tüm özellikler test edildi ve başarıyla çalışıyor."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
