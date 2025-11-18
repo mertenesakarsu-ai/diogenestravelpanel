@@ -148,10 +148,16 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     setSearchQuery('');
     setStatusFilter('ALL');
     setDestinationFilter('ALL');
+    setAgencyFilter('ALL');
     setStartDate('');
     setEndDate('');
     setAppliedStartDate('');
     setAppliedEndDate('');
+  };
+
+  const handleReservationClick = (reservationId) => {
+    setSelectedReservationId(reservationId);
+    setShowJourneyTimeline(true);
   };
 
   if (!isOpen) return null;
