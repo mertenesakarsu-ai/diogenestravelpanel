@@ -68,8 +68,8 @@ const Flights = () => {
       setIsComparing(true);
       setCompareError(null);
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/flights/compare`,
+      const response = await api.post(
+        '/api/flights/compare',
         formData,
         {
           headers: {
