@@ -383,3 +383,14 @@ agent_communication:
       8. POST /api/flights/compare - Excel karşılaştırma özelliği çalışıyor (yeni:1, güncellenen:1, eksik:2)
       
       TÜM BACKEND ÖZELLİKLERİ AKTİF VE ÇALIŞIR DURUMDA!"
+    - agent: "main"
+      message: "✅ Dashboard Güncellendi - Gerçek Zamanlı Tarihler:
+      
+      YAPILAN DEĞİŞİKLİKLER:
+      1. mockData.js'de generateWeeklyData() fonksiyonu eklendi
+      2. Grafik artık güncel tarihten bir gün öncesi ve önceki 6 günü gösteriyor
+      3. Tarihler gerçek zamanlı olarak hesaplanıyor (dün, 2 gün önce, 3 gün önce...)
+      4. Ay isimleri Türkçe formatında (Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara)
+      5. Başlık 'Son 7 Gün (Dünden geriye)' olarak güncellendi
+      
+      Artık her sayfa yenilendiğinde grafik otomatik olarak güncel tarihleri gösterecek."
