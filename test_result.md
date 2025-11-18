@@ -105,7 +105,7 @@
 user_problem_statement: "Diogenes Travel Panel - Seyahat yönetim paneli uygulaması"
 
 frontend:
-  - task: "Login.jsx - Username/Password Giriş Sistemi"
+  - task: "Login.jsx - Email Adresleri ve Test Bölümü Güncelleme"
     implemented: true
     working: true
     file: "/app/frontend/src/pages/Login.jsx"
@@ -119,6 +119,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Giriş ekranındaki logo güncellendi. Google Drive'dan özel Diogenes Travel logosu indirildi ve Shield icon yerine kullanıldı. Logo /app/frontend/public/images/logo.png konumuna kaydedildi."
+        - working: true
+          agent: "main"
+          comment: "Email placeholder @diogenestravel.com olarak güncellendi. Test kullanıcı bilgileri bölümü tamamen kaldırıldı. Daha temiz ve profesyonel görünüm."
 
   - task: "Admin.jsx dosyası düzeltildi"
     implemented: true
