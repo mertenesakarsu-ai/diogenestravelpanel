@@ -260,6 +260,24 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                 <option value="CANCELLED">İptal</option>
               </select>
             </div>
+
+            {/* Source Agency Filter */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Filter className="w-4 h-4 inline mr-2" />
+                Kaynak Acenta
+              </label>
+              <select
+                value={agencyFilter}
+                onChange={(e) => setAgencyFilter(e.target.value)}
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base bg-white"
+              >
+                <option value="ALL">Tüm Acentalar</option>
+                {sourceAgencies.map(agency => (
+                  <option key={agency} value={agency}>{agency}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
