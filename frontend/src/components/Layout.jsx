@@ -143,15 +143,31 @@ const Layout = () => {
           })}
         </nav>
 
-        {sidebarOpen && (
+        {sidebarOpen && user && (
           <div className="p-4 border-t border-slate-200">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+            <div className="p-3 rounded-xl bg-slate-50 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleBadgeColor(user.role)} flex items-center justify-center shadow-lg`}>
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800 truncate">{user.name}</p>
+                  <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Admin User</p>
-                <p className="text-xs text-slate-500">admin@diogenes.com</p>
+              <div className="flex items-center justify-between">
+                <span className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold text-white bg-gradient-to-r ${getRoleBadgeColor(user.role)}`}>
+                  {getRoleDisplayName(user.role)}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Çıkış
+                </Button>
               </div>
             </div>
           </div>
