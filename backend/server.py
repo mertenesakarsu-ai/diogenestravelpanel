@@ -397,6 +397,49 @@ async def create_reservation(reservation: ReservationCreate):
     
     return reservation_obj
 
+@api_router.post("/reservations/upload")
+async def upload_reservations(file: UploadFile = File(...)):
+    """Upload Excel file to add reservations to database"""
+    try:
+        contents = await file.read()
+        
+        # Read Excel file
+        if file.filename.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(io.BytesIO(contents))
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format. Please upload Excel file.")
+        
+        # Expected columns: voucherNo, leader_name, leader_passport, product_code, product_name, hotel, arrivalDate, departureDate, pax, status
+        reservations_added = 0
+        for _, row in df.iterrows():
+            reservation_data = {
+                "voucherNo": str(row.get('voucherNo', '')),
+                "leader_name": str(row.get('leader_name', '')),
+                "leader_passport": str(row.get('leader_passport', '')),
+                "product_code": str(row.get('product_code', '')),
+                "product_name": str(row.get('product_name', '')),
+                "hotel": str(row.get('hotel', '')),
+                "arrivalDate": str(row.get('arrivalDate', '')),
+                "departureDate": str(row.get('departureDate', '')),
+                "pax": int(row.get('pax', 0)),
+                "status": str(row.get('status', 'pending'))
+            }
+            
+            reservation = Reservation(**reservation_data)
+            doc = reservation.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            
+            await db.reservations.insert_one(doc)
+            reservations_added += 1
+        
+        # Log the action
+        await log_action("admin", "IMPORT_EXCEL", "reservations", "batch", f"Imported {reservations_added} reservations from {file.filename}")
+        
+        return {"message": f"Successfully imported {reservations_added} reservations", "count": reservations_added}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
 # ===== OPERATIONS ENDPOINTS =====
 @api_router.get("/operations")
 async def get_operations(date: Optional[str] = None, type: str = "all"):
