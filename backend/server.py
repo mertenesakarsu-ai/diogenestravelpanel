@@ -406,8 +406,20 @@ async def upload_flights(file: UploadFile = File(...), x_user_id: Optional[str] 
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
 @api_router.post("/flights/compare")
-async def compare_flights(file: UploadFile = File(...)):
+async def compare_flights(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Compare uploaded Excel with database flights"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to compare flights")
+    
     try:
         contents = await file.read()
         
