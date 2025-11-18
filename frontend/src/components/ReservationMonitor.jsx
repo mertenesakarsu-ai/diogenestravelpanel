@@ -444,6 +444,16 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
           </div>
         </div>
       )}
+
+      {/* Journey Timeline Modal */}
+      <JourneyTimeline 
+        reservationId={selectedReservationId}
+        isOpen={showJourneyTimeline}
+        onClose={() => {
+          setShowJourneyTimeline(false);
+          setSelectedReservationId(null);
+        }}
+      />
     </div>
   );
 };
