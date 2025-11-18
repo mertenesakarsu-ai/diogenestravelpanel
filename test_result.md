@@ -353,6 +353,37 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ EMAIL ADRESLERI VE KULLANICI YÖNETİMİ GÜNCELLEMESİ TAMAMLANDI:
+      
+      DEĞİŞİKLİKLER:
+      1. Tüm email adresleri @diogenes.com'dan @diogenestravel.com'a güncellendi
+         - Backend: /api/users/init endpoint'indeki default kullanıcılar
+         - Frontend: Login.jsx placeholder ve Admin.jsx log kayıtları
+      
+      2. Login sayfasındaki test kullanıcı bilgileri bölümü kaldırıldı
+         - Daha temiz ve profesyonel görünüm
+      
+      3. Admin panelinde kullanıcı yönetimi tamamen işlevsel hale getirildi
+         - Yeni Kullanıcı Ekle butonu aktif
+         - Düzenle butonu her kullanıcı için aktif
+         - Sil butonu eklendi
+         - Kullanıcılar API'den gerçek zamanlı yükleniyor
+         - Modal form ile kullanıcı ekleme/düzenleme
+         - Tüm CRUD operasyonları çalışıyor
+      
+      YENİ ÖZELLİKLER:
+      - Kullanıcı ekleme/düzenleme modalı
+      - Kullanıcı silme onay dialogu
+      - Gerçek zamanlı kullanıcı listesi (API'den)
+      - Loading state'leri
+      
+      TÜM YENİ EMAIL ADRESLERI:
+      - admin@diogenestravel.com / admin123
+      - reservation@diogenestravel.com / reservation123
+      - operation@diogenestravel.com / operation123
+      - flight@diogenestravel.com / flight123
+      - management@diogenestravel.com / management123"
+    - agent: "main"
       message: "✅ GİRİŞ EKRANİ GÜNCELLEME TAMAMLANDI:
       
       DEĞİŞİKLİKLER:
