@@ -252,7 +252,19 @@ async def root():
 
 # ===== FLIGHTS ENDPOINTS =====
 @api_router.get("/flights", response_model=List[Flight])
-async def get_flights():
+async def get_flights(x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view flights")
+    
     flights = await db.flights.find({}, {"_id": 0}).to_list(1000)
     for flight in flights:
         if 'created_at' in flight and isinstance(flight['created_at'], str):
@@ -262,7 +274,19 @@ async def get_flights():
     return flights
 
 @api_router.post("/flights", response_model=Flight)
-async def create_flight(flight: FlightCreate):
+async def create_flight(flight: FlightCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to create flights")
+    
     flight_obj = Flight(**flight.model_dump())
     doc = flight_obj.model_dump(by_alias=True)
     doc['created_at'] = doc['created_at'].isoformat()
@@ -270,12 +294,24 @@ async def create_flight(flight: FlightCreate):
     await db.flights.insert_one(doc)
     
     # Log the action
-    await log_action("system", "CREATE", "flights", flight_obj.id, f"Created flight {flight_obj.flightCode}")
+    await log_action(user.get('email', 'system'), "CREATE", "flights", flight_obj.id, f"Created flight {flight_obj.flightCode}")
     
     return flight_obj
 
 @api_router.put("/flights/{flight_id}", response_model=Flight)
-async def update_flight(flight_id: str, flight: FlightCreate):
+async def update_flight(flight_id: str, flight: FlightCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'update' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to update flights")
+    
     flight_obj = Flight(id=flight_id, **flight.model_dump())
     flight_obj.updated_at = datetime.now(timezone.utc)
     doc = flight_obj.model_dump(by_alias=True)
@@ -285,23 +321,35 @@ async def update_flight(flight_id: str, flight: FlightCreate):
     await db.flights.update_one({"id": flight_id}, {"$set": doc})
     
     # Log the action
-    await log_action("system", "UPDATE", "flights", flight_id, f"Updated flight {flight_obj.flightCode}")
+    await log_action(user.get('email', 'system'), "UPDATE", "flights", flight_id, f"Updated flight {flight_obj.flightCode}")
     
     return flight_obj
 
 @api_router.delete("/flights/{flight_id}")
-async def delete_flight(flight_id: str):
+async def delete_flight(flight_id: str, x_user_id: Optional[str] = Header(None)):
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'delete' not in PERMISSIONS[user_role].get('flights', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to delete flights")
+    
     result = await db.flights.delete_one({"id": flight_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Flight not found")
     
     # Log the action
-    await log_action("system", "DELETE", "flights", flight_id, f"Deleted flight {flight_id}")
+    await log_action(user.get('email', 'system'), "DELETE", "flights", flight_id, f"Deleted flight {flight_id}")
     
     return {"message": "Flight deleted successfully"}
 
 @api_router.post("/flights/upload")
-async def upload_flights(file: UploadFile = File(...)):
+async def upload_flights(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
     """Upload Excel or BAK file to add flights to database"""
     try:
         contents = await file.read()
