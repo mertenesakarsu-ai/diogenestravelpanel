@@ -199,7 +199,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
 
         {/* Filters Section */}
         <div className="bg-white px-8 py-5 border-b border-slate-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
             {/* Search */}
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-slate-700 mb-2">
