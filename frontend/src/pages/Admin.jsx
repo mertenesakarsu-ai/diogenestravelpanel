@@ -48,6 +48,12 @@ const Admin = () => {
       return;
     }
 
+    // Check permission
+    if (!hasPermission(uploadType, 'upload')) {
+      setUploadError(`${uploadType} verilerini yükleme yetkiniz yok`);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", uploadFile);
 
