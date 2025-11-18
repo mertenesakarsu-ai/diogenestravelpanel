@@ -560,34 +560,70 @@ async def initialize_users():
     return {"message": f"Initialized {len(default_users)} users", "count": len(default_users)}
 
 @api_router.post("/users", response_model=User)
-async def create_user(user: UserCreate):
+async def create_user(user: UserCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission - only admin can create users
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('users', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to create users")
+    
     user_obj = User(**user.model_dump())
     doc = user_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.users.insert_one(doc)
     
-    await log_action("admin", "CREATE", "users", user_obj.id, f"Created user {user_obj.email}")
+    await log_action(current_user.get('email', 'admin'), "CREATE", "users", user_obj.id, f"Created user {user_obj.email}")
     
     return user_obj
 
 @api_router.put("/users/{user_id}", response_model=User)
-async def update_user(user_id: str, user: UserCreate):
+async def update_user(user_id: str, user: UserCreate, x_user_id: Optional[str] = Header(None)):
+    # Check permission - only admin can update users
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role not in PERMISSIONS or 'update' not in PERMISSIONS[user_role].get('users', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to update users")
+    
     user_obj = User(id=user_id, **user.model_dump())
     doc = user_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     
     await db.users.update_one({"id": user_id}, {"$set": doc})
-    await log_action("admin", "UPDATE", "users", user_id, f"Updated user {user_obj.email}")
+    await log_action(current_user.get('email', 'admin'), "UPDATE", "users", user_id, f"Updated user {user_obj.email}")
     
     return user_obj
 
 @api_router.delete("/users/{user_id}")
-async def delete_user(user_id: str):
+async def delete_user(user_id: str, x_user_id: Optional[str] = Header(None)):
+    # Check permission - only admin can delete users
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role not in PERMISSIONS or 'delete' not in PERMISSIONS[user_role].get('users', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to delete users")
+    
     result = await db.users.delete_one({"id": user_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     
-    await log_action("admin", "DELETE", "users", user_id, f"Deleted user {user_id}")
+    await log_action(current_user.get('email', 'admin'), "DELETE", "users", user_id, f"Deleted user {user_id}")
     
     return {"message": "User deleted successfully"}
 
