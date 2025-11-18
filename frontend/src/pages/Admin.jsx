@@ -367,7 +367,10 @@ const Admin = () => {
           <TabsContent value="users" className="space-y-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-slate-800">Kullanıcı Yönetimi</h3>
-              <Button className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white">
+              <Button 
+                onClick={openNewUserModal}
+                className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+              >
                 Yeni Kullanıcı Ekle
               </Button>
             </div>
