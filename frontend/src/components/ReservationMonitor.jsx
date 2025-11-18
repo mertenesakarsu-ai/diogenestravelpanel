@@ -8,6 +8,8 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   const [destinationFilter, setDestinationFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [appliedStartDate, setAppliedStartDate] = useState('');
+  const [appliedEndDate, setAppliedEndDate] = useState('');
   const [selectedPax, setSelectedPax] = useState(null);
 
   useEffect(() => {
