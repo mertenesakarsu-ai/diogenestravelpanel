@@ -1,0 +1,79 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 4,
+    "failed": 4,
+    "timestamp": "2025-11-18T07:40:00.536161"
+  },
+  "results": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "message": "System is healthy and database connected",
+      "timestamp": "2025-11-18T07:40:00.335617",
+      "response_data": {
+        "database": "connected",
+        "total_flights": 0,
+        "total_reservations": 0,
+        "total_users": 0,
+        "total_logs": 0,
+        "status": "healthy"
+      }
+    },
+    {
+      "test": "Get Flights",
+      "success": true,
+      "message": "Retrieved 0 flights",
+      "timestamp": "2025-11-18T07:40:00.348541",
+      "response_data": {
+        "count": 0
+      }
+    },
+    {
+      "test": "Get Reservations",
+      "success": true,
+      "message": "Retrieved 0 reservations",
+      "timestamp": "2025-11-18T07:40:00.400223",
+      "response_data": {
+        "count": 0
+      }
+    },
+    {
+      "test": "Get Operations",
+      "success": true,
+      "message": "Retrieved 0 operations",
+      "timestamp": "2025-11-18T07:40:00.414451",
+      "response_data": {
+        "count": 0
+      }
+    },
+    {
+      "test": "Flights Upload",
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T07:40:00.519676",
+      "response_data": null
+    },
+    {
+      "test": "Reservations Upload",
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T07:40:00.525592",
+      "response_data": null
+    },
+    {
+      "test": "Operations Upload",
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T07:40:00.530701",
+      "response_data": null
+    },
+    {
+      "test": "Flights Compare",
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T07:40:00.535686",
+      "response_data": null
+    }
+  ]
+}
