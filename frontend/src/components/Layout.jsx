@@ -245,7 +245,7 @@ const Layout = () => {
       )}
 
       <div className="flex h-screen bg-gradient-to-br from-slate-50 to-cyan-50">
-      <aside
+        <aside
         data-testid="sidebar"
         className={`hidden lg:flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out ${
           sidebarOpen ? "w-64" : "w-20"
