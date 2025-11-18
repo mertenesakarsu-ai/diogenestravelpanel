@@ -57,20 +57,28 @@ const Dashboard = () => {
       <div className="bg-white rounded-2xl p-6 lg:p-8 border border-slate-200 shadow-lg" style={{
         boxShadow: "0 8px 32px rgba(8, 145, 178, 0.12)"
       }}>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-lg lg:text-xl font-bold text-slate-800">Son 7 Gün</h3>
-            <p className="text-sm text-slate-500 mt-1">Geliş ve Gidiş Grafiği (Dünden geriye)</p>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg lg:text-xl font-bold text-slate-800">Dün ve Önümüzdeki 5 Gün</h3>
+              <p className="text-sm text-slate-500 mt-1">Geliş ve Gidiş Grafiği</p>
+            </div>
+            <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                <span className="text-slate-600">Geliş</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                <span className="text-slate-600">Gidiş</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-              <span className="text-slate-600">Geliş</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-teal-500"></div>
-              <span className="text-slate-600">Gidiş</span>
-            </div>
+          
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-50 to-teal-50 border border-cyan-200 rounded-lg">
+            <Calendar className="w-5 h-5 text-cyan-600" />
+            <span className="text-sm font-semibold text-slate-700">Bugün:</span>
+            <span className="text-sm text-slate-600">{getTodayDate()}</span>
           </div>
         </div>
         <ArrivalDepartureChart data={mockDashboardData.weeklyData} />
