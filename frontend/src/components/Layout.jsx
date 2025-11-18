@@ -506,6 +506,98 @@ const Layout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            <DropdownMenu open={monitorMenuOpen} onOpenChange={setMonitorMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`border-slate-300 hover:border-cyan-400 hover:bg-cyan-50 transition-all ${selectedDateRange ? 'bg-cyan-50 border-cyan-400' : ''}`}
+                  data-testid="monitor-btn"
+                >
+                  <Monitor className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Monitör</span>
+                  {selectedDateRange && (
+                    <span className="ml-2 w-2 h-2 bg-cyan-500 rounded-full"></span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 p-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+                    <CalendarRange className="w-5 h-5 text-cyan-600" />
+                    <h3 className="font-semibold text-slate-800">Tarih Aralığı Seç</h3>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        Başlangıç Tarihi
+                      </label>
+                      <input
+                        type="date"
+                        value={dateRange.startDate}
+                        onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                      />
+                      {dateRange.startDate && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          Seçilen: {formatDateTurkish(dateRange.startDate)}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                        Bitiş Tarihi
+                      </label>
+                      <input
+                        type="date"
+                        value={dateRange.endDate}
+                        onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                        min={dateRange.startDate}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                      />
+                      {dateRange.endDate && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          Seçilen: {formatDateTurkish(dateRange.endDate)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {selectedDateRange && (
+                    <div className="p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+                      <p className="text-sm font-medium text-cyan-800">
+                        Aktif Tarih Aralığı:
+                      </p>
+                      <p className="text-sm text-cyan-700 mt-1">
+                        {formatDateTurkish(selectedDateRange.startDate)} - {formatDateTurkish(selectedDateRange.endDate)}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-3 border-t border-slate-200">
+                    <Button
+                      onClick={handleApplyDateRange}
+                      disabled={!dateRange.startDate || !dateRange.endDate}
+                      className="flex-1 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+                      size="sm"
+                    >
+                      Uygula
+                    </Button>
+                    <Button
+                      onClick={handleClearDateRange}
+                      variant="outline"
+                      className="flex-1 border-slate-300 hover:bg-slate-50"
+                      size="sm"
+                    >
+                      Temizle
+                    </Button>
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {canAccessPage('admin') && (
               <Button
                 onClick={() => navigate('/admin')}
