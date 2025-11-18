@@ -1,125 +1,180 @@
 {
   "summary": {
-    "total": 8,
-    "passed": 8,
-    "failed": 0,
-    "timestamp": "2025-11-18T07:40:15.414349"
+    "total": 17,
+    "passed": 10,
+    "failed": 7,
+    "timestamp": "2025-11-18T09:46:40.008625"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-18T07:40:14.720509",
+      "timestamp": "2025-11-18T09:46:35.405837",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
         "total_reservations": 0,
-        "total_users": 0,
+        "total_users": 5,
         "total_logs": 0,
         "status": "healthy"
       }
     },
     {
-      "test": "Get Flights",
+      "test": "Initialize Users",
       "success": true,
-      "message": "Retrieved 0 flights",
-      "timestamp": "2025-11-18T07:40:14.769541",
+      "message": "Users initialization: Users already initialized",
+      "timestamp": "2025-11-18T09:46:35.421581",
       "response_data": {
-        "count": 0
+        "message": "Users already initialized",
+        "count": 5
       }
+    },
+    {
+      "test": "Login Success - Admin",
+      "success": true,
+      "message": "Admin login successful: Admin User (admin)",
+      "timestamp": "2025-11-18T09:46:36.147261",
+      "response_data": {
+        "id": "aef2f268-c297-47a2-aabf-49ff8685982c",
+        "name": "Admin User",
+        "email": "admin@diogenes.com",
+        "role": "admin",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.141442Z"
+      }
+    },
+    {
+      "test": "Login Wrong Password",
+      "success": true,
+      "message": "Correctly rejected wrong password with 401",
+      "timestamp": "2025-11-18T09:46:36.754411",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Nonexistent Email",
+      "success": true,
+      "message": "Correctly rejected non-existent email with 401",
+      "timestamp": "2025-11-18T09:46:36.896661",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Empty Credentials",
+      "success": true,
+      "message": "Correctly rejected empty credentials with 401",
+      "timestamp": "2025-11-18T09:46:36.908284",
+      "response_data": {
+        "detail": "Email veya \u015fifre hatal\u0131"
+      }
+    },
+    {
+      "test": "Login Success - Reservation",
+      "success": true,
+      "message": "Reservation login successful: Rezervasyon Manager (reservation)",
+      "timestamp": "2025-11-18T09:46:37.647680",
+      "response_data": {
+        "id": "dc15012a-bf1f-4a60-8855-254a4bef81a2",
+        "name": "Rezervasyon Manager",
+        "email": "reservation@diogenes.com",
+        "role": "reservation",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.170348Z"
+      }
+    },
+    {
+      "test": "Login Success - Operation",
+      "success": true,
+      "message": "Operation login successful: Operasyon Manager (operation)",
+      "timestamp": "2025-11-18T09:46:38.261768",
+      "response_data": {
+        "id": "0b25f4c4-f431-4a0d-8c22-9a2923d1bdec",
+        "name": "Operasyon Manager",
+        "email": "operation@diogenes.com",
+        "role": "operation",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.171875Z"
+      }
+    },
+    {
+      "test": "Login Success - Flight",
+      "success": true,
+      "message": "Flight login successful: U\u00e7ak Manager (flight)",
+      "timestamp": "2025-11-18T09:46:38.801355",
+      "response_data": {
+        "id": "ddb21d1f-843a-43af-9e17-77944e26535b",
+        "name": "U\u00e7ak Manager",
+        "email": "flight@diogenes.com",
+        "role": "flight",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.173277Z"
+      }
+    },
+    {
+      "test": "Login Success - Management",
+      "success": true,
+      "message": "Management login successful: Y\u00f6netim Manager (management)",
+      "timestamp": "2025-11-18T09:46:39.699114",
+      "response_data": {
+        "id": "301e4a4c-a40c-4189-bbdb-43d9926f0fdf",
+        "name": "Y\u00f6netim Manager",
+        "email": "management@diogenes.com",
+        "role": "management",
+        "status": "active",
+        "created_at": "2025-11-18T09:43:27.174452Z"
+      }
+    },
+    {
+      "test": "Get Flights",
+      "success": false,
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-18T09:46:39.710153",
+      "response_data": null
     },
     {
       "test": "Get Reservations",
-      "success": true,
-      "message": "Retrieved 0 reservations",
-      "timestamp": "2025-11-18T07:40:14.778819",
-      "response_data": {
-        "count": 0
-      }
+      "success": false,
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-18T09:46:39.719152",
+      "response_data": null
     },
     {
       "test": "Get Operations",
-      "success": true,
-      "message": "Retrieved 0 operations",
-      "timestamp": "2025-11-18T07:40:14.787959",
-      "response_data": {
-        "count": 0
-      }
+      "success": false,
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-18T09:46:39.769946",
+      "response_data": null
     },
     {
       "test": "Flights Upload",
-      "success": true,
-      "message": "Successfully uploaded 3 flights",
-      "timestamp": "2025-11-18T07:40:15.252756",
-      "response_data": {
-        "message": "Successfully imported 3 flights",
-        "count": 3
-      }
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T09:46:39.973227",
+      "response_data": null
     },
     {
       "test": "Reservations Upload",
-      "success": true,
-      "message": "Successfully uploaded 3 reservations",
-      "timestamp": "2025-11-18T07:40:15.307596",
-      "response_data": {
-        "message": "Successfully imported 3 reservations",
-        "count": 3
-      }
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T09:46:39.987662",
+      "response_data": null
     },
     {
       "test": "Operations Upload",
-      "success": true,
-      "message": "Successfully uploaded 3 operations",
-      "timestamp": "2025-11-18T07:40:15.382144",
-      "response_data": {
-        "message": "Successfully imported 3 operations",
-        "count": 3
-      }
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T09:46:39.996352",
+      "response_data": null
     },
     {
       "test": "Flights Compare",
-      "success": true,
-      "message": "Compare completed - New: 1, Updated: 1, Missing: 2",
-      "timestamp": "2025-11-18T07:40:15.414084",
-      "response_data": {
-        "summary": {
-          "new": 1,
-          "updated": 1,
-          "missing": 2
-        },
-        "new_flights": [
-          {
-            "flightCode": "NEW001",
-            "from": "Ankara",
-            "to": "Izmir",
-            "date": "2024-01-18",
-            "hasPNR": false
-          }
-        ],
-        "updated_flights": [
-          {
-            "flightCode": "TK1234",
-            "oldPNR": "ABC123",
-            "newPNR": "XYZ999",
-            "date": "2024-01-15"
-          }
-        ],
-        "missing_flights": [
-          {
-            "flightCode": "PC5678",
-            "date": "2024-01-16",
-            "from": "Antalya",
-            "to": "Istanbul"
-          },
-          {
-            "flightCode": "SU9012",
-            "date": "2024-01-17",
-            "from": "Izmir",
-            "to": "Antalya"
-          }
-        ]
-      }
+      "success": false,
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-18T09:46:40.007854",
+      "response_data": null
     }
   ]
 }
