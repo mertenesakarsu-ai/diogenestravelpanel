@@ -731,7 +731,7 @@ async def upload_operations(file: UploadFile = File(...), x_user_id: Optional[st
             operations_added += 1
         
         # Log the action
-        await log_action("admin", "IMPORT_EXCEL", "operations", "batch", f"Imported {operations_added} operations from {file.filename}")
+        await log_action(user.get('email', 'admin'), "IMPORT_EXCEL", "operations", "batch", f"Imported {operations_added} operations from {file.filename}")
         
         return {"message": f"Successfully imported {operations_added} operations", "count": operations_added}
     
