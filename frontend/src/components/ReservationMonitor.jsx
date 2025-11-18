@@ -52,6 +52,35 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     { date: '2025-01-22', agency: 'Ruby Holidays', passenger: 'Betty Walker', hotel: 'Patara Beach Villa', stars: 5, destination: 'Patara', checkIn: '2025-01-22', checkOut: '2025-01-29', nights: 7, room: 'Villa', board: 'All Inclusive', paxAdults: 3, paxChildren: 2, paxInfants: 1, status: 'CONFIRMED', note: 'Beach front villa' },
   ];
 
+  // Get unique destinations for filter
+  const uniqueDestinations = [...new Set(allReservations.map(r => r.destination))];
+
+  // Filter reservations based on search, status, destination, and date range
+  const filteredReservations = allReservations.filter(reservation => {
+    // Search filter
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = !searchQuery || 
+      reservation.passenger.toLowerCase().includes(searchLower) ||
+      reservation.agency.toLowerCase().includes(searchLower) ||
+      reservation.hotel.toLowerCase().includes(searchLower) ||
+      reservation.destination.toLowerCase().includes(searchLower) ||
+      reservation.note.toLowerCase().includes(searchLower);
+
+    // Status filter
+    const matchesStatus = statusFilter === 'ALL' || reservation.status === statusFilter;
+
+    // Destination filter
+    const matchesDestination = destinationFilter === 'ALL' || reservation.destination === destinationFilter;
+
+    // Date range filter
+    const reservationDate = new Date(reservation.checkIn);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    const matchesDateRange = (!start || reservationDate >= start) && (!end || reservationDate <= end);
+
+    return matchesSearch && matchesStatus && matchesDestination && matchesDateRange;
+  });
+
   const getStatusBadge = (status) => {
     const statusStyles = {
       CONFIRMED: 'bg-green-500 text-white',
@@ -59,6 +88,30 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
       CANCELLED: 'bg-red-500 text-white',
     };
     return statusStyles[status] || 'bg-gray-500 text-white';
+  };
+
+  const formatPax = (adults, children, infants) => {
+    const parts = [];
+    if (adults > 0) parts.push(`${adults}A`);
+    if (children > 0) parts.push(`${children}C`);
+    if (infants > 0) parts.push(`${infants}I`);
+    return parts.join(' + ');
+  };
+
+  const getTotalPax = (adults, children, infants) => {
+    return adults + children + infants;
+  };
+
+  const renderStars = (count) => {
+    return '⭐'.repeat(count);
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('ALL');
+    setDestinationFilter('ALL');
+    setStartDate('');
+    setEndDate('');
   };
 
   if (!isOpen) return null;
