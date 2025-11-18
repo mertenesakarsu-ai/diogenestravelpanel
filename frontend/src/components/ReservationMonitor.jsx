@@ -74,11 +74,11 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     // Destination filter
     const matchesDestination = destinationFilter === 'ALL' || reservation.destination === destinationFilter;
 
-    // Date range filter
-    const reservationDate = new Date(reservation.checkIn);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-    const matchesDateRange = (!start || reservationDate >= start) && (!end || reservationDate <= end);
+    // Date range filter - using applied dates
+    const reservationCheckIn = new Date(reservation.checkIn);
+    const start = appliedStartDate ? new Date(appliedStartDate) : null;
+    const end = appliedEndDate ? new Date(appliedEndDate) : null;
+    const matchesDateRange = (!start || reservationCheckIn >= start) && (!end || reservationCheckIn <= end);
 
     return matchesSearch && matchesStatus && matchesDestination && matchesDateRange;
   });
