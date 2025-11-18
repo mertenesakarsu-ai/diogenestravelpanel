@@ -86,9 +86,11 @@ const Layout = () => {
       >
         <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center shadow-lg">
-              <Plane className="w-6 h-6 text-white" />
-            </div>
+            <img 
+              src="/images/logo.png" 
+              alt="Diogenes Travel Logo" 
+              className="h-10 w-10 object-contain"
+            />
             {sidebarOpen && (
               <div>
                 <h1 className="text-lg font-bold text-slate-800 leading-tight">Diogenes</h1>
