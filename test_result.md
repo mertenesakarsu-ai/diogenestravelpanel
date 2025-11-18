@@ -250,7 +250,7 @@ frontend:
           comment: "Excel karşılaştırma özelliği aktif. /api/flights/compare endpoint'i çalışıyor."
 
 backend:
-  - task: "Login API Endpoint"
+  - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
     implemented: true
     working: true
     file: "/app/backend/server.py"
@@ -264,6 +264,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ Login sistemi testi tamamlandı. Tüm test senaryoları başarılı (9/9): 1) Admin giriş başarılı (admin@diogenes.com/admin123), 2) Yanlış şifre 401 hatası, 3) Var olmayan email 401 hatası, 4) Boş credentials 401 hatası, 5) Tüm kullanıcılar (reservation, operation, flight, management) başarılı giriş. Response formatı doğru: id, name, email, role, status, created_at alanları mevcut."
+        - working: true
+          agent: "main"
+          comment: "Tüm kullanıcı email adresleri @diogenes.com'dan @diogenestravel.com'a güncellendi. /api/users/init endpoint'i ile yeni kullanıcılar oluşturuldu. Login testi başarılı (admin@diogenestravel.com/admin123)."
 
   - task: "Backend servisi"
     implemented: true
