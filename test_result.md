@@ -255,7 +255,7 @@ frontend:
     file: "/app/frontend/src/components/Layout.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
@@ -272,6 +272,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Monitör butonu güncellendi - artık tam ekran Reservation Monitor modal'ı açıyor. ReservationMonitor.jsx component'i oluşturuldu. Modal özellikleri: Tam ekran/büyük modal, dark overlay (tıklanabilir), X butonu ile kapatma, header bar (RESERVATION MONITOR + gerçek zamanlı saat), scrollable tablo (Time, Agency, Passenger, Service, Destination, Check-in, Check-out, Nights, Room, Board, Pax, Status, Note), 20 dummy rezervasyon verisi, status badges (CONFIRMED-yeşil, OPTION-sarı, CANCELLED-kırmızı), sticky header, alternating row colors, hover effects, büyük font boyutları (TV/büyük ekran için optimize). Test edildi ve başarıyla çalışıyor."
+        - working: true
+          agent: "main"
+          comment: "Monitör butonu yetkilendirme eklendi: Sadece admin, rezervasyon ve yönetim departmanı kullanıcıları Monitör butonunu görebilir. Uçak ve operasyon departmanı kullanıcıları için buton gizli. Test edilmeye hazır."
 
   - task: "ReservationMonitor.jsx - Rezervasyon İzleme Dashboard Modal"
     implemented: true
