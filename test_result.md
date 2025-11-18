@@ -360,6 +360,18 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ POST /api/flights/compare testi başarılı. Excel karşılaştırma özelliği çalışıyor. Yeni (1), güncellenmiş (1) ve eksik (2) kayıtları doğru tespit ediyor."
+  
+  - task: "Kullanıcı Database Initialization"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Kullanıcılar database'de bulunmuyordu, /api/users/init endpoint'i çağrılarak 5 kullanıcı başarıyla oluşturuldu. Login sistemi artık çalışıyor. Email adresleri: admin@diogenestravel.com, reservation@diogenestravel.com, operation@diogenestravel.com, flight@diogenestravel.com, management@diogenestravel.com - Tüm şifreler: [rol]123"
 
 metadata:
   created_by: "main_agent"
