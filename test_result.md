@@ -322,6 +322,30 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ GİRİŞ EKRANİ GÜNCELLEME TAMAMLANDI:
+      
+      DEĞİŞİKLİKLER:
+      1. Kullanıcı dropdown/seçimi KALDIRILDI
+      2. Kullanıcı adı (email) ve şifre ile giriş eklendi
+      3. Backend /api/login endpoint'i oluşturuldu
+      4. User modelinde password field'ı eklendi (bcrypt hash)
+      5. Login.jsx tamamen yeniden yazıldı
+      
+      YENİ GİRİŞ SİSTEMİ:
+      - Email input field
+      - Password input field (göster/gizle butonu)
+      - Hata mesajları (yanlış şifre, aktif olmayan kullanıcı)
+      - Test hesapları sayfada gösteriliyor
+      
+      DEFAULT KULLANICILAR:
+      - admin@diogenes.com / admin123
+      - reservation@diogenes.com / reservation123
+      - operation@diogenes.com / operation123
+      - flight@diogenes.com / flight123
+      - management@diogenes.com / management123
+      
+      Backend ve frontend yeniden başlatıldı. Sistem hazır!"
+    - agent: "main"
       message: "✅ DEPARTMAN BAZLI YETKİLENDİRME SİSTEMİ TAMAMLANDI:
       
       BACKEND DEĞİŞİKLİKLER:
