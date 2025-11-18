@@ -11,7 +11,9 @@ import {
   Globe,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Camera,
+  Upload as UploadIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
