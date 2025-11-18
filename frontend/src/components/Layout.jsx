@@ -281,14 +281,16 @@ const Layout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              onClick={() => navigate('/admin')}
-              className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white shadow-lg shadow-cyan-200 transition-all hidden sm:flex"
-              data-testid="admin-panel-btn"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Admin Paneli
-            </Button>
+            {canAccessPage('admin') && (
+              <Button
+                onClick={() => navigate('/admin')}
+                className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white shadow-lg shadow-cyan-200 transition-all hidden sm:flex"
+                data-testid="admin-panel-btn"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Admin Paneli
+              </Button>
+            )}
           </div>
         </header>
 
