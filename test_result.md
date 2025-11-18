@@ -105,6 +105,18 @@
 user_problem_statement: "Diogenes Travel Panel - Seyahat yönetim paneli uygulaması"
 
 frontend:
+  - task: "Login.jsx - Username/Password Giriş Sistemi"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Login.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Login sayfası tamamen yeniden yazıldı. Kullanıcı dropdown yerine email ve şifre ile giriş yapılıyor. Göster/gizle butonu, hata mesajları ve test hesapları eklendi."
+
   - task: "Admin.jsx dosyası düzeltildi"
     implemented: true
     working: true
