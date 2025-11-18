@@ -202,11 +202,11 @@ const Admin = () => {
                     <input
                       id="file-upload"
                       type="file"
-                      accept=".xlsx,.xls,.bak"
+                      accept=".xlsx,.xls"
                       onChange={handleFileChange}
                       className="hidden"
                     />
-                    <p className="text-sm text-slate-500 mt-2">Excel (.xlsx, .xls) veya SQL BAK dosyaları</p>
+                    <p className="text-sm text-slate-500 mt-2">Excel dosyaları (.xlsx, .xls)</p>
                   </div>
 
                   {uploadFile && (
