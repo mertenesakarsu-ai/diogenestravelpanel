@@ -537,6 +537,12 @@ const Layout = () => {
         </main>
       </div>
       </div>
+
+      {/* Reservation Monitor Modal */}
+      <ReservationMonitor 
+        isOpen={showReservationMonitor} 
+        onClose={() => setShowReservationMonitor(false)} 
+      />
     </>
   );
 };
