@@ -270,3 +270,21 @@ agent_communication:
          - Güncellenmiş kayıtlar (PNR farklı) - Mavi
          - Eksik kayıtlar (Excel'de yok) - Turuncu
          - Her kategori için detaylı liste gösterimi"
+    - agent: "main"
+      message: "✅ Excel Import Özellikleri Aktif Hale Getirildi:
+      
+      BACKEND:
+      1. Operation Model eklendi (flightCode, type, from, to, date, time, passengers, hotel, transferTime, notes)
+      2. /api/reservations/upload endpoint'i eklendi - Excel ile rezervasyon verisi yükleme
+      3. /api/operations/upload endpoint'i eklendi - Excel ile operasyon verisi yükleme
+      4. /api/operations POST endpoint'i eklendi - Tek operasyon oluşturma
+      
+      FRONTEND:
+      1. Admin.jsx güncellendi - .bak desteği kaldırıldı, sadece Excel (.xlsx, .xls)
+      2. Dosya format gereksinimleri güncellendi
+      
+      AKTİF ÖZELLİKLER:
+      ✅ Admin Paneli > Veri Yükleme sekmesi > Flights/Reservations/Operations Excel import
+      ✅ Uçak Departmanı > Excel Karşılaştırma özelliği
+      
+      Tüm endpoint'ler çalışır durumda. Backend ve frontend yeniden başlatıldı."
