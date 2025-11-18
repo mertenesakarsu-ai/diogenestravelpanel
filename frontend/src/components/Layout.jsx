@@ -13,7 +13,9 @@ import {
   X,
   LogOut,
   Camera,
-  Upload as UploadIcon
+  Upload as UploadIcon,
+  Monitor,
+  CalendarRange
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
