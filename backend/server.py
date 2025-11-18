@@ -113,7 +113,47 @@ class SystemLog(BaseModel):
     details: str = ""
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-# Reservation Models
+# Package Tour Models
+class PackageLeg(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    step_number: int
+    leg_type: str  # "hotel", "transfer", "airport_pickup", "airport_dropoff"
+    location: str
+    hotel_name: Optional[str] = None
+    hotel_stars: Optional[int] = None
+    check_in_date: Optional[str] = None  # Will be calculated based on reservation start date
+    check_out_date: Optional[str] = None
+    duration_nights: int = 0
+    room_type: Optional[str] = None
+    board_type: Optional[str] = None
+    notes: Optional[str] = None
+
+class Package(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    package_code: str  # e.g., "EISK7"
+    name: str  # e.g., "Istanbul-Cappadocia 7 Days Tour"
+    description: Optional[str] = None
+    total_nights: int = 0
+    legs: List[PackageLeg] = []
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PackageCreate(BaseModel):
+    package_code: str
+    name: str
+    description: Optional[str] = None
+    total_nights: int = 0
+    legs: List[PackageLeg] = []
+    is_active: bool = True
+
+# Source Agencies - predefined list
+SOURCE_AGENCIES = ["THV", "EURO TOURS", "SELECT HOLIDAYS", "AZURO"]
+
+# Reservation Models (Updated for multi-leg package tours)
 class Reservation(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
@@ -127,8 +167,19 @@ class Reservation(BaseModel):
     arrivalDate: str
     departureDate: str
     pax: int
+    pax_adults: int = 0
+    pax_children: int = 0
+    pax_infants: int = 0
     status: str  # "confirmed", "pending", "cancelled"
+    source_agency: str = "THV"  # New field: Source agency
+    package_id: Optional[str] = None  # New field: Link to package if multi-leg tour
+    current_leg: int = 0  # New field: Current leg number (0 = not started)
+    room_type: Optional[str] = None
+    board_type: Optional[str] = None
+    destination: Optional[str] = None
+    notes: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ReservationCreate(BaseModel):
     voucherNo: str
@@ -140,7 +191,17 @@ class ReservationCreate(BaseModel):
     arrivalDate: str
     departureDate: str
     pax: int
+    pax_adults: int = 2
+    pax_children: int = 0
+    pax_infants: int = 0
     status: str = "pending"
+    source_agency: str = "THV"
+    package_id: Optional[str] = None
+    current_leg: int = 0
+    room_type: Optional[str] = None
+    board_type: Optional[str] = None
+    destination: Optional[str] = None
+    notes: Optional[str] = None
 
 # Operation Models
 class Operation(BaseModel):
