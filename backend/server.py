@@ -1094,6 +1094,135 @@ async def upload_operations(file: UploadFile = File(...), x_user_id: Optional[st
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
+# ===== FLIGHT DETAILS API (RapidAPI Integration) =====
+# Simple in-memory cache to minimize API calls
+flight_details_cache = {}
+
+@api_router.get("/operations/flight-details/{flight_code}")
+async def get_flight_details(flight_code: str, airport_code: str = "IST", x_user_id: Optional[str] = Header(None)):
+    """Get real-time flight details from Aerodatabox API"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('operations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view flight details")
+    
+    # Check cache first (cache for 15 minutes)
+    cache_key = f"{flight_code}_{airport_code}"
+    current_time = datetime.now(timezone.utc)
+    
+    if cache_key in flight_details_cache:
+        cached_data, cached_time = flight_details_cache[cache_key]
+        time_diff = (current_time - cached_time).total_seconds()
+        if time_diff < 900:  # 15 minutes = 900 seconds
+            return cached_data
+    
+    # Get API credentials from environment
+    rapidapi_key = os.environ.get('RAPIDAPI_KEY')
+    rapidapi_host = os.environ.get('RAPIDAPI_HOST')
+    
+    if not rapidapi_key or not rapidapi_host:
+        raise HTTPException(status_code=500, detail="Flight API credentials not configured")
+    
+    try:
+        # Call Aerodatabox API to search for flights
+        # First, try to get flights from/to the airport
+        headers = {
+            'x-rapidapi-key': rapidapi_key,
+            'x-rapidapi-host': rapidapi_host
+        }
+        
+        # Query parameters for airport flights
+        url = f"https://{rapidapi_host}/flights/number/{flight_code}"
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=f"Flight API error: {response.text}")
+        
+        data = response.json()
+        
+        # Parse and structure the response
+        if not data:
+            return {"error": "Flight not found", "flight_code": flight_code}
+        
+        # Get the most recent flight
+        flight_data = data[0] if isinstance(data, list) else data
+        
+        # Extract comprehensive flight information
+        result = {
+            "flight_number": flight_data.get('number'),
+            "callsign": flight_data.get('callsign', ''),
+            "status": flight_data.get('status', 'Unknown'),
+            
+            # Airline info
+            "airline": {
+                "name": flight_data.get('airline', {}).get('name', ''),
+                "iata": flight_data.get('airline', {}).get('iata', ''),
+                "icao": flight_data.get('airline', {}).get('icao', '')
+            },
+            
+            # Aircraft info
+            "aircraft": {
+                "model": flight_data.get('aircraft', {}).get('model', ''),
+                "registration": flight_data.get('aircraft', {}).get('reg', ''),
+                "image": flight_data.get('aircraft', {}).get('image', '')
+            },
+            
+            # Departure info
+            "departure": {
+                "airport": flight_data.get('departure', {}).get('airport', {}).get('name', ''),
+                "iata": flight_data.get('departure', {}).get('airport', {}).get('iata', ''),
+                "icao": flight_data.get('departure', {}).get('airport', {}).get('icao', ''),
+                "terminal": flight_data.get('departure', {}).get('terminal', ''),
+                "gate": flight_data.get('departure', {}).get('gate', ''),
+                "scheduled_time": flight_data.get('departure', {}).get('scheduledTime', {}).get('local', ''),
+                "estimated_time": flight_data.get('departure', {}).get('estimatedTime', {}).get('local', ''),
+                "actual_time": flight_data.get('departure', {}).get('actualTime', {}).get('local', ''),
+                "delay": flight_data.get('departure', {}).get('delay', 0)
+            },
+            
+            # Arrival info
+            "arrival": {
+                "airport": flight_data.get('arrival', {}).get('airport', {}).get('name', ''),
+                "iata": flight_data.get('arrival', {}).get('airport', {}).get('iata', ''),
+                "icao": flight_data.get('arrival', {}).get('airport', {}).get('icao', ''),
+                "terminal": flight_data.get('arrival', {}).get('terminal', ''),
+                "gate": flight_data.get('arrival', {}).get('gate', ''),
+                "baggage": flight_data.get('arrival', {}).get('baggageBelt', ''),
+                "scheduled_time": flight_data.get('arrival', {}).get('scheduledTime', {}).get('local', ''),
+                "estimated_time": flight_data.get('arrival', {}).get('estimatedTime', {}).get('local', ''),
+                "actual_time": flight_data.get('arrival', {}).get('actualTime', {}).get('local', ''),
+                "delay": flight_data.get('arrival', {}).get('delay', 0)
+            },
+            
+            # Additional info
+            "duration": flight_data.get('duration', {}).get('scheduled', 0),
+            "distance": flight_data.get('distance', 0),
+            "last_updated": current_time.isoformat()
+        }
+        
+        # Cache the result
+        flight_details_cache[cache_key] = (result, current_time)
+        
+        # Log the action
+        await log_action(user.get('email', 'system'), "VIEW", "flight_details", flight_code, f"Viewed flight details for {flight_code}")
+        
+        return result
+        
+    except requests.exceptions.Timeout:
+        raise HTTPException(status_code=504, detail="Flight API request timeout")
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"Flight API connection error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching flight details: {str(e)}")
+
 # ===== SEARCH ENDPOINT (for Management Department) =====
 @api_router.get("/search")
 async def search_passenger(query: str = Query(..., min_length=2), x_user_id: Optional[str] = Header(None)):
