@@ -402,7 +402,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
           <table className="w-full">
             <thead className="sticky top-0 bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md z-10">
               <tr>
-                <th className="px-3 py-4 text-left text-base font-semibold">Tarih</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">İlk Geliş Tarihi</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Kaynak</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Acente</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Yolcu</th>
@@ -428,7 +428,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                 <th className="px-3 py-4 text-left text-base font-semibold">Pansiyon</th>
                 <th className="px-3 py-4 text-center text-base font-semibold">Kişi</th>
                 <th className="px-3 py-4 text-center text-base font-semibold">Durum</th>
-                <th className="px-3 py-4 text-left text-base font-semibold">Not</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Voucher No</th>
               </tr>
             </thead>
             <tbody>
