@@ -340,42 +340,108 @@ const Operations = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Tarih Seçin</label>
-            <Input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="h-10"
-              data-testid="date-picker"
-            />
+        <div className="space-y-4">
+          {/* First Row - Date Filters */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[180px]">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Tek Tarih</label>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="h-10"
+                data-testid="date-picker"
+                disabled={appliedStartDate && appliedEndDate}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px]">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Başlangıç Tarihi</label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="h-10"
+                placeholder="Başlangıç"
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px]">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Bitiş Tarihi</label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="h-10"
+                placeholder="Bitiş"
+                min={startDate}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[180px]">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Filtre Tipi</label>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="h-10" data-testid="filter-select">
+                  <SelectValue placeholder="Tümü" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tümü</SelectItem>
+                  <SelectItem value="arrival">Sadece Geliş</SelectItem>
+                  <SelectItem value="departure">Sadece Dönüş</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Filtre</label>
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="h-10" data-testid="filter-select">
-                <SelectValue placeholder="Tümü" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tümü</SelectItem>
-                <SelectItem value="arrival">Sadece Geliş</SelectItem>
-                <SelectItem value="departure">Sadece Dönüş</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Second Row - Search and Actions */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[300px]">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Detaylı Arama</label>
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Voucher, otel, uçuş kodu veya not ile ara..."
+                className="h-10"
+              />
+            </div>
+
+            <div className="flex items-end gap-2">
+              <Button
+                onClick={applyFilters}
+                disabled={loading}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white h-10 px-6"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                {loading ? "Yükleniyor..." : "Uygula"}
+              </Button>
+              <Button
+                onClick={clearFilters}
+                disabled={loading}
+                variant="outline"
+                className="h-10 px-6"
+              >
+                Temizle
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-end">
-            <Button
-              onClick={fetchOperations}
-              disabled={loading}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white h-10"
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              {loading ? "Yükleniyor..." : "Uygula"}
-            </Button>
-          </div>
+          {/* Active Filters Display */}
+          {(appliedStartDate || appliedEndDate || appliedSearchQuery) && (
+            <div className="flex flex-wrap gap-2 items-center text-sm">
+              <span className="text-slate-600 font-medium">Aktif Filtreler:</span>
+              {appliedStartDate && appliedEndDate && (
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
+                  📅 {appliedStartDate} - {appliedEndDate}
+                </span>
+              )}
+              {appliedSearchQuery && (
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
+                  🔍 "{appliedSearchQuery}"
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
