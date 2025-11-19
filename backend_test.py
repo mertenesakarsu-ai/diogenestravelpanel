@@ -761,6 +761,166 @@ class BackendTester:
         except Exception as e:
             self.log_test("Flight Details API - Cache Test", False, f"Error: {str(e)}")
 
+    def test_operations_filtering_single_date(self):
+        """Test GET /api/operations with single date parameter"""
+        try:
+            # Get operation user ID for authentication
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Operations Filtering - Single Date", False, "Could not get operation user ID")
+                return
+                
+            headers = {"x-user-id": operation_user_id}
+            test_date = "2025-01-15"
+            
+            response = self.session.get(f"{BACKEND_URL}/operations?date={test_date}", headers=headers, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Operations Filtering - Single Date", True, 
+                            f"Successfully retrieved operations for date {test_date} (count: {len(data)})", 
+                            {"date": test_date, "count": len(data)})
+            else:
+                self.log_test("Operations Filtering - Single Date", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Operations Filtering - Single Date", False, f"Error: {str(e)}")
+
+    def test_operations_filtering_date_range(self):
+        """Test GET /api/operations with date range (start_date and end_date)"""
+        try:
+            # Get operation user ID for authentication
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Operations Filtering - Date Range", False, "Could not get operation user ID")
+                return
+                
+            headers = {"x-user-id": operation_user_id}
+            start_date = "2025-01-10"
+            end_date = "2025-01-20"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations?start_date={start_date}&end_date={end_date}", 
+                headers=headers, 
+                timeout=10
+            )
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Operations Filtering - Date Range", True, 
+                            f"Successfully retrieved operations for date range {start_date} to {end_date} (count: {len(data)})", 
+                            {"start_date": start_date, "end_date": end_date, "count": len(data)})
+            else:
+                self.log_test("Operations Filtering - Date Range", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Operations Filtering - Date Range", False, f"Error: {str(e)}")
+
+    def test_operations_filtering_type_filter(self):
+        """Test GET /api/operations with type filter"""
+        try:
+            # Get operation user ID for authentication
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Operations Filtering - Type Filter", False, "Could not get operation user ID")
+                return
+                
+            headers = {"x-user-id": operation_user_id}
+            
+            # Test different type filters
+            test_types = ["all", "arrival", "departure", "transfer"]
+            
+            for operation_type in test_types:
+                response = self.session.get(
+                    f"{BACKEND_URL}/operations?type={operation_type}", 
+                    headers=headers, 
+                    timeout=10
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    self.log_test(f"Operations Filtering - Type '{operation_type}'", True, 
+                                f"Successfully retrieved operations with type filter '{operation_type}' (count: {len(data)})", 
+                                {"type": operation_type, "count": len(data)})
+                else:
+                    self.log_test(f"Operations Filtering - Type '{operation_type}'", False, 
+                                f"HTTP {response.status_code}: {response.text}")
+                    
+        except Exception as e:
+            self.log_test("Operations Filtering - Type Filter", False, f"Error: {str(e)}")
+
+    def test_operations_filtering_combined(self):
+        """Test GET /api/operations with combined filters (date range + type)"""
+        try:
+            # Get operation user ID for authentication
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Operations Filtering - Combined Filters", False, "Could not get operation user ID")
+                return
+                
+            headers = {"x-user-id": operation_user_id}
+            start_date = "2025-01-10"
+            end_date = "2025-01-20"
+            operation_type = "arrival"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations?start_date={start_date}&end_date={end_date}&type={operation_type}", 
+                headers=headers, 
+                timeout=10
+            )
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Operations Filtering - Combined Filters", True, 
+                            f"Successfully retrieved operations with combined filters: {start_date} to {end_date}, type '{operation_type}' (count: {len(data)})", 
+                            {"start_date": start_date, "end_date": end_date, "type": operation_type, "count": len(data)})
+            else:
+                self.log_test("Operations Filtering - Combined Filters", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Operations Filtering - Combined Filters", False, f"Error: {str(e)}")
+
+    def test_operations_data_structure(self):
+        """Test GET /api/operations to verify correct data structure is returned"""
+        try:
+            # Get operation user ID for authentication
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Operations Data Structure", False, "Could not get operation user ID")
+                return
+                
+            headers = {"x-user-id": operation_user_id}
+            
+            response = self.session.get(f"{BACKEND_URL}/operations", headers=headers, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                
+                if len(data) > 0:
+                    # Check first operation for expected fields
+                    operation = data[0]
+                    expected_fields = ['id', 'voucherNo', 'type', 'status']
+                    
+                    missing_fields = [field for field in expected_fields if field not in operation]
+                    
+                    if not missing_fields:
+                        self.log_test("Operations Data Structure", True, 
+                                    f"Operations data structure is correct. Sample operation has all expected fields.", 
+                                    {
+                                        "sample_operation_id": operation.get('id'),
+                                        "voucher_no": operation.get('voucherNo'),
+                                        "type": operation.get('type'),
+                                        "status": operation.get('status')
+                                    })
+                    else:
+                        self.log_test("Operations Data Structure", False, 
+                                    f"Missing expected fields in operation data: {missing_fields}", 
+                                    {"missing_fields": missing_fields, "available_fields": list(operation.keys())})
+                else:
+                    self.log_test("Operations Data Structure", True, 
+                                "No operations data returned, but API call successful", 
+                                {"count": 0})
+            else:
+                self.log_test("Operations Data Structure", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Operations Data Structure", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
