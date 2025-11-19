@@ -15,6 +15,10 @@ import FlightDetailModal from "@/components/FlightDetailModal";
 
 const Operations = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [appliedStartDate, setAppliedStartDate] = useState("");
+  const [appliedEndDate, setAppliedEndDate] = useState("");
   const [filterType, setFilterType] = useState("all"); // all, arrival, departure
   const [operations, setOperations] = useState([]);
   const [loading, setLoading] = useState(false);
