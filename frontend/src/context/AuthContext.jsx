@@ -104,25 +104,25 @@ export const AuthProvider = ({ children }) => {
       flight: {
         dashboard: true,
         flights: true,
-        reservations: false,
-        operations: false,
-        management: false,
+        reservations: true,
+        operations: true,
+        management: true,
         admin: false
       },
       reservation: {
         dashboard: true,
-        flights: false,
+        flights: true,
         reservations: true,
-        operations: false,
-        management: false,
+        operations: true,
+        management: true,
         admin: false
       },
       operation: {
         dashboard: true,
-        flights: false,
-        reservations: false,
+        flights: true,
+        reservations: true,
         operations: true,
-        management: false,
+        management: true,
         admin: false
       },
       management: {
