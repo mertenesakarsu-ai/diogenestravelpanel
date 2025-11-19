@@ -29,7 +29,7 @@ const Operations = () => {
 
   useEffect(() => {
     fetchOperations();
-  }, [selectedDate, filterType, appliedStartDate, appliedEndDate]);
+  }, [selectedDate, filterType, appliedStartDate, appliedEndDate, appliedSearchQuery]);
 
   const fetchOperations = async () => {
     setLoading(true);
