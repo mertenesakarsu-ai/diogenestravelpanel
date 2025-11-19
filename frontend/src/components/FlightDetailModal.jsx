@@ -44,11 +44,29 @@ const FlightDetailModal = ({ isOpen, onClose, flightCode, airportCode = "IST" })
   const getStatusText = (status) => {
     const statusLower = status?.toLowerCase() || "";
     if (statusLower.includes("landed") || statusLower.includes("arrived")) return "İniş Yapıldı";
-    if (statusLower.includes("departed")) return "Kalktı";
-    if (statusLower.includes("en-route")) return "Uçuşta";
+    if (statusLower.includes("departed")) return "Kalkış Yaptı";
+    if (statusLower.includes("en-route") || statusLower.includes("enroute")) return "Yolda";
+    if (statusLower.includes("boarding")) return "Biniş Yapılıyor";
     if (statusLower.includes("delayed")) return "Rötarlı";
     if (statusLower.includes("cancelled")) return "İptal Edildi";
     if (statusLower.includes("scheduled")) return "Planlandı";
+    if (statusLower.includes("taxiing")) return "Pistde";
+    if (statusLower.includes("final approach")) return "İniş Yaklaşımında";
+    
+    // Diğer tüm İngilizce durumları Türkçe'ye çevir
+    const translations = {
+      "expected": "Bekleniyor",
+      "airborne": "Havada",
+      "diverted": "Yönlendirildi",
+      "unknown": "Bilinmiyor",
+      "gate arrival": "Kapıya Ulaştı",
+      "gate departure": "Kapıdan Ayrıldı"
+    };
+    
+    for (const [eng, tr] of Object.entries(translations)) {
+      if (statusLower.includes(eng)) return tr;
+    }
+    
     return status || "Bilinmiyor";
   };
 
