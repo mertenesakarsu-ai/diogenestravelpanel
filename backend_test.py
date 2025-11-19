@@ -346,7 +346,7 @@ class BackendTester:
                 data = response.json()
                 expected_fields = ['id', 'name', 'email', 'role', 'status', 'created_at']
                 if all(field in data for field in expected_fields):
-                    if data['email'] == 'admin@diogenes.com' and data['role'] == 'admin' and data['status'] == 'active':
+                    if data['email'] == 'admin@diogenestravel.com' and data['role'] == 'admin' and data['status'] == 'active':
                         self.log_test("Login Success - Admin", True, f"Admin login successful: {data['name']} ({data['role']})", data)
                     else:
                         self.log_test("Login Success - Admin", False, f"Incorrect user data returned: {data}", data)
