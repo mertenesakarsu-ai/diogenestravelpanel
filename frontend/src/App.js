@@ -7,6 +7,7 @@ import Reservations from "@/pages/Reservations";
 import Operations from "@/pages/Operations";
 import Management from "@/pages/Management";
 import Flights from "@/pages/Flights";
+import Hotels from "@/pages/Hotels";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
 
