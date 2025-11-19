@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://operation-viewer.preview.emergentagent.com/api"
+BACKEND_URL = "https://copy-paste-issue.preview.emergentagent.com/api"
 
 class FlightAPITester:
     def __init__(self):
