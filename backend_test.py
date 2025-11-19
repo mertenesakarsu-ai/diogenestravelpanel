@@ -420,10 +420,10 @@ class BackendTester:
     def test_login_all_users(self):
         """Test login for all default users"""
         test_users = [
-            {"email": "reservation@diogenes.com", "password": "reservation123", "role": "reservation", "name": "Rezervasyon Manager"},
-            {"email": "operation@diogenes.com", "password": "operation123", "role": "operation", "name": "Operasyon Manager"},
-            {"email": "flight@diogenes.com", "password": "flight123", "role": "flight", "name": "Uçak Manager"},
-            {"email": "management@diogenes.com", "password": "management123", "role": "management", "name": "Yönetim Manager"}
+            {"email": "reservation@diogenestravel.com", "password": "reservation123", "role": "reservation", "name": "Rezervasyon Manager"},
+            {"email": "operation@diogenestravel.com", "password": "operation123", "role": "operation", "name": "Operasyon Manager"},
+            {"email": "flight@diogenestravel.com", "password": "flight123", "role": "flight", "name": "Uçak Manager"},
+            {"email": "management@diogenestravel.com", "password": "management123", "role": "management", "name": "Yönetim Manager"}
         ]
         
         for user in test_users:
