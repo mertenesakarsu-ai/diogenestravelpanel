@@ -31,10 +31,11 @@ const Operations = () => {
       const response = await api.get('/api/operations', {
         params: { date: selectedDate, type: filterType }
       });
-      setOperations(response.data || []);
-    } catch (error) {
-      console.error("Operations fetch error:", error);
-      // Mock data for development - Comprehensive operation data
+      
+      // If API returns empty data, use mock data for development
+      if (!response.data || response.data.length === 0) {
+        console.log("No operations from API, using mock data for development");
+        // Mock data for development - Comprehensive operation data
       setOperations([
         {
           id: 1,
