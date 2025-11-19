@@ -361,7 +361,7 @@ class BackendTester:
         """Test POST /api/login with wrong password"""
         try:
             login_data = {
-                "email": "admin@diogenes.com",
+                "email": "admin@diogenestravel.com",
                 "password": "wrongpassword"
             }
             
