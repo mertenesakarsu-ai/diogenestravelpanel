@@ -168,6 +168,10 @@ const Operations = () => {
           hotelCheckIn: selectedDate + " 10:00",
           hotelCheckOut: "2025-01-18 17:00",
           passengers: 2,
+          passengerNames: [
+            { firstName: "Hans", lastName: "Schmidt" },
+            { firstName: "Anna", lastName: "Schmidt" }
+          ],
           type: "arrival",
           transferTime: "06:00",
           notes: "Aktarmalı uçuş, Dalaman'dan otele transfer",
