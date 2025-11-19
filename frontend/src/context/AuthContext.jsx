@@ -99,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         reservations: true,
         operations: true,
         management: true,
+        hotels: true,
         admin: true
       },
       flight: {
@@ -107,6 +108,7 @@ export const AuthProvider = ({ children }) => {
         reservations: true,
         operations: true,
         management: true,
+        hotels: false,
         admin: false
       },
       reservation: {
@@ -115,6 +117,7 @@ export const AuthProvider = ({ children }) => {
         reservations: true,
         operations: true,
         management: true,
+        hotels: true,
         admin: false
       },
       operation: {
@@ -123,6 +126,7 @@ export const AuthProvider = ({ children }) => {
         reservations: true,
         operations: true,
         management: true,
+        hotels: false,
         admin: false
       },
       management: {
