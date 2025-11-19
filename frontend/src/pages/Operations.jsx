@@ -27,7 +27,7 @@ const Operations = () => {
 
   useEffect(() => {
     fetchOperations();
-  }, [selectedDate, filterType]);
+  }, [selectedDate, filterType, appliedStartDate, appliedEndDate]);
 
   const fetchOperations = async () => {
     setLoading(true);
