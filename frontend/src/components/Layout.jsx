@@ -45,7 +45,7 @@ const Layout = () => {
   const allMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/", page: "dashboard" },
     { icon: Calendar, label: "Rezervasyon Departmanı", path: "/reservations", page: "reservations" },
-    { icon: Truck, label: "Operasyon Departmanı", path: "/operations", page: "operations" },
+    { icon: Bus, label: "Operasyon Departmanı", path: "/operations", page: "operations" },
     { icon: Plane, label: "Uçak Departmanı", path: "/flights", page: "flights" },
     { icon: Settings, label: "Yönetim Departmanı", path: "/management", page: "management" },
   ];
