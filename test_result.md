@@ -463,7 +463,45 @@ test_plan:
 
 agent_communication:
     - agent: "main"
-      message: "✅ FLIGHT API ENTEGRASYONU TAMAMLANDI:
+      message: "✅ YETKİLENDİRME SİSTEMİ VE OPERASYON İKONU GÜNCELLENDİ:
+      
+      YAPILAN DEĞİŞİKLİKLER:
+      
+      1. ✅ Tüm Departmanlar Artık Tüm Menüleri Görebilir:
+         - Uçak Departmanı → Rezervasyon, Operasyon, Yönetim menülerini görebilir
+         - Rezervasyon Departmanı → Uçak, Operasyon, Yönetim menülerini görebilir
+         - Operasyon Departmanı → Uçak, Rezervasyon, Yönetim menülerini görebilir
+         - Yönetim Departmanı → Tüm menüleri görebilir (değişiklik yok)
+         - Admin → Tüm menüleri görebilir (değişiklik yok)
+      
+      2. ✅ Düzenleme Yetkileri Korundu (Sadece Okuma):
+         - Her departman sadece KENDİ bölümünde düzenleme/ekleme/silme yapabilir
+         - Diğer departmanların verilerini sadece GÖRÜNTÜLEYEBİLİR (read yetkisi)
+         - Örnek: Rezervasyon departmanı Operasyon sayfasını görebilir ama yeni operasyon ekleyemez
+         
+      3. ✅ Backend PERMISSIONS Güncellendi (/app/backend/server.py):
+         - flight: reservations, operations, management → ['read'] eklendi
+         - reservation: flights, operations, management → ['read'] eklendi
+         - operation: flights, reservations, management → ['read'] eklendi
+         - Her departman kendi kaynağında tam yetki: ['read', 'create', 'update', 'delete', 'upload']
+      
+      4. ✅ Frontend AuthContext Güncellendi (/app/frontend/src/context/AuthContext.jsx):
+         - canAccessPage: Tüm roller için tüm sayfalar true (görünüm erişimi)
+         - hasPermission: Yetki kontrolü korundu (create/update/delete sadece kendi departmanında)
+      
+      5. ✅ Operasyon İkonu Değiştirildi (/app/frontend/src/components/Layout.jsx):
+         - Eski: 🚛 Truck (Kamyon) ikonu
+         - Yeni: 🚌 Bus (Otobüs) ikonu
+         - Yolcu taşıyan bir araç, uçak değil
+      
+      KULLANICI DENEYİMİ:
+      - Her kullanıcı tüm menüleri sol sidebar'da görecek
+      - Kendi departmanında: Ekle/Düzenle/Sil butonları aktif
+      - Diğer departmanlarda: Sadece görüntüleme, butonlar pasif
+      
+      Backend ve frontend servisleri yeniden başlatıldı. Test edilmeye hazır!"
+    - agent: "main"
+      message: "✅ EMAIL ADRESLERI VE KULLANICI YÖNETİMİ GÜNCELLEMESİ TAMAMLANDI:
       
       YAPILAN DEĞİŞİKLİKLER:
       
