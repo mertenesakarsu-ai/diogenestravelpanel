@@ -164,6 +164,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Flight API entegrasyonu eklendi. RapidAPI Aerodatabox kullanılarak gerçek zamanlı uçuş bilgileri gösteriliyor. Uçuş Detayı butonu eklendi. FlightDetailModal component'i oluşturuldu. 15 dakika cache mekanizması ile API sorgusu optimize edildi."
+        - working: true
+          agent: "main"
+          comment: "MAJOR UPDATE - Operasyon bölümü tamamen yeniden tasarlandı. YENİ ÖZELLİKLER: 1) Detaylı yolcu bilgileri (voucher numarası, toplam yolcu sayısı), 2) Çoklu uçuş desteği (Geliş/Dönüş/Aktarma uçuşları ayrı ayrı gösteriliyor), 3) Her uçuş için ayrı 'Uçuş Detayı' butonu, 4) Uçuş detay butonu 24 saat öncesinden aktif olma kontrolü (uçuş saatinden 24 saat öncesine kadar pasif, sonra aktif), 5) Kapsamlı otel bilgileri (giriş/çıkış tarihi ve saati), 6) Gerçek zamanlı otel durumu (Henüz giriş yapmadı / Otelde X gün kaldı / Çıkış yaptı), 7) Her uçuş için havayolu, rota ve tarih/saat bilgisi, 8) Renk kodlu uçuş kartları (Geliş-yeşil, Transfer-mavi, Dönüş-turuncu). UI İYİLEŞTİRMELERİ: Voucher numarası prominent gösterimi, Otel durumu anlık hesaplama, Uçuş bilgileri detaylı grid layout, Pasif/aktif buton görsel farklılığı, Responsive tasarım. Mock data ile test edildi, 3 örnek operasyon gösteriliyor."
 
   - task: "FlightDetailModal.jsx - Uçuş Bilgisi Modal Component"
     implemented: true
