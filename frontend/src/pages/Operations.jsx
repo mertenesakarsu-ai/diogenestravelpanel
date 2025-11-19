@@ -132,7 +132,13 @@ const Operations = () => {
           notes: "2 otobüs gerekli, büyük aile",
           status: "completed"
         }
-      ]);
+        ]);
+      } else {
+        setOperations(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching operations:", error);
+      setOperations([]);
     } finally {
       setLoading(false);
     }
