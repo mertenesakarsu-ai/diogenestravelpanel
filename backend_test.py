@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://date-filter-ops.preview.emergentagent.com/api"
+BACKEND_URL = "https://flight-tracker-69.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
