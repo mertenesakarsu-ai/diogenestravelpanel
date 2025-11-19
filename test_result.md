@@ -419,6 +419,44 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ REZERVASYON MONİTÖR GÜNCELLEMELERİ TAMAMLANDI:
+      
+      YAPILAN DEĞİŞİKLİKLER:
+      
+      1. ✅ Kaynak Acenta İsimleri Kısaltıldı:
+         - 'SELECT HOLIDAYS' → 'SELECT' (badge içinde)
+         - 'EURO TOURS' → 'EURO'
+         - Font boyutu küçültüldü (text-xs)
+         - Artık badge içine sığıyor
+      
+      2. ✅ Filtre Uygula Butonu Düzeltildi:
+         - Tarih filtreleme aktif hale getirildi
+         - appliedStartDate ve appliedEndDate kullanılıyor
+         - Filtre Uygula butonuna tıklanınca tarihler aktif oluyor
+      
+      3. ✅ Tarih Sıralama Ok İşaretleri Eklendi:
+         - Giriş Tarihi kolonunda ok işareti (tıklanabilir)
+         - Çıkış Tarihi kolonunda ok işareti (tıklanabilir)
+         - 3 durum: Azdan çoğa (↑), çoktan aza (↓), sırasız (↕)
+         - Hover efekti ile görsel geri bildirim
+      
+      4. ✅ Veriler Sıralı Gösteriliyor:
+         - Default sıralama: Giriş tarihine göre (azdan çoğa)
+         - Kullanıcı ok işaretine tıklayarak değiştirebilir
+         - Bir tarih sıralaması aktifken diğeri pasif oluyor
+      
+      5. ✅ Yolcu Yolculuk Planı Endpoint'i:
+         - Backend'de /api/reservations/{id}/journey endpoint'i zaten mevcut
+         - JourneyTimeline component'i doğru endpoint'i çağırıyor
+         - Hata mesajı: 'Yolcu yolculuğu yüklenemedi' (Türkçe)
+      
+      KULLANICI DENEYİMİ:
+      - Kullanıcı tarih girer → Filtre Uygula → Rezervasyonlar filtrelenir
+      - Giriş/Çıkış başlığına tıklar → Veriler sıralanır
+      - Rezervasyona tıklar → Yolcu yolculuk planı açılır (eğer veri varsa)
+      
+      Frontend yeniden başlatıldı. Test edilmeye hazır!"
+    - agent: "main"
       message: "✅ LOGİN SORUNU ÇÖZÜLDÜ - KULLANICILAR YENİDEN OLUŞTURULDU:
       
       SORUN:
