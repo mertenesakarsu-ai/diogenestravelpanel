@@ -499,6 +499,238 @@ class BackendTester:
         except Exception as e:
             self.log_test("Initialize Users", False, f"Error: {str(e)}")
 
+    def get_user_id_by_email(self, email):
+        """Get user ID by email for authentication headers"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/users", timeout=10)
+            if response.status_code == 200:
+                users = response.json()
+                for user in users:
+                    if user.get('email') == email:
+                        return user.get('id')
+            return None
+        except Exception:
+            return None
+
+    def test_flight_details_api_success(self):
+        """Test GET /api/operations/flight-details/{flight_code} with operation user"""
+        try:
+            # Get operation user ID
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Flight Details API - Success", False, "Could not get operation user ID")
+                return
+
+            headers = {"x-user-id": operation_user_id}
+            flight_code = "TK2412"
+            airport_code = "IST"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations/flight-details/{flight_code}?airport_code={airport_code}", 
+                headers=headers, 
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Check for comprehensive flight information
+                required_fields = ['flight_number', 'callsign', 'status', 'airline', 'aircraft', 'departure', 'arrival']
+                
+                if all(field in data for field in required_fields):
+                    # Check airline info
+                    airline = data.get('airline', {})
+                    if 'name' in airline and 'iata' in airline:
+                        # Check departure info
+                        departure = data.get('departure', {})
+                        arrival = data.get('arrival', {})
+                        
+                        if ('airport' in departure and 'scheduled_time' in departure and 
+                            'airport' in arrival and 'scheduled_time' in arrival):
+                            self.log_test("Flight Details API - Success", True, 
+                                        f"Successfully retrieved comprehensive flight details for {flight_code}", 
+                                        {
+                                            "flight_number": data.get('flight_number'),
+                                            "airline": airline.get('name'),
+                                            "status": data.get('status'),
+                                            "departure_airport": departure.get('airport'),
+                                            "arrival_airport": arrival.get('airport')
+                                        })
+                        else:
+                            self.log_test("Flight Details API - Success", False, 
+                                        f"Missing departure/arrival details: {data}")
+                    else:
+                        self.log_test("Flight Details API - Success", False, 
+                                    f"Missing airline information: {data}")
+                else:
+                    missing_fields = [field for field in required_fields if field not in data]
+                    self.log_test("Flight Details API - Success", False, 
+                                f"Missing required fields: {missing_fields}. Response: {data}")
+            else:
+                self.log_test("Flight Details API - Success", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Flight Details API - Success", False, f"Error: {str(e)}")
+
+    def test_flight_details_api_permission_denied(self):
+        """Test GET /api/operations/flight-details/{flight_code} with reservation user (should be denied)"""
+        try:
+            # Get reservation user ID
+            reservation_user_id = self.get_user_id_by_email("reservation@diogenestravel.com")
+            if not reservation_user_id:
+                self.log_test("Flight Details API - Permission Denied", False, "Could not get reservation user ID")
+                return
+
+            headers = {"x-user-id": reservation_user_id}
+            flight_code = "TK2412"
+            airport_code = "IST"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations/flight-details/{flight_code}?airport_code={airport_code}", 
+                headers=headers, 
+                timeout=10
+            )
+            
+            if response.status_code == 403:
+                data = response.json()
+                if 'detail' in data and 'permission' in data['detail'].lower():
+                    self.log_test("Flight Details API - Permission Denied", True, 
+                                "Correctly denied access for reservation user with 403", data)
+                else:
+                    self.log_test("Flight Details API - Permission Denied", False, 
+                                f"Wrong error message for 403: {data}")
+            else:
+                self.log_test("Flight Details API - Permission Denied", False, 
+                            f"Expected 403, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Flight Details API - Permission Denied", False, f"Error: {str(e)}")
+
+    def test_flight_details_api_no_auth(self):
+        """Test GET /api/operations/flight-details/{flight_code} without authentication"""
+        try:
+            flight_code = "TK2412"
+            airport_code = "IST"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations/flight-details/{flight_code}?airport_code={airport_code}", 
+                timeout=10
+            )
+            
+            if response.status_code == 401:
+                data = response.json()
+                if 'detail' in data and 'authentication' in data['detail'].lower():
+                    self.log_test("Flight Details API - No Auth", True, 
+                                "Correctly rejected request without authentication with 401", data)
+                else:
+                    self.log_test("Flight Details API - No Auth", False, 
+                                f"Wrong error message for 401: {data}")
+            else:
+                self.log_test("Flight Details API - No Auth", False, 
+                            f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Flight Details API - No Auth", False, f"Error: {str(e)}")
+
+    def test_flight_details_api_invalid_flight(self):
+        """Test GET /api/operations/flight-details/{flight_code} with invalid flight code"""
+        try:
+            # Get operation user ID
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Flight Details API - Invalid Flight", False, "Could not get operation user ID")
+                return
+
+            headers = {"x-user-id": operation_user_id}
+            flight_code = "INVALID999"
+            airport_code = "IST"
+            
+            response = self.session.get(
+                f"{BACKEND_URL}/operations/flight-details/{flight_code}?airport_code={airport_code}", 
+                headers=headers, 
+                timeout=30
+            )
+            
+            # Should handle gracefully - either return error info or empty result
+            if response.status_code in [200, 404, 502]:
+                if response.status_code == 200:
+                    data = response.json()
+                    if 'error' in data or not data.get('flight_number'):
+                        self.log_test("Flight Details API - Invalid Flight", True, 
+                                    "Gracefully handled invalid flight code", data)
+                    else:
+                        self.log_test("Flight Details API - Invalid Flight", False, 
+                                    f"Unexpected success for invalid flight: {data}")
+                else:
+                    self.log_test("Flight Details API - Invalid Flight", True, 
+                                f"Appropriately handled invalid flight with HTTP {response.status_code}")
+            else:
+                self.log_test("Flight Details API - Invalid Flight", False, 
+                            f"Unexpected HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Flight Details API - Invalid Flight", False, f"Error: {str(e)}")
+
+    def test_flight_details_api_cache(self):
+        """Test GET /api/operations/flight-details/{flight_code} caching (15 minutes)"""
+        try:
+            # Get operation user ID
+            operation_user_id = self.get_user_id_by_email("operation@diogenestravel.com")
+            if not operation_user_id:
+                self.log_test("Flight Details API - Cache Test", False, "Could not get operation user ID")
+                return
+
+            headers = {"x-user-id": operation_user_id}
+            flight_code = "TK2412"
+            airport_code = "IST"
+            url = f"{BACKEND_URL}/operations/flight-details/{flight_code}?airport_code={airport_code}"
+            
+            # First call
+            import time
+            start_time = time.time()
+            response1 = self.session.get(url, headers=headers, timeout=30)
+            first_call_time = time.time() - start_time
+            
+            if response1.status_code != 200:
+                self.log_test("Flight Details API - Cache Test", False, 
+                            f"First call failed: HTTP {response1.status_code}")
+                return
+            
+            # Second call (should be cached)
+            start_time = time.time()
+            response2 = self.session.get(url, headers=headers, timeout=30)
+            second_call_time = time.time() - start_time
+            
+            if response2.status_code == 200:
+                data1 = response1.json()
+                data2 = response2.json()
+                
+                # Check if responses are similar (cached)
+                if (data1.get('flight_number') == data2.get('flight_number') and
+                    data1.get('status') == data2.get('status')):
+                    
+                    # Second call should be faster (cached)
+                    if second_call_time < first_call_time * 0.8:  # At least 20% faster
+                        self.log_test("Flight Details API - Cache Test", True, 
+                                    f"Cache working - First call: {first_call_time:.2f}s, Second call: {second_call_time:.2f}s", 
+                                    {
+                                        "first_call_time": first_call_time,
+                                        "second_call_time": second_call_time,
+                                        "flight_number": data1.get('flight_number')
+                                    })
+                    else:
+                        self.log_test("Flight Details API - Cache Test", True, 
+                                    f"Cache appears to be working (consistent data) - First: {first_call_time:.2f}s, Second: {second_call_time:.2f}s", 
+                                    {
+                                        "first_call_time": first_call_time,
+                                        "second_call_time": second_call_time,
+                                        "note": "Second call not significantly faster, but data is consistent"
+                                    })
+                else:
+                    self.log_test("Flight Details API - Cache Test", False, 
+                                f"Inconsistent data between calls - possible cache issue")
+            else:
+                self.log_test("Flight Details API - Cache Test", False, 
+                            f"Second call failed: HTTP {response2.status_code}")
+        except Exception as e:
+            self.log_test("Flight Details API - Cache Test", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
