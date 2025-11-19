@@ -309,8 +309,8 @@ const Operations = () => {
     }
   };
 
-  const arrivalCount = operations.filter(op => op.type === 'arrival' || op.arrivalFlight).length;
-  const departureCount = operations.filter(op => op.type === 'departure' || op.returnFlight).length;
+  const arrivalCount = filteredOperations.filter(op => op.type === 'arrival' || op.arrivalFlight).length;
+  const departureCount = filteredOperations.filter(op => op.type === 'departure' || op.returnFlight).length;
 
   return (
     <div className="space-y-6" data-testid="operations-page">
