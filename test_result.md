@@ -419,6 +419,25 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: "✅ MONİTÖR KOLON GÜNCELLEMESİ TAMAMLANDI:
+      
+      YAPILAN DEĞİŞİKLİKLER:
+      
+      1. ✅ Tarih Kolonu → İlk Geliş Tarihi:
+         - Kolon başlığı 'Tarih'tan 'İlk Geliş Tarihi'ne değiştirildi
+         - Artık rezervasyon tarihi yerine check-in tarihi gösteriliyor
+         - Format: GG.AA.YYYY
+      
+      2. ✅ Not Kolonu → Voucher No:
+         - Kolon başlığı 'Not'tan 'Voucher No'ya değiştirildi
+         - Artık not alanı yerine voucher numarası gösteriliyor
+         - Örnek format: THV-2025-001, EUR-2025-142, SEL-2025-078
+      
+      TABLO YAPISI:
+      - İlk Geliş Tarihi | Kaynak | Acente | Yolcu | Otel | ⭐ | Destinasyon | Giriş | Çıkış | Gece | Oda | Pansiyon | Kişi | Durum | Voucher No
+      
+      Frontend hot-reload ile otomatik güncellendi. Test edilmeye hazır!"
+    - agent: "main"
       message: "✅ REZERVASYON MONİTÖR GÜNCELLEMELERİ TAMAMLANDI:
       
       YAPILAN DEĞİŞİKLİKLER:
