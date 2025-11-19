@@ -411,7 +411,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                 <th className="px-3 py-4 text-left text-base font-semibold">İlk Geliş Tarihi</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Kaynak</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Acente</th>
-                <th className="px-3 py-4 text-left text-base font-semibold">Yolcu</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Yolcular</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Otel</th>
                 <th className="px-3 py-4 text-center text-base font-semibold">⭐</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Destinasyon</th>
