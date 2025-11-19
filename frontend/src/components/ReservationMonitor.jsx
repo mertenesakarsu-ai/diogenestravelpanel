@@ -17,6 +17,8 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   const [showJourneyTimeline, setShowJourneyTimeline] = useState(false);
   const [checkInSort, setCheckInSort] = useState('asc'); // 'asc', 'desc', or null
   const [checkOutSort, setCheckOutSort] = useState(null); // 'asc', 'desc', or null
+  const [dateSort, setDateSort] = useState(null); // 'asc', 'desc', or null
+  const [paxSort, setPaxSort] = useState(null); // 'asc', 'desc', or null
 
   useEffect(() => {
     if (isOpen) {
