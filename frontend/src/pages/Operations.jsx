@@ -591,15 +591,38 @@ const Operations = () => {
                           <Users className="w-4 h-4 text-blue-600" />
                           Yolcu Bilgileri
                         </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="bg-white p-3 rounded-lg border border-slate-200">
-                            <div className="text-xs text-slate-500">Voucher No</div>
-                            <div className="font-semibold text-slate-800">{operation.voucherNo || 'N/A'}</div>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-white p-3 rounded-lg border border-slate-200">
+                              <div className="text-xs text-slate-500">Voucher No</div>
+                              <div className="font-semibold text-slate-800">{operation.voucherNo || 'N/A'}</div>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg border border-slate-200">
+                              <div className="text-xs text-slate-500">Toplam Yolcu</div>
+                              <div className="font-semibold text-slate-800">{operation.passengers} kişi</div>
+                            </div>
                           </div>
-                          <div className="bg-white p-3 rounded-lg border border-slate-200">
-                            <div className="text-xs text-slate-500">Toplam Yolcu</div>
-                            <div className="font-semibold text-slate-800">{operation.passengers} kişi</div>
-                          </div>
+                          
+                          {/* Yolcu İsimleri */}
+                          {operation.passengerNames && operation.passengerNames.length > 0 && (
+                            <div className="bg-white p-4 rounded-lg border border-slate-200">
+                              <div className="text-xs text-slate-500 mb-3 font-semibold">Yolcu Listesi</div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {operation.passengerNames.map((passenger, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                      <span className="text-blue-600 font-semibold text-sm">{index + 1}</span>
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="font-semibold text-slate-800 text-sm">
+                                        {passenger.firstName} {passenger.lastName}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
