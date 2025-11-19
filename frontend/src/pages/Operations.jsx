@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Users, MapPin, Plane, Clock, Hotel, FileText, Filter, ArrowRight, ChevronDown, Info, CheckCircle2, Ticket } from "lucide-react";
+import { Calendar, Users, MapPin, Bus, Clock, Hotel, FileText, Filter, ArrowRight, ChevronDown, Info, CheckCircle2, Ticket, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
