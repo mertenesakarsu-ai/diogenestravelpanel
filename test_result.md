@@ -441,8 +441,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Login sistemi testi tamamlandı - tüm senaryolar başarılı"
-    - "Backend API testleri tamamlandı - tüm endpoint'ler çalışıyor"
+    - "Flight API Integration - Uçuş detay gösterimi ve RapidAPI entegrasyonu"
+    - "Operations sayfasında Uçuş Detayı butonu ve modal testi"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
