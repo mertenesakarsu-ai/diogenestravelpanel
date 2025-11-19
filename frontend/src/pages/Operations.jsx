@@ -336,7 +336,7 @@ const Operations = () => {
       <div className="space-y-4">
         {operations.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-12 text-center">
-            <Plane className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <Bus className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-800 mb-2">Operasyon Bulunamadı</h3>
             <p className="text-slate-600">Seçili tarih için henüz operasyon planlanmamış.</p>
           </div>
