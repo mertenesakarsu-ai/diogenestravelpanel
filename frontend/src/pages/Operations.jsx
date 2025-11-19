@@ -447,14 +447,18 @@ const Operations = () => {
 
       {/* Operations List */}
       <div className="space-y-4">
-        {operations.length === 0 ? (
+        {filteredOperations.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-12 text-center">
             <Bus className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-800 mb-2">Operasyon Bulunamadı</h3>
-            <p className="text-slate-600">Seçili tarih için henüz operasyon planlanmamış.</p>
+            <p className="text-slate-600">
+              {appliedSearchQuery 
+                ? `"${appliedSearchQuery}" araması için sonuç bulunamadı.` 
+                : "Seçili tarih için henüz operasyon planlanmamış."}
+            </p>
           </div>
         ) : (
-          operations.map((operation) => {
+          filteredOperations.map((operation) => {
             const hotelStatus = getHotelStatus(operation.hotelCheckIn, operation.hotelCheckOut);
             const isArrivalActive = isFlightDetailActive(
               operation.arrivalFlight?.date, 
