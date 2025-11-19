@@ -213,6 +213,40 @@ const Operations = () => {
           transferTime: "19:45",
           notes: "2 otobüs gerekli, büyük aile",
           status: "completed"
+        },
+        {
+          id: 4,
+          voucherNo: "PEG-2025-456",
+          reservationId: "res-004",
+          arrivalFlight: {
+            flightCode: "PC2012",
+            date: selectedDate,
+            time: "16:50",
+            from: "SAW",
+            to: "AYT",
+            airline: "Pegasus Airlines"
+          },
+          returnFlight: {
+            flightCode: "PC2013",
+            date: "2025-01-22",
+            time: "19:15",
+            from: "AYT",
+            to: "SAW",
+            airline: "Pegasus Airlines"
+          },
+          currentHotel: "Delphin Imperial Hotel - Lara",
+          hotelCheckIn: selectedDate + " 18:30",
+          hotelCheckOut: "2025-01-22 17:00",
+          passengers: 3,
+          passengerNames: [
+            { firstName: "Elif", lastName: "Kaya" },
+            { firstName: "Burak", lastName: "Kaya" },
+            { firstName: "Deniz", lastName: "Kaya" }
+          ],
+          type: "arrival",
+          transferTime: "18:00",
+          notes: "Sabiha Gökçen'den geliş, ailece tatil",
+          status: "scheduled"
         }
         ]);
       } else {
