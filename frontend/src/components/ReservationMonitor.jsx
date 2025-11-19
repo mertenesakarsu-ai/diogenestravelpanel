@@ -448,7 +448,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                 filteredReservations.map((reservation, index) => (
                   <tr 
                     key={index}
-                    onClick={() => handleReservationClick(reservation.id)}
+                    onClick={(e) => handleReservationClick(reservation.id, e)}
                     className={`border-b border-slate-200 hover:bg-cyan-100 transition-colors cursor-pointer ${
                       index % 2 === 0 ? 'bg-white' : 'bg-slate-50'
                     }`}
