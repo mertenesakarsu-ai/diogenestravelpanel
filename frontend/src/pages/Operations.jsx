@@ -521,23 +521,35 @@ const Operations = () => {
                             <span className="text-lg font-bold text-slate-800">{operation.voucherNo || 'N/A'}</span>
                           </div>
                           <div className="text-sm text-slate-600 mt-1">
-                            {operation.arrivalFlight && (
-                              <span className="font-semibold">{operation.arrivalFlight.flightCode}</span>
-                            )}
+                            {/* Uçak Kodları - Geliş, Transfer (varsa), Dönüş */}
+                            <span className="font-semibold">
+                              {operation.arrivalFlight?.flightCode}
+                              {operation.returnFlight && ` - ${operation.returnFlight.flightCode}`}
+                              {operation.transferFlight && ` - ${operation.transferFlight.flightCode}`}
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Hotel Status */}
-                      <div>
-                        <div className="text-xs text-slate-500 mb-1">Otel Durumu</div>
-                        <div className="flex items-center gap-2">
-                          <Hotel className="w-4 h-4 text-slate-400" />
-                          <span className={`font-semibold ${hotelStatus.color}`}>
-                            {hotelStatus.text}
-                          </span>
+                      {/* Geliş Tarihi ve Saati */}
+                      {operation.arrivalFlight && (
+                        <div>
+                          <div className="text-xs text-slate-500 mb-1">Geliş</div>
+                          <div className="font-semibold text-green-700 text-sm">
+                            {formatDate(operation.arrivalFlight.date)} {operation.arrivalFlight.time}
+                          </div>
                         </div>
-                      </div>
+                      )}
+
+                      {/* Gidiş Tarihi ve Saati */}
+                      {operation.returnFlight && (
+                        <div>
+                          <div className="text-xs text-slate-500 mb-1">Gidiş</div>
+                          <div className="font-semibold text-orange-700 text-sm">
+                            {formatDate(operation.returnFlight.date)} {operation.returnFlight.time}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Current Hotel */}
                       <div>
