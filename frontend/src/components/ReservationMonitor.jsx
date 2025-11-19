@@ -46,7 +46,12 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   };
 
   // Source agencies
-  const sourceAgencies = ['THV', 'EURO TOURS', 'SELECT HOLIDAYS', 'AZURO'];
+  const sourceAgencies = [
+    { value: 'THV', label: 'THV' },
+    { value: 'EURO TOURS', label: 'Euro Tours' },
+    { value: 'SELECT HOLIDAYS', label: 'Select Holidays' },
+    { value: 'AZURO', label: 'Azuro' }
+  ];
 
   // Get agency badge color
   const getAgencyBadgeColor = (agency) => {
@@ -57,6 +62,17 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
       'AZURO': 'bg-orange-500 text-white'
     };
     return colors[agency] || 'bg-gray-500 text-white';
+  };
+
+  // Get agency display name
+  const getAgencyDisplayName = (agency) => {
+    const displayNames = {
+      'THV': 'THV',
+      'EURO TOURS': 'EURO',
+      'SELECT HOLIDAYS': 'SELECT',
+      'AZURO': 'AZURO'
+    };
+    return displayNames[agency] || agency;
   };
 
   // Dummy reservation data - 20 rows with updated structure (including source agency and reservation IDs)
