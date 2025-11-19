@@ -190,6 +190,34 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     setAppliedEndDate('');
   };
 
+  const toggleCheckInSort = () => {
+    if (checkInSort === 'asc') {
+      setCheckInSort('desc');
+    } else if (checkInSort === 'desc') {
+      setCheckInSort(null);
+    } else {
+      setCheckInSort('asc');
+    }
+    setCheckOutSort(null); // Clear other sort
+  };
+
+  const toggleCheckOutSort = () => {
+    if (checkOutSort === 'asc') {
+      setCheckOutSort('desc');
+    } else if (checkOutSort === 'desc') {
+      setCheckOutSort(null);
+    } else {
+      setCheckOutSort('asc');
+    }
+    setCheckInSort(null); // Clear other sort
+  };
+
+  const getSortIcon = (sortState) => {
+    if (sortState === 'asc') return <ArrowUp className="w-4 h-4 inline ml-1" />;
+    if (sortState === 'desc') return <ArrowDown className="w-4 h-4 inline ml-1" />;
+    return <ArrowUpDown className="w-4 h-4 inline ml-1 opacity-50" />;
+  };
+
   const handleReservationClick = (reservationId) => {
     setSelectedReservationId(reservationId);
     setShowJourneyTimeline(true);
