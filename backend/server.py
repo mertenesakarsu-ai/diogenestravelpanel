@@ -1057,6 +1057,51 @@ async def get_operations(date: Optional[str] = None, type: str = "all", x_user_i
     operations = await db.operations.find(query, {"_id": 0}).to_list(1000)
     return operations
 
+@api_router.get("/operations/{operation_id}/details")
+async def get_operation_details(operation_id: str, x_user_id: Optional[str] = Header(None)):
+    """Get detailed operation information with reservation data"""
+    # Check permission
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('operations', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view operations")
+    
+    # Get operation
+    operation = await db.operations.find_one({"id": operation_id}, {"_id": 0})
+    if not operation:
+        raise HTTPException(status_code=404, detail="Operation not found")
+    
+    # Get linked reservation if exists
+    reservation = None
+    if operation.get('reservationId'):
+        reservation = await db.reservations.find_one({"id": operation['reservationId']}, {"_id": 0})
+    
+    # Combine data
+    result = {
+        "operation": operation,
+        "reservation": reservation,
+        "passengers": []
+    }
+    
+    # Add passenger information from reservation
+    if reservation:
+        result["passengers"] = [{
+            "name": reservation.get('leader_name', ''),
+            "passport": reservation.get('leader_passport', ''),
+            "adults": reservation.get('pax_adults', 0),
+            "children": reservation.get('pax_children', 0),
+            "infants": reservation.get('pax_infants', 0),
+            "total": reservation.get('pax', 0)
+        }]
+    
+    return result
+
 @api_router.post("/operations", response_model=Operation)
 async def create_operation(operation: OperationCreate, x_user_id: Optional[str] = Header(None)):
     # Check permission
