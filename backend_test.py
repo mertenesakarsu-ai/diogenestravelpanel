@@ -984,6 +984,17 @@ class BackendTester:
         self.test_flights_compare()
         
         print("\n" + "-" * 40)
+        print("OPERATIONS FILTERING SYSTEM TESTS")
+        print("-" * 40)
+        
+        # Test Operations Filtering System (as requested in review)
+        self.test_operations_filtering_single_date()
+        self.test_operations_filtering_date_range()
+        self.test_operations_filtering_type_filter()
+        self.test_operations_filtering_combined()
+        self.test_operations_data_structure()
+        
+        print("\n" + "-" * 40)
         print("FLIGHT API INTEGRATION TESTS")
         print("-" * 40)
         
