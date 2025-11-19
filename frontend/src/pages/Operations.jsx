@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Users, MapPin, Plane, Clock, Hotel, FileText, Filter, ArrowRight, ChevronDown } from "lucide-react";
+import { Calendar, Users, MapPin, Plane, Clock, Hotel, FileText, Filter, ArrowRight, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import api from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
+import FlightDetailModal from "@/components/FlightDetailModal";
 
 const Operations = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -18,6 +19,7 @@ const Operations = () => {
   const [operations, setOperations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOperation, setExpandedOperation] = useState(null);
+  const [flightDetailModal, setFlightDetailModal] = useState({ isOpen: false, flightCode: null, airportCode: "IST" });
 
   useEffect(() => {
     fetchOperations();
