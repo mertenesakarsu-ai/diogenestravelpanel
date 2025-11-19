@@ -206,33 +206,74 @@ class ReservationCreate(BaseModel):
     notes: Optional[str] = None
 
 # Operation Models
+class FlightInfo(BaseModel):
+    """Flight information for operations"""
+    flightCode: str
+    date: str  # YYYY-MM-DD format
+    time: str  # HH:MM format
+    from_location: str = Field(alias="from")
+    to: str
+    airline: str = ""
+
 class Operation(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    flightCode: str
-    type: str  # "transfer", "tour", etc.
-    from_location: str = Field(alias="from")
-    to: str
-    date: str
-    time: str
+    reservationId: Optional[str] = None  # Link to reservation
+    voucherNo: str = ""  # Voucher number from reservation
+    
+    # Flight Information
+    arrivalFlight: Optional[Dict[str, Any]] = None  # Arrival flight details
+    returnFlight: Optional[Dict[str, Any]] = None  # Return flight details (optional)
+    transferFlight: Optional[Dict[str, Any]] = None  # Transfer flight details (optional)
+    
+    # Hotel Information
+    currentHotel: str = ""
+    hotelCheckIn: str = ""  # YYYY-MM-DD HH:MM format
+    hotelCheckOut: str = ""  # YYYY-MM-DD HH:MM format
+    
+    # Legacy fields (for backward compatibility)
+    flightCode: str = ""
+    type: str = "transfer"  # "arrival", "departure", "transfer"
+    from_location: str = Field(default="", alias="from")
+    to: str = ""
+    date: str = ""
+    time: str = ""
     passengers: int = 0
     hotel: str = ""
     transferTime: str = ""
     notes: str = ""
+    status: str = "scheduled"  # "scheduled", "in_progress", "completed"
+    
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class OperationCreate(BaseModel):
-    flightCode: str
-    type: str
-    from_location: str = Field(alias="from")
-    to: str
-    date: str
-    time: str
+    reservationId: Optional[str] = None
+    voucherNo: str = ""
+    
+    # Flight Information
+    arrivalFlight: Optional[Dict[str, Any]] = None
+    returnFlight: Optional[Dict[str, Any]] = None
+    transferFlight: Optional[Dict[str, Any]] = None
+    
+    # Hotel Information
+    currentHotel: str = ""
+    hotelCheckIn: str = ""
+    hotelCheckOut: str = ""
+    
+    # Legacy fields
+    flightCode: str = ""
+    type: str = "transfer"
+    from_location: str = Field(default="", alias="from")
+    to: str = ""
+    date: str = ""
+    time: str = ""
     passengers: int = 0
     hotel: str = ""
     transferTime: str = ""
     notes: str = ""
+    status: str = "scheduled"
 
 # Health Check Model
 class HealthStatus(BaseModel):
