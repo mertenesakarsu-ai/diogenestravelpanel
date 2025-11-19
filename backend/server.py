@@ -1032,8 +1032,14 @@ async def upload_reservations(file: UploadFile = File(...), x_user_id: Optional[
 
 # ===== OPERATIONS ENDPOINTS =====
 @api_router.get("/operations")
-async def get_operations(date: Optional[str] = None, type: str = "all", x_user_id: Optional[str] = Header(None)):
-    """Get operations for a specific date"""
+async def get_operations(
+    date: Optional[str] = None, 
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    type: str = "all", 
+    x_user_id: Optional[str] = Header(None)
+):
+    """Get operations for a specific date or date range"""
     # Check permission
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
@@ -1048,7 +1054,12 @@ async def get_operations(date: Optional[str] = None, type: str = "all", x_user_i
     
     query = {}
     
-    if date:
+    # Handle date filtering - priority: date range > single date
+    if start_date and end_date:
+        # Date range filtering
+        query["date"] = {"$gte": start_date, "$lte": end_date}
+    elif date:
+        # Single date filtering
         query["date"] = date
     
     if type != "all":
