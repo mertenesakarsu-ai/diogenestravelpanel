@@ -92,6 +92,10 @@ const Operations = () => {
           hotelCheckIn: "2025-11-19 15:00",
           hotelCheckOut: "2025-11-26 12:00",
           passengers: 2,
+          passengerNames: [
+            { firstName: "Ahmet", lastName: "Yılmaz" },
+            { firstName: "Ayşe", lastName: "Yılmaz" }
+          ],
           type: "arrival",
           transferTime: "14:00",
           notes: "GERÇEK UÇUŞ TESTİ - TK2412 şu an havada, API gerçek veri çekiyor",
