@@ -31,6 +31,23 @@ const Operations = () => {
     fetchOperations();
   }, [selectedDate, filterType, appliedStartDate, appliedEndDate, appliedSearchQuery]);
 
+  const applyFilters = () => {
+    setAppliedStartDate(startDate);
+    setAppliedEndDate(endDate);
+    setAppliedSearchQuery(searchQuery);
+  };
+
+  const clearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setAppliedStartDate("");
+    setAppliedEndDate("");
+    setSearchQuery("");
+    setAppliedSearchQuery("");
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+    setFilterType("all");
+  };
+
   const fetchOperations = async () => {
     setLoading(true);
     try {
