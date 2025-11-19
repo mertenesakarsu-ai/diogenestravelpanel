@@ -102,35 +102,52 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   // Get unique destinations for filter
   const uniqueDestinations = [...new Set(allReservations.map(r => r.destination))];
 
-  // Filter reservations based on search, status, destination, agency, and date range
-  const filteredReservations = allReservations.filter(reservation => {
-    // Search filter
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = !searchQuery || 
-      reservation.passenger.toLowerCase().includes(searchLower) ||
-      reservation.agency.toLowerCase().includes(searchLower) ||
-      reservation.hotel.toLowerCase().includes(searchLower) ||
-      reservation.destination.toLowerCase().includes(searchLower) ||
-      reservation.sourceAgency.toLowerCase().includes(searchLower) ||
-      reservation.note.toLowerCase().includes(searchLower);
+  // Filter and sort reservations
+  const filteredReservations = allReservations
+    .filter(reservation => {
+      // Search filter
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = !searchQuery || 
+        reservation.passenger.toLowerCase().includes(searchLower) ||
+        reservation.agency.toLowerCase().includes(searchLower) ||
+        reservation.hotel.toLowerCase().includes(searchLower) ||
+        reservation.destination.toLowerCase().includes(searchLower) ||
+        reservation.sourceAgency.toLowerCase().includes(searchLower) ||
+        reservation.note.toLowerCase().includes(searchLower);
 
-    // Status filter
-    const matchesStatus = statusFilter === 'ALL' || reservation.status === statusFilter;
+      // Status filter
+      const matchesStatus = statusFilter === 'ALL' || reservation.status === statusFilter;
 
-    // Destination filter
-    const matchesDestination = destinationFilter === 'ALL' || reservation.destination === destinationFilter;
+      // Destination filter
+      const matchesDestination = destinationFilter === 'ALL' || reservation.destination === destinationFilter;
 
-    // Source Agency filter
-    const matchesAgency = agencyFilter === 'ALL' || reservation.sourceAgency === agencyFilter;
+      // Source Agency filter
+      const matchesAgency = agencyFilter === 'ALL' || reservation.sourceAgency === agencyFilter;
 
-    // Date range filter - using applied dates
-    const reservationCheckIn = new Date(reservation.checkIn);
-    const start = appliedStartDate ? new Date(appliedStartDate) : null;
-    const end = appliedEndDate ? new Date(appliedEndDate) : null;
-    const matchesDateRange = (!start || reservationCheckIn >= start) && (!end || reservationCheckIn <= end);
+      // Date range filter - using applied dates
+      const reservationCheckIn = new Date(reservation.checkIn);
+      const start = appliedStartDate ? new Date(appliedStartDate) : null;
+      const end = appliedEndDate ? new Date(appliedEndDate) : null;
+      const matchesDateRange = (!start || reservationCheckIn >= start) && (!end || reservationCheckIn <= end);
 
-    return matchesSearch && matchesStatus && matchesDestination && matchesAgency && matchesDateRange;
-  });
+      return matchesSearch && matchesStatus && matchesDestination && matchesAgency && matchesDateRange;
+    })
+    .sort((a, b) => {
+      // Sort by check-in date
+      if (checkInSort) {
+        const dateA = new Date(a.checkIn);
+        const dateB = new Date(b.checkIn);
+        return checkInSort === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+      // Sort by check-out date
+      if (checkOutSort) {
+        const dateA = new Date(a.checkOut);
+        const dateB = new Date(b.checkOut);
+        return checkOutSort === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+      // Default sort by check-in date ascending
+      return new Date(a.checkIn) - new Date(b.checkIn);
+    });
 
   const getStatusBadge = (status) => {
     const statusStyles = {
