@@ -20,6 +20,8 @@ const Operations = () => {
   const [appliedStartDate, setAppliedStartDate] = useState("");
   const [appliedEndDate, setAppliedEndDate] = useState("");
   const [filterType, setFilterType] = useState("all"); // all, arrival, departure
+  const [searchQuery, setSearchQuery] = useState("");
+  const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
   const [operations, setOperations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedOperation, setExpandedOperation] = useState(null);
