@@ -793,6 +793,17 @@ class BackendTester:
         # Test compare functionality
         self.test_flights_compare()
         
+        print("\n" + "-" * 40)
+        print("FLIGHT API INTEGRATION TESTS")
+        print("-" * 40)
+        
+        # Test Flight Details API (RapidAPI Integration)
+        self.test_flight_details_api_success()
+        self.test_flight_details_api_permission_denied()
+        self.test_flight_details_api_no_auth()
+        self.test_flight_details_api_invalid_flight()
+        self.test_flight_details_api_cache()
+        
         # Summary
         print("\n" + "=" * 60)
         print("TEST SUMMARY")
