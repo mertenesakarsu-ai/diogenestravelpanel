@@ -1530,6 +1530,292 @@ async def delete_package(package_id: str, x_user_id: Optional[str] = Header(None
     
     return {"message": "Package deleted successfully"}
 
+# ===== HOTELS ENDPOINTS =====
+@api_router.get("/hotels", response_model=List[Hotel])
+async def get_hotels(
+    search: Optional[str] = None,
+    region: Optional[str] = None,
+    category: Optional[str] = None,
+    active_only: bool = True,
+    x_user_id: Optional[str] = Header(None)
+):
+    """Get list of hotels with optional filters"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view hotels")
+    
+    # Build query
+    query = {}
+    if active_only:
+        query["active"] = True
+    if region:
+        query["region"] = region
+    if category:
+        query["category"] = category
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"code": {"$regex": search, "$options": "i"}},
+            {"region": {"$regex": search, "$options": "i"}},
+            {"city": {"$regex": search, "$options": "i"}}
+        ]
+    
+    hotels = await db.hotels.find(query, {"_id": 0}).to_list(10000)
+    return hotels
+
+@api_router.get("/hotels/{hotel_id}", response_model=Hotel)
+async def get_hotel(hotel_id: str, x_user_id: Optional[str] = Header(None)):
+    """Get a specific hotel by ID"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'read' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to view hotels")
+    
+    hotel = await db.hotels.find_one({"id": hotel_id}, {"_id": 0})
+    if not hotel:
+        raise HTTPException(status_code=404, detail="Hotel not found")
+    
+    return hotel
+
+@api_router.post("/hotels", response_model=Hotel)
+async def create_hotel(hotel: HotelCreate, x_user_id: Optional[str] = Header(None)):
+    """Create a new hotel"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'create' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to create hotels")
+    
+    # Check if hotel code already exists
+    existing = await db.hotels.find_one({"code": hotel.code})
+    if existing:
+        raise HTTPException(status_code=400, detail="Hotel code already exists")
+    
+    new_hotel = Hotel(**hotel.model_dump())
+    doc = new_hotel.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.hotels.insert_one(doc)
+    await log_action(user['email'], "CREATE", "hotels", new_hotel.id, f"Created hotel: {hotel.name}")
+    
+    return new_hotel
+
+@api_router.put("/hotels/{hotel_id}")
+async def update_hotel(hotel_id: str, hotel: HotelCreate, x_user_id: Optional[str] = Header(None)):
+    """Update an existing hotel"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'update' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to update hotels")
+    
+    existing = await db.hotels.find_one({"id": hotel_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Hotel not found")
+    
+    update_data = hotel.model_dump()
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.hotels.update_one({"id": hotel_id}, {"$set": update_data})
+    await log_action(user['email'], "UPDATE", "hotels", hotel_id, f"Updated hotel: {hotel.name}")
+    
+    return {"message": "Hotel updated successfully"}
+
+@api_router.delete("/hotels/{hotel_id}")
+async def delete_hotel(hotel_id: str, x_user_id: Optional[str] = Header(None)):
+    """Delete a hotel"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'delete' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to delete hotels")
+    
+    result = await db.hotels.delete_one({"id": hotel_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Hotel not found")
+    
+    await log_action(user['email'], "DELETE", "hotels", hotel_id, "Deleted hotel")
+    
+    return {"message": "Hotel deleted successfully"}
+
+@api_router.post("/hotels/upload")
+async def upload_hotels(file: UploadFile = File(...), x_user_id: Optional[str] = Header(None)):
+    """Upload Excel file to add hotels to database"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = user.get('role', '')
+    if user_role not in PERMISSIONS or 'upload' not in PERMISSIONS[user_role].get('hotels', []):
+        raise HTTPException(status_code=403, detail="You don't have permission to upload hotels")
+    
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Only Excel files (.xlsx, .xls) are supported")
+    
+    try:
+        # Read Excel file
+        contents = await file.read()
+        df = pd.read_excel(io.BytesIO(contents))
+        
+        # Excel column mapping (Turkish to English)
+        column_mapping = {
+            'Otel ': 'code',
+            'Adı': 'name',
+            'Kategori ': 'category',
+            'Bölgesi': 'region',
+            'Bölge': 'region_code',
+            'Transfer Bölgesi': 'transfer_region',
+            'Telefon 1': 'phone1',
+            'Telefon 2': 'phone2',
+            'Fax ': 'fax',
+            'Email ': 'email',
+            'EMail 2': 'email2',
+            'EMail 3': 'email3',
+            'Web ': 'website',
+            'Adres': 'address',
+            'Adres 2': 'address2',
+            'Şehir': 'city',
+            'Posta Kodu': 'postal_code',
+            'Ülke': 'country',
+            'Servis Türü': 'service_type',
+            'Yönetici': 'manager',
+            'Intern Not': 'notes',
+            'Aktif': 'active',
+            'Enlem': 'latitude',
+            'Boylam': 'longitude',
+            'Paximum ID': 'paximum_id',
+            'Giata': 'giata'
+        }
+        
+        # Process data
+        hotels_added = 0
+        hotels_updated = 0
+        errors = []
+        
+        for index, row in df.iterrows():
+            try:
+                # Extract and clean data
+                code = str(row.get('Otel ', '')).strip()
+                name = str(row.get('Adı', '')).strip()
+                
+                if not code or code == 'nan' or not name or name == 'nan':
+                    continue
+                
+                # Extract category and determine stars
+                category = str(row.get('Kategori ', 'OTEL')).strip()
+                stars = 0
+                if 'YILDIZ' in category.upper() or '*' in category:
+                    # Try to extract number
+                    import re
+                    star_match = re.search(r'(\d+)', category)
+                    if star_match:
+                        stars = int(star_match.group(1))
+                
+                # Build hotel data
+                hotel_data = {
+                    'code': code,
+                    'name': name,
+                    'category': category if category != 'nan' else 'OTEL',
+                    'region': str(row.get('Bölgesi', '')).strip() if str(row.get('Bölgesi', '')).strip() != 'nan' else '',
+                    'region_code': str(row.get('Bölge', '')).strip() if str(row.get('Bölge', '')).strip() != 'nan' else '',
+                    'transfer_region': str(row.get('Transfer Bölgesi', '')).strip() if str(row.get('Transfer Bölgesi', '')).strip() != 'nan' else '',
+                    'phone1': str(row.get('Telefon 1', '')).strip() if str(row.get('Telefon 1', '')).strip() != 'nan' else '',
+                    'phone2': str(row.get('Telefon 2', '')).strip() if str(row.get('Telefon 2', '')).strip() != 'nan' else '',
+                    'fax': str(row.get('Fax ', '')).strip() if str(row.get('Fax ', '')).strip() != 'nan' else '',
+                    'email': str(row.get('Email ', '')).strip() if str(row.get('Email ', '')).strip() != 'nan' else '',
+                    'email2': str(row.get('EMail 2', '')).strip() if str(row.get('EMail 2', '')).strip() != 'nan' else '',
+                    'email3': str(row.get('EMail 3', '')).strip() if str(row.get('EMail 3', '')).strip() != 'nan' else '',
+                    'website': str(row.get('Web ', '')).strip() if str(row.get('Web ', '')).strip() != 'nan' else '',
+                    'address': str(row.get('Adres', '')).strip() if str(row.get('Adres', '')).strip() != 'nan' else '',
+                    'address2': str(row.get('Adres 2', '')).strip() if str(row.get('Adres 2', '')).strip() != 'nan' else '',
+                    'city': str(row.get('Şehir', '')).strip() if str(row.get('Şehir', '')).strip() != 'nan' else '',
+                    'postal_code': str(row.get('Posta Kodu', '')).strip() if str(row.get('Posta Kodu', '')).strip() != 'nan' else '',
+                    'country': str(row.get('Ülke', '')).strip() if str(row.get('Ülke', '')).strip() != 'nan' else '',
+                    'service_type': str(row.get('Servis Türü', 'Otel')).strip() if str(row.get('Servis Türü', 'Otel')).strip() != 'nan' else 'Otel',
+                    'manager': str(row.get('Yönetici', '')).strip() if str(row.get('Yönetici', '')).strip() != 'nan' else '',
+                    'notes': str(row.get('Intern Not', '')).strip() if str(row.get('Intern Not', '')).strip() != 'nan' else '',
+                    'active': True if str(row.get('Aktif', 'True')).strip() == 'True' else False,
+                    'latitude': float(row.get('Enlem', 0)) if pd.notna(row.get('Enlem')) else 0.0,
+                    'longitude': float(row.get('Boylam', 0)) if pd.notna(row.get('Boylam')) else 0.0,
+                    'stars': stars,
+                    'paximum_id': str(row.get('Paximum ID', '')).strip() if str(row.get('Paximum ID', '')).strip() != 'nan' else '',
+                    'giata': str(row.get('Giata', '')).strip() if str(row.get('Giata', '')).strip() != 'nan' else ''
+                }
+                
+                # Check if hotel exists
+                existing_hotel = await db.hotels.find_one({"code": code})
+                
+                if existing_hotel:
+                    # Update existing hotel
+                    hotel_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+                    await db.hotels.update_one({"code": code}, {"$set": hotel_data})
+                    hotels_updated += 1
+                else:
+                    # Create new hotel
+                    hotel_data['id'] = str(uuid.uuid4())
+                    hotel_data['created_at'] = datetime.now(timezone.utc).isoformat()
+                    hotel_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+                    await db.hotels.insert_one(hotel_data)
+                    hotels_added += 1
+                    
+            except Exception as e:
+                errors.append(f"Row {index + 1}: {str(e)}")
+                continue
+        
+        # Log the action
+        await log_action(
+            user['email'], 
+            "IMPORT_EXCEL", 
+            "hotels", 
+            "", 
+            f"Imported {hotels_added} new hotels, updated {hotels_updated} hotels from Excel"
+        )
+        
+        result = {
+            "message": "Hotels uploaded successfully",
+            "hotels_added": hotels_added,
+            "hotels_updated": hotels_updated,
+            "total_processed": hotels_added + hotels_updated,
+            "errors": errors[:10] if errors else []  # Return first 10 errors only
+        }
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error processing Excel file: {str(e)}")
+
 @api_router.get("/reservations/{reservation_id}/journey")
 async def get_reservation_journey(reservation_id: str, x_user_id: Optional[str] = Header(None)):
     """Get passenger journey timeline for a multi-leg reservation"""
