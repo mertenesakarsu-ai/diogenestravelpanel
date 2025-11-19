@@ -739,7 +739,12 @@ const Admin = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="date-format">Tarih Formatı</Label>
-                <Input id="date-format" value="YYYY-MM-DD" readOnly />
+                <Input id="date-format" value="GG.AA.YYYY" readOnly />
+              </div>
+
+              <div className="space-y-3">
+                <Label htmlFor="datetime-format">Tarih & Saat Formatı</Label>
+                <Input id="datetime-format" value="GG.AA.YYYY SS:DD" readOnly />
               </div>
 
               <div className="space-y-3">
