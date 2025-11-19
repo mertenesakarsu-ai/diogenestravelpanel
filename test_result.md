@@ -167,6 +167,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "MAJOR UPDATE - Operasyon bölümü tamamen yeniden tasarlandı. YENİ ÖZELLİKLER: 1) Detaylı yolcu bilgileri (voucher numarası, toplam yolcu sayısı), 2) Çoklu uçuş desteği (Geliş/Dönüş/Aktarma uçuşları ayrı ayrı gösteriliyor), 3) Her uçuş için ayrı 'Uçuş Detayı' butonu, 4) Uçuş detay butonu 24 saat öncesinden aktif olma kontrolü (uçuş saatinden 24 saat öncesine kadar pasif, sonra aktif), 5) Kapsamlı otel bilgileri (giriş/çıkış tarihi ve saati), 6) Gerçek zamanlı otel durumu (Henüz giriş yapmadı / Otelde X gün kaldı / Çıkış yaptı), 7) Her uçuş için havayolu, rota ve tarih/saat bilgisi, 8) Renk kodlu uçuş kartları (Geliş-yeşil, Transfer-mavi, Dönüş-turuncu). UI İYİLEŞTİRMELERİ: Voucher numarası prominent gösterimi, Otel durumu anlık hesaplama, Uçuş bilgileri detaylı grid layout, Pasif/aktif buton görsel farklılığı, Responsive tasarım. Mock data ile test edildi, 3 örnek operasyon gösteriliyor."
+        - working: true
+          agent: "main"
+          comment: "SORUN ÇÖZÜLDÜ - Kullanıcı operations değişikliklerini göremiyordu ve login çalışmıyordu. SORUN: Backend ve frontend servisleri durmuştu. ÇÖZÜM: Tüm servisler yeniden başlatıldı. Operations.jsx'teki tüm özellikler korunmuş durumda. Frontend başarıyla compile edildi."
 
   - task: "FlightDetailModal.jsx - Uçuş Bilgisi Modal Component"
     implemented: true
