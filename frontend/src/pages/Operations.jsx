@@ -350,6 +350,14 @@ const Operations = () => {
           ))
         )}
       </div>
+
+      {/* Flight Detail Modal */}
+      <FlightDetailModal
+        isOpen={flightDetailModal.isOpen}
+        onClose={() => setFlightDetailModal({ isOpen: false, flightCode: null, airportCode: "IST" })}
+        flightCode={flightDetailModal.flightCode}
+        airportCode={flightDetailModal.airportCode}
+      />
     </div>
   );
 };
