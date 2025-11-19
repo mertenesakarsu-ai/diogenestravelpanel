@@ -1589,6 +1589,74 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_db():
+    """Initialize users on startup if database is empty"""
+    try:
+        users_count = await db.users.count_documents({})
+        if users_count == 0:
+            print("⚠️  No users found in database. Initializing default users...")
+            
+            default_users = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Admin User",
+                    "email": "admin@diogenestravel.com",
+                    "password": pwd_context.hash("admin123"),
+                    "role": "admin",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Reservation Manager",
+                    "email": "reservation@diogenestravel.com",
+                    "password": pwd_context.hash("reservation123"),
+                    "role": "reservation",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Operation Manager",
+                    "email": "operation@diogenestravel.com",
+                    "password": pwd_context.hash("operation123"),
+                    "role": "operation",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Flight Manager",
+                    "email": "flight@diogenestravel.com",
+                    "password": pwd_context.hash("flight123"),
+                    "role": "flight",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Management User",
+                    "email": "management@diogenestravel.com",
+                    "password": pwd_context.hash("management123"),
+                    "role": "management",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                }
+            ]
+            
+            await db.users.insert_many(default_users)
+            print(f"✅ Successfully initialized {len(default_users)} default users")
+        else:
+            print(f"ℹ️  Found {users_count} users in database")
+    except Exception as e:
+        print(f"❌ Error during startup initialization: {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
