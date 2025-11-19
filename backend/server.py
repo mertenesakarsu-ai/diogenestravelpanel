@@ -205,6 +205,70 @@ class ReservationCreate(BaseModel):
     destination: Optional[str] = None
     notes: Optional[str] = None
 
+# Hotel Models
+class Hotel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    code: str  # Otel kodu (örn: "3*ANT")
+    name: str  # Otel adı
+    category: str = ""  # Kategori (OTEL, 3 YILDIZ, vb.)
+    region: str = ""  # Bölgesi
+    region_code: str = ""  # Bölge kodu
+    transfer_region: str = ""  # Transfer bölgesi
+    phone1: str = ""
+    phone2: str = ""
+    fax: str = ""
+    email: str = ""
+    email2: str = ""
+    email3: str = ""
+    website: str = ""
+    address: str = ""
+    address2: str = ""
+    city: str = ""
+    postal_code: str = ""
+    country: str = ""
+    service_type: str = "Otel"  # Servis türü
+    manager: str = ""  # Yönetici
+    notes: str = ""  # Internal notlar
+    active: bool = True  # Aktif/Pasif
+    latitude: float = 0.0  # Enlem
+    longitude: float = 0.0  # Boylam
+    stars: int = 0  # Yıldız sayısı
+    paximum_id: str = ""  # Paximum entegrasyon ID
+    giata: str = ""  # Giata kodu
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class HotelCreate(BaseModel):
+    code: str
+    name: str
+    category: str = ""
+    region: str = ""
+    region_code: str = ""
+    transfer_region: str = ""
+    phone1: str = ""
+    phone2: str = ""
+    fax: str = ""
+    email: str = ""
+    email2: str = ""
+    email3: str = ""
+    website: str = ""
+    address: str = ""
+    address2: str = ""
+    city: str = ""
+    postal_code: str = ""
+    country: str = ""
+    service_type: str = "Otel"
+    manager: str = ""
+    notes: str = ""
+    active: bool = True
+    latitude: float = 0.0
+    longitude: float = 0.0
+    stars: int = 0
+    paximum_id: str = ""
+    giata: str = ""
+
 # Operation Models
 class FlightInfo(BaseModel):
     """Flight information for operations"""
