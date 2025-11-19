@@ -1,32 +1,42 @@
 {
   "summary": {
-    "total": 17,
+    "total": 18,
     "passed": 10,
-    "failed": 7,
-    "timestamp": "2025-11-18T09:46:40.008625"
+    "failed": 8,
+    "timestamp": "2025-11-19T06:57:34.444662"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-18T09:46:35.405837",
+      "timestamp": "2025-11-19T06:57:29.669075",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
         "total_reservations": 0,
-        "total_users": 5,
+        "total_users": 0,
         "total_logs": 0,
         "status": "healthy"
       }
     },
     {
+      "test": "Get Users",
+      "success": false,
+      "message": "No users found in database",
+      "timestamp": "2025-11-19T06:57:29.686166",
+      "response_data": {
+        "count": 0,
+        "users": []
+      }
+    },
+    {
       "test": "Initialize Users",
       "success": true,
-      "message": "Users initialization: Users already initialized",
-      "timestamp": "2025-11-18T09:46:35.421581",
+      "message": "Users initialization: Initialized 5 users",
+      "timestamp": "2025-11-19T06:57:31.828614",
       "response_data": {
-        "message": "Users already initialized",
+        "message": "Initialized 5 users",
         "count": 5
       }
     },
@@ -34,21 +44,82 @@
       "test": "Login Success - Admin",
       "success": true,
       "message": "Admin login successful: Admin User (admin)",
-      "timestamp": "2025-11-18T09:46:36.147261",
+      "timestamp": "2025-11-19T06:57:32.274015",
       "response_data": {
-        "id": "aef2f268-c297-47a2-aabf-49ff8685982c",
+        "id": "c80fcbe5-ab0b-40ac-97de-8fbbd287b2e0",
         "name": "Admin User",
-        "email": "admin@diogenes.com",
+        "email": "admin@diogenestravel.com",
         "role": "admin",
         "status": "active",
-        "created_at": "2025-11-18T09:43:27.141442Z"
+        "profile_picture": null,
+        "created_at": "2025-11-19T06:57:31.802124Z"
+      }
+    },
+    {
+      "test": "Login Success - Reservation",
+      "success": true,
+      "message": "Reservation login successful: Rezervasyon Manager (reservation)",
+      "timestamp": "2025-11-19T06:57:32.640036",
+      "response_data": {
+        "id": "ed865d8d-e57d-41dc-91a7-2271b259bb84",
+        "name": "Rezervasyon Manager",
+        "email": "reservation@diogenestravel.com",
+        "role": "reservation",
+        "status": "active",
+        "profile_picture": null,
+        "created_at": "2025-11-19T06:57:31.819608Z"
+      }
+    },
+    {
+      "test": "Login Success - Operation",
+      "success": true,
+      "message": "Operation login successful: Operasyon Manager (operation)",
+      "timestamp": "2025-11-19T06:57:33.081858",
+      "response_data": {
+        "id": "2cad2c6a-2941-4a65-b726-b5048f383a32",
+        "name": "Operasyon Manager",
+        "email": "operation@diogenestravel.com",
+        "role": "operation",
+        "status": "active",
+        "profile_picture": null,
+        "created_at": "2025-11-19T06:57:31.821263Z"
+      }
+    },
+    {
+      "test": "Login Success - Flight",
+      "success": true,
+      "message": "Flight login successful: U\u00e7ak Manager (flight)",
+      "timestamp": "2025-11-19T06:57:33.506711",
+      "response_data": {
+        "id": "5e96e437-7864-4ca5-8443-e380bdfc62a7",
+        "name": "U\u00e7ak Manager",
+        "email": "flight@diogenestravel.com",
+        "role": "flight",
+        "status": "active",
+        "profile_picture": null,
+        "created_at": "2025-11-19T06:57:31.822463Z"
+      }
+    },
+    {
+      "test": "Login Success - Management",
+      "success": true,
+      "message": "Management login successful: Y\u00f6netim Manager (management)",
+      "timestamp": "2025-11-19T06:57:33.913507",
+      "response_data": {
+        "id": "dd2699b1-453b-4d3a-8e90-d2f8399300db",
+        "name": "Y\u00f6netim Manager",
+        "email": "management@diogenestravel.com",
+        "role": "management",
+        "status": "active",
+        "profile_picture": null,
+        "created_at": "2025-11-19T06:57:31.823384Z"
       }
     },
     {
       "test": "Login Wrong Password",
       "success": true,
       "message": "Correctly rejected wrong password with 401",
-      "timestamp": "2025-11-18T09:46:36.754411",
+      "timestamp": "2025-11-19T06:57:34.210529",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -57,7 +128,7 @@
       "test": "Login Nonexistent Email",
       "success": true,
       "message": "Correctly rejected non-existent email with 401",
-      "timestamp": "2025-11-18T09:46:36.896661",
+      "timestamp": "2025-11-19T06:57:34.262130",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -66,114 +137,58 @@
       "test": "Login Empty Credentials",
       "success": true,
       "message": "Correctly rejected empty credentials with 401",
-      "timestamp": "2025-11-18T09:46:36.908284",
+      "timestamp": "2025-11-19T06:57:34.277877",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
-      }
-    },
-    {
-      "test": "Login Success - Reservation",
-      "success": true,
-      "message": "Reservation login successful: Rezervasyon Manager (reservation)",
-      "timestamp": "2025-11-18T09:46:37.647680",
-      "response_data": {
-        "id": "dc15012a-bf1f-4a60-8855-254a4bef81a2",
-        "name": "Rezervasyon Manager",
-        "email": "reservation@diogenes.com",
-        "role": "reservation",
-        "status": "active",
-        "created_at": "2025-11-18T09:43:27.170348Z"
-      }
-    },
-    {
-      "test": "Login Success - Operation",
-      "success": true,
-      "message": "Operation login successful: Operasyon Manager (operation)",
-      "timestamp": "2025-11-18T09:46:38.261768",
-      "response_data": {
-        "id": "0b25f4c4-f431-4a0d-8c22-9a2923d1bdec",
-        "name": "Operasyon Manager",
-        "email": "operation@diogenes.com",
-        "role": "operation",
-        "status": "active",
-        "created_at": "2025-11-18T09:43:27.171875Z"
-      }
-    },
-    {
-      "test": "Login Success - Flight",
-      "success": true,
-      "message": "Flight login successful: U\u00e7ak Manager (flight)",
-      "timestamp": "2025-11-18T09:46:38.801355",
-      "response_data": {
-        "id": "ddb21d1f-843a-43af-9e17-77944e26535b",
-        "name": "U\u00e7ak Manager",
-        "email": "flight@diogenes.com",
-        "role": "flight",
-        "status": "active",
-        "created_at": "2025-11-18T09:43:27.173277Z"
-      }
-    },
-    {
-      "test": "Login Success - Management",
-      "success": true,
-      "message": "Management login successful: Y\u00f6netim Manager (management)",
-      "timestamp": "2025-11-18T09:46:39.699114",
-      "response_data": {
-        "id": "301e4a4c-a40c-4189-bbdb-43d9926f0fdf",
-        "name": "Y\u00f6netim Manager",
-        "email": "management@diogenes.com",
-        "role": "management",
-        "status": "active",
-        "created_at": "2025-11-18T09:43:27.174452Z"
       }
     },
     {
       "test": "Get Flights",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-18T09:46:39.710153",
+      "timestamp": "2025-11-19T06:57:34.289410",
       "response_data": null
     },
     {
       "test": "Get Reservations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-18T09:46:39.719152",
+      "timestamp": "2025-11-19T06:57:34.297936",
       "response_data": null
     },
     {
       "test": "Get Operations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-18T09:46:39.769946",
+      "timestamp": "2025-11-19T06:57:34.308293",
       "response_data": null
     },
     {
       "test": "Flights Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T09:46:39.973227",
+      "timestamp": "2025-11-19T06:57:34.427365",
       "response_data": null
     },
     {
       "test": "Reservations Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T09:46:39.987662",
+      "timestamp": "2025-11-19T06:57:34.432465",
       "response_data": null
     },
     {
       "test": "Operations Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T09:46:39.996352",
+      "timestamp": "2025-11-19T06:57:34.439308",
       "response_data": null
     },
     {
       "test": "Flights Compare",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-18T09:46:40.007854",
+      "timestamp": "2025-11-19T06:57:34.443732",
       "response_data": null
     }
   ]
