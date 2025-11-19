@@ -32,9 +32,17 @@ const Operations = () => {
   const fetchOperations = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/api/operations', {
-        params: { date: selectedDate, type: filterType }
-      });
+      const params = { type: filterType };
+      
+      // Eğer tarih aralığı uygulandıysa onu kullan, yoksa tek tarih kullan
+      if (appliedStartDate && appliedEndDate) {
+        params.start_date = appliedStartDate;
+        params.end_date = appliedEndDate;
+      } else {
+        params.date = selectedDate;
+      }
+      
+      const response = await api.get('/api/operations', { params });
       
       // If API returns empty data, use mock data for development
       if (!response.data || response.data.length === 0) {
