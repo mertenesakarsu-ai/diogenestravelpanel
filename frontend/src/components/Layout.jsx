@@ -508,8 +508,8 @@ const Layout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Monitör butonu - sadece admin, reservation ve management için */}
-            {(user?.role === 'admin' || user?.role === 'reservation' || user?.role === 'management') && (
+            {/* Monitör butonu - admin, reservation, operation ve management için */}
+            {(user?.role === 'admin' || user?.role === 'reservation' || user?.role === 'operation' || user?.role === 'management') && (
               <Button
                 variant="outline"
                 size="sm"
