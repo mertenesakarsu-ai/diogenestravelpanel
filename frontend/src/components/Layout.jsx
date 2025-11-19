@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard,
   Calendar,
-  Truck,
+  Bus,
   Plane,
   Settings,
   ChevronLeft,
