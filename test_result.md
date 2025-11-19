@@ -340,7 +340,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
@@ -351,6 +351,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ Backend API testi tamamlandı. GET /api/health endpoint'i çalışıyor. Database bağlantısı aktif. Sistem sağlıklı durumda."
+        - working: true
+          agent: "main"
+          comment: "MAJOR BACKEND UPDATE - Operation modeli genişletildi. YENİ ALANLAR: reservationId (Rezervasyon bağlantısı), voucherNo (Voucher numarası), arrivalFlight (Geliş uçuşu - flightCode, date, time, from, to, airline), returnFlight (Dönüş uçuşu - opsiyonel), transferFlight (Aktarma uçuşu - opsiyonel), currentHotel (Güncel otel), hotelCheckIn (Giriş tarihi ve saati), hotelCheckOut (Çıkış tarihi ve saati), status (scheduled/in_progress/completed), updated_at. YENİ ENDPOINT: GET /api/operations/{operation_id}/details - Operasyon ve rezervasyon bilgilerini birlikte döndürüyor, yolcu bilgileri dahil. FlightInfo model class'ı eklendi. Backward compatibility korundu (eski fieldlar hala çalışıyor). Backend başarıyla restart edildi."
   
   - task: "Excel Upload - Flights"
     implemented: true
