@@ -1,48 +1,42 @@
 {
   "summary": {
-    "total": 18,
-    "passed": 11,
-    "failed": 7,
-    "timestamp": "2025-11-19T06:58:36.857298"
+    "total": 23,
+    "passed": 14,
+    "failed": 9,
+    "timestamp": "2025-11-19T07:38:30.977240"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-19T06:58:33.766722",
+      "timestamp": "2025-11-19T07:38:26.015471",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
         "total_reservations": 0,
-        "total_users": 5,
+        "total_users": 0,
         "total_logs": 0,
         "status": "healthy"
       }
     },
     {
       "test": "Get Users",
-      "success": true,
-      "message": "All 5 expected users found",
-      "timestamp": "2025-11-19T06:58:33.781016",
+      "success": false,
+      "message": "No users found in database",
+      "timestamp": "2025-11-19T07:38:26.030093",
       "response_data": {
-        "count": 5,
-        "users": [
-          "admin@diogenestravel.com",
-          "reservation@diogenestravel.com",
-          "operation@diogenestravel.com",
-          "flight@diogenestravel.com",
-          "management@diogenestravel.com"
-        ]
+        "count": 0,
+        "users": []
       }
     },
     {
       "test": "Initialize Users",
       "success": true,
-      "message": "Users initialization: Users already initialized",
-      "timestamp": "2025-11-19T06:58:33.832343",
+      "message": "Users initialization: Initialized 5 users",
+      "timestamp": "2025-11-19T07:38:27.489303",
       "response_data": {
-        "message": "Users already initialized",
+        "message": "Initialized 5 users",
         "count": 5
       }
     },
@@ -50,82 +44,82 @@
       "test": "Login Success - Admin",
       "success": true,
       "message": "Admin login successful: Admin User (admin)",
-      "timestamp": "2025-11-19T06:58:34.141821",
+      "timestamp": "2025-11-19T07:38:27.775435",
       "response_data": {
-        "id": "c80fcbe5-ab0b-40ac-97de-8fbbd287b2e0",
+        "id": "b4464247-9a07-4bb2-95e8-2ac016e9fd16",
         "name": "Admin User",
         "email": "admin@diogenestravel.com",
         "role": "admin",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T06:57:31.802124Z"
+        "created_at": "2025-11-19T07:38:27.422970Z"
       }
     },
     {
       "test": "Login Success - Reservation",
       "success": true,
       "message": "Reservation login successful: Rezervasyon Manager (reservation)",
-      "timestamp": "2025-11-19T06:58:34.601471",
+      "timestamp": "2025-11-19T07:38:28.062361",
       "response_data": {
-        "id": "ed865d8d-e57d-41dc-91a7-2271b259bb84",
+        "id": "9b37dd57-3b22-4afe-8161-966df5e64d7c",
         "name": "Rezervasyon Manager",
         "email": "reservation@diogenestravel.com",
         "role": "reservation",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T06:57:31.819608Z"
+        "created_at": "2025-11-19T07:38:27.441059Z"
       }
     },
     {
       "test": "Login Success - Operation",
       "success": true,
       "message": "Operation login successful: Operasyon Manager (operation)",
-      "timestamp": "2025-11-19T06:58:35.034886",
+      "timestamp": "2025-11-19T07:38:28.352980",
       "response_data": {
-        "id": "2cad2c6a-2941-4a65-b726-b5048f383a32",
+        "id": "519addba-fe9d-4124-8a1d-57e05cd00404",
         "name": "Operasyon Manager",
         "email": "operation@diogenestravel.com",
         "role": "operation",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T06:57:31.821263Z"
+        "created_at": "2025-11-19T07:38:27.442469Z"
       }
     },
     {
       "test": "Login Success - Flight",
       "success": true,
       "message": "Flight login successful: U\u00e7ak Manager (flight)",
-      "timestamp": "2025-11-19T06:58:35.468535",
+      "timestamp": "2025-11-19T07:38:28.683591",
       "response_data": {
-        "id": "5e96e437-7864-4ca5-8443-e380bdfc62a7",
+        "id": "73b7c092-2bad-4e99-9087-99675eefca3c",
         "name": "U\u00e7ak Manager",
         "email": "flight@diogenestravel.com",
         "role": "flight",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T06:57:31.822463Z"
+        "created_at": "2025-11-19T07:38:27.443552Z"
       }
     },
     {
       "test": "Login Success - Management",
       "success": true,
       "message": "Management login successful: Y\u00f6netim Manager (management)",
-      "timestamp": "2025-11-19T06:58:35.867537",
+      "timestamp": "2025-11-19T07:38:28.968248",
       "response_data": {
-        "id": "dd2699b1-453b-4d3a-8e90-d2f8399300db",
+        "id": "6692bb17-303c-4cea-8913-413076150e57",
         "name": "Y\u00f6netim Manager",
         "email": "management@diogenestravel.com",
         "role": "management",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T06:57:31.823384Z"
+        "created_at": "2025-11-19T07:38:27.444736Z"
       }
     },
     {
       "test": "Login Wrong Password",
       "success": true,
       "message": "Correctly rejected wrong password with 401",
-      "timestamp": "2025-11-19T06:58:36.210316",
+      "timestamp": "2025-11-19T07:38:29.267282",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -134,7 +128,7 @@
       "test": "Login Nonexistent Email",
       "success": true,
       "message": "Correctly rejected non-existent email with 401",
-      "timestamp": "2025-11-19T06:58:36.222402",
+      "timestamp": "2025-11-19T07:38:29.282702",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -143,7 +137,7 @@
       "test": "Login Empty Credentials",
       "success": true,
       "message": "Correctly rejected empty credentials with 401",
-      "timestamp": "2025-11-19T06:58:36.246534",
+      "timestamp": "2025-11-19T07:38:29.293413",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -152,50 +146,99 @@
       "test": "Get Flights",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.257368",
+      "timestamp": "2025-11-19T07:38:29.342229",
       "response_data": null
     },
     {
       "test": "Get Reservations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.268546",
+      "timestamp": "2025-11-19T07:38:29.352095",
       "response_data": null
     },
     {
       "test": "Get Operations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.320018",
+      "timestamp": "2025-11-19T07:38:29.403851",
       "response_data": null
     },
     {
       "test": "Flights Upload",
       "success": false,
-      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.704246",
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-19T07:38:29.504427",
       "response_data": null
     },
     {
       "test": "Reservations Upload",
       "success": false,
-      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.785933",
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-19T07:38:29.508431",
       "response_data": null
     },
     {
       "test": "Operations Upload",
       "success": false,
-      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.826541",
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-19T07:38:29.511884",
       "response_data": null
     },
     {
       "test": "Flights Compare",
       "success": false,
-      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:58:36.856973",
+      "message": "Error: No module named 'et_xmlfile'",
+      "timestamp": "2025-11-19T07:38:29.515167",
       "response_data": null
+    },
+    {
+      "test": "Flight Details API - Success",
+      "success": true,
+      "message": "Successfully retrieved comprehensive flight details for TK2412",
+      "timestamp": "2025-11-19T07:38:30.365647",
+      "response_data": {
+        "flight_number": "TK 2412",
+        "airline": "Turkish Airlines",
+        "status": "Boarding",
+        "departure_airport": "Istanbul",
+        "arrival_airport": "Antalya"
+      }
+    },
+    {
+      "test": "Flight Details API - Permission Denied",
+      "success": true,
+      "message": "Correctly denied access for reservation user with 403",
+      "timestamp": "2025-11-19T07:38:30.394859",
+      "response_data": {
+        "detail": "You don't have permission to view flight details"
+      }
+    },
+    {
+      "test": "Flight Details API - No Auth",
+      "success": true,
+      "message": "Correctly rejected request without authentication with 401",
+      "timestamp": "2025-11-19T07:38:30.447381",
+      "response_data": {
+        "detail": "Authentication required"
+      }
+    },
+    {
+      "test": "Flight Details API - Invalid Flight",
+      "success": false,
+      "message": "Unexpected HTTP 500: {\"detail\":\"Error fetching flight details: 204: Flight API error: \"}",
+      "timestamp": "2025-11-19T07:38:30.893917",
+      "response_data": null
+    },
+    {
+      "test": "Flight Details API - Cache Test",
+      "success": true,
+      "message": "Cache working - First call: 0.06s, Second call: 0.01s",
+      "timestamp": "2025-11-19T07:38:30.976714",
+      "response_data": {
+        "first_call_time": 0.05553245544433594,
+        "second_call_time": 0.013648748397827148,
+        "flight_number": "TK 2412"
+      }
     }
   ]
 }
