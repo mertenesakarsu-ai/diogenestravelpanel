@@ -1,42 +1,48 @@
 {
   "summary": {
     "total": 18,
-    "passed": 10,
-    "failed": 8,
-    "timestamp": "2025-11-19T06:57:34.444662"
+    "passed": 11,
+    "failed": 7,
+    "timestamp": "2025-11-19T06:58:36.857298"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-19T06:57:29.669075",
+      "timestamp": "2025-11-19T06:58:33.766722",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
         "total_reservations": 0,
-        "total_users": 0,
+        "total_users": 5,
         "total_logs": 0,
         "status": "healthy"
       }
     },
     {
       "test": "Get Users",
-      "success": false,
-      "message": "No users found in database",
-      "timestamp": "2025-11-19T06:57:29.686166",
+      "success": true,
+      "message": "All 5 expected users found",
+      "timestamp": "2025-11-19T06:58:33.781016",
       "response_data": {
-        "count": 0,
-        "users": []
+        "count": 5,
+        "users": [
+          "admin@diogenestravel.com",
+          "reservation@diogenestravel.com",
+          "operation@diogenestravel.com",
+          "flight@diogenestravel.com",
+          "management@diogenestravel.com"
+        ]
       }
     },
     {
       "test": "Initialize Users",
       "success": true,
-      "message": "Users initialization: Initialized 5 users",
-      "timestamp": "2025-11-19T06:57:31.828614",
+      "message": "Users initialization: Users already initialized",
+      "timestamp": "2025-11-19T06:58:33.832343",
       "response_data": {
-        "message": "Initialized 5 users",
+        "message": "Users already initialized",
         "count": 5
       }
     },
@@ -44,7 +50,7 @@
       "test": "Login Success - Admin",
       "success": true,
       "message": "Admin login successful: Admin User (admin)",
-      "timestamp": "2025-11-19T06:57:32.274015",
+      "timestamp": "2025-11-19T06:58:34.141821",
       "response_data": {
         "id": "c80fcbe5-ab0b-40ac-97de-8fbbd287b2e0",
         "name": "Admin User",
@@ -59,7 +65,7 @@
       "test": "Login Success - Reservation",
       "success": true,
       "message": "Reservation login successful: Rezervasyon Manager (reservation)",
-      "timestamp": "2025-11-19T06:57:32.640036",
+      "timestamp": "2025-11-19T06:58:34.601471",
       "response_data": {
         "id": "ed865d8d-e57d-41dc-91a7-2271b259bb84",
         "name": "Rezervasyon Manager",
@@ -74,7 +80,7 @@
       "test": "Login Success - Operation",
       "success": true,
       "message": "Operation login successful: Operasyon Manager (operation)",
-      "timestamp": "2025-11-19T06:57:33.081858",
+      "timestamp": "2025-11-19T06:58:35.034886",
       "response_data": {
         "id": "2cad2c6a-2941-4a65-b726-b5048f383a32",
         "name": "Operasyon Manager",
@@ -89,7 +95,7 @@
       "test": "Login Success - Flight",
       "success": true,
       "message": "Flight login successful: U\u00e7ak Manager (flight)",
-      "timestamp": "2025-11-19T06:57:33.506711",
+      "timestamp": "2025-11-19T06:58:35.468535",
       "response_data": {
         "id": "5e96e437-7864-4ca5-8443-e380bdfc62a7",
         "name": "U\u00e7ak Manager",
@@ -104,7 +110,7 @@
       "test": "Login Success - Management",
       "success": true,
       "message": "Management login successful: Y\u00f6netim Manager (management)",
-      "timestamp": "2025-11-19T06:57:33.913507",
+      "timestamp": "2025-11-19T06:58:35.867537",
       "response_data": {
         "id": "dd2699b1-453b-4d3a-8e90-d2f8399300db",
         "name": "Y\u00f6netim Manager",
@@ -119,7 +125,7 @@
       "test": "Login Wrong Password",
       "success": true,
       "message": "Correctly rejected wrong password with 401",
-      "timestamp": "2025-11-19T06:57:34.210529",
+      "timestamp": "2025-11-19T06:58:36.210316",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -128,7 +134,7 @@
       "test": "Login Nonexistent Email",
       "success": true,
       "message": "Correctly rejected non-existent email with 401",
-      "timestamp": "2025-11-19T06:57:34.262130",
+      "timestamp": "2025-11-19T06:58:36.222402",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -137,7 +143,7 @@
       "test": "Login Empty Credentials",
       "success": true,
       "message": "Correctly rejected empty credentials with 401",
-      "timestamp": "2025-11-19T06:57:34.277877",
+      "timestamp": "2025-11-19T06:58:36.246534",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -146,49 +152,49 @@
       "test": "Get Flights",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:57:34.289410",
+      "timestamp": "2025-11-19T06:58:36.257368",
       "response_data": null
     },
     {
       "test": "Get Reservations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:57:34.297936",
+      "timestamp": "2025-11-19T06:58:36.268546",
       "response_data": null
     },
     {
       "test": "Get Operations",
       "success": false,
       "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
-      "timestamp": "2025-11-19T06:57:34.308293",
+      "timestamp": "2025-11-19T06:58:36.320018",
       "response_data": null
     },
     {
       "test": "Flights Upload",
       "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T06:57:34.427365",
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-19T06:58:36.704246",
       "response_data": null
     },
     {
       "test": "Reservations Upload",
       "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T06:57:34.432465",
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-19T06:58:36.785933",
       "response_data": null
     },
     {
       "test": "Operations Upload",
       "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T06:57:34.439308",
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-19T06:58:36.826541",
       "response_data": null
     },
     {
       "test": "Flights Compare",
       "success": false,
-      "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T06:57:34.443732",
+      "message": "HTTP 401: {\"detail\":\"Authentication required\"}",
+      "timestamp": "2025-11-19T06:58:36.856973",
       "response_data": null
     }
   ]
