@@ -381,7 +381,7 @@ class BackendTester:
         """Test POST /api/login with non-existent email"""
         try:
             login_data = {
-                "email": "nonexistent@diogenes.com",
+                "email": "nonexistent@diogenestravel.com",
                 "password": "anypassword"
             }
             
