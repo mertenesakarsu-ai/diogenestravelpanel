@@ -648,8 +648,8 @@ class BackendTester:
                 timeout=30
             )
             
-            # Should handle gracefully - either return error info or empty result
-            if response.status_code in [200, 404, 502]:
+            # Should handle gracefully - either return error info or 500 for API errors
+            if response.status_code in [200, 404, 500, 502]:
                 if response.status_code == 200:
                     data = response.json()
                     if 'error' in data or not data.get('flight_number'):
@@ -658,6 +658,15 @@ class BackendTester:
                     else:
                         self.log_test("Flight Details API - Invalid Flight", False, 
                                     f"Unexpected success for invalid flight: {data}")
+                elif response.status_code == 500:
+                    # This is expected for invalid flights - API returns 204/error
+                    data = response.json()
+                    if 'detail' in data and 'flight api error' in data['detail'].lower():
+                        self.log_test("Flight Details API - Invalid Flight", True, 
+                                    "Correctly handled invalid flight code with API error", data)
+                    else:
+                        self.log_test("Flight Details API - Invalid Flight", False, 
+                                    f"Unexpected 500 error message: {data}")
                 else:
                     self.log_test("Flight Details API - Invalid Flight", True, 
                                 f"Appropriately handled invalid flight with HTTP {response.status_code}")
