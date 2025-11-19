@@ -38,6 +38,35 @@ const Operations = () => {
         // Mock data for development - Comprehensive operation data
         setOperations([
         {
+          id: 0,
+          voucherNo: "TK-TEST-2412",
+          reservationId: "res-test-001",
+          arrivalFlight: {
+            flightCode: "TK2412",
+            date: "2025-11-19",
+            time: "12:20",
+            from: "IST",
+            to: "AYT",
+            airline: "Turkish Airlines"
+          },
+          returnFlight: {
+            flightCode: "TK2413",
+            date: "2025-11-26",
+            time: "14:45",
+            from: "AYT",
+            to: "IST",
+            airline: "Turkish Airlines"
+          },
+          currentHotel: "Lara Beach Hotel",
+          hotelCheckIn: "2025-11-19 15:00",
+          hotelCheckOut: "2025-11-26 12:00",
+          passengers: 2,
+          type: "arrival",
+          transferTime: "14:00",
+          notes: "GERÇEK UÇUŞ TESTİ - TK2412 şu an havada, API gerçek veri çekiyor",
+          status: "in_progress"
+        },
+        {
           id: 1,
           voucherNo: "THV-2025-001",
           reservationId: "res-001",
