@@ -475,6 +475,11 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                       title={`${reservation.paxAdults} Yetişkin, ${reservation.paxChildren} Çocuk, ${reservation.paxInfants} Bebek`}
                       onClick={(e) => {
                         e.stopPropagation();
+                        // Kullanıcı metin seçimi yapmışsa (copy-paste için) modal açma
+                        const selection = window.getSelection();
+                        if (selection && selection.toString().length > 0) {
+                          return;
+                        }
                         setSelectedPax(reservation);
                       }}
                     >
