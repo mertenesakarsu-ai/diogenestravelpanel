@@ -161,6 +161,21 @@ frontend:
         - working: true
           agent: "main"
           comment: "Operations.jsx dosyası yeniden oluşturuldu. Operasyon departmanı menüye eklendi. Günlük transfer ve operasyon yönetimi sayfası çalışıyor."
+        - working: true
+          agent: "main"
+          comment: "Flight API entegrasyonu eklendi. RapidAPI Aerodatabox kullanılarak gerçek zamanlı uçuş bilgileri gösteriliyor. Uçuş Detayı butonu eklendi. FlightDetailModal component'i oluşturuldu. 15 dakika cache mekanizması ile API sorgusu optimize edildi."
+
+  - task: "FlightDetailModal.jsx - Uçuş Bilgisi Modal Component"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/FlightDetailModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "Uçuş detay modal component'i oluşturuldu. Kapsamlı uçuş bilgileri gösterimi: Uçuş kimliği (flight number, callsign, havayolu, durum), Uçak bilgileri (model, kayıt, IATA/ICAO), Kalkış bilgileri (havalimanı, terminal, gate, STD/ETD/ATD, rötar), Varış bilgileri (havalimanı, terminal, gate, bagaj bandı, STA/ETA/ATA, rötar), Uçuş süreleri ve mesafe. Türkçe etiketler ve renkli UI tasarımı."
   
   - task: "Reservations.jsx dosyası yeniden oluşturuldu"
     implemented: true
