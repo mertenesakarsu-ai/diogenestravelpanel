@@ -204,6 +204,22 @@ const Operations = () => {
     }
   };
 
+  // Client-side search filtering
+  const filteredOperations = operations.filter(operation => {
+    if (!appliedSearchQuery) return true;
+    
+    const query = appliedSearchQuery.toLowerCase();
+    return (
+      (operation.voucherNo && operation.voucherNo.toLowerCase().includes(query)) ||
+      (operation.currentHotel && operation.currentHotel.toLowerCase().includes(query)) ||
+      (operation.hotel && operation.hotel.toLowerCase().includes(query)) ||
+      (operation.arrivalFlight?.flightCode && operation.arrivalFlight.flightCode.toLowerCase().includes(query)) ||
+      (operation.returnFlight?.flightCode && operation.returnFlight.flightCode.toLowerCase().includes(query)) ||
+      (operation.transferFlight?.flightCode && operation.transferFlight.flightCode.toLowerCase().includes(query)) ||
+      (operation.notes && operation.notes.toLowerCase().includes(query))
+    );
+  });
+
   // Check if flight detail button should be active (24 hours before flight)
   const isFlightDetailActive = (flightDate, flightTime) => {
     if (!flightDate || !flightTime) return false;
