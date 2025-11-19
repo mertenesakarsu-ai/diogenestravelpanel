@@ -179,6 +179,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ OPERASYON DEPARTMANI YENİ ÖZELLİKLER EKLENDİ: 1) ANA KART GÜNCELLEMELERİ: Uçak kodları artık 'TK2412 - TK2413' formatında gösteriliyor (geliş ve dönüş birlikte), Ara uçuş varsa o da ekleniyor (örn: TK1990 - TK1991 - TK1992), Yolcu sayısının yanına 'Geliş Tarihi ve Saati' eklendi (yeşil renkte), Yolcu sayısının yanına 'Gidiş Tarihi ve Saati' eklendi (turuncu renkte), Otel Durumu kolonu kaldırıldı (detayda mevcut). 2) DETAY BÖLÜMÜ YENİ ÖZELLİKLER: Yolcu isimleri ve soyisimleri eklendi, Yolcu listesi grid layout ile gösteriliyor (3 sütun), Her yolcu numaralandırılmış (1, 2, 3...), Yolcu isimleri beyaz kartlarda, mavi numaralarla. 3) MOCK DATA GÜNCELLEMELERİ: Tüm 4 operasyona passengerNames field'ı eklendi, Her operasyonda gerçekçi yolcu isimleri (Türkçe ve yabancı isimler). Frontend başarıyla derlendi, tüm servisler çalışıyor. Test edilmeye hazır."
+        - working: true
+          agent: "main"
+          comment: "✅ YENİ PEGASUS UÇUŞU EKLENDİ (PC2012): Mock data'ya 5. operasyon eklendi - PEG-2025-456. Uçuş Bilgileri: PC2012 (Geliş) - Sabiha Gökçen (SAW) → Antalya (AYT), 19.11.2025 saat 16:50, PC2013 (Dönüş) - Antalya (AYT) → Sabiha Gökçen (SAW), 22.01.2025 saat 19:15. Otel: Delphin Imperial Hotel - Lara. 3 yolcu: Elif Kaya, Burak Kaya, Deniz Kaya. Durum: Planlandı (scheduled). Uçuş kodları kartda 'PC2012 - PC2013' formatında gösteriliyor. Geliş ve gidiş tarih-saatleri doğru şekilde görünüyor. Yolcu detayları genişletilmiş görünümde listeleniyor. Ekran görüntüleriyle test edildi, tüm özellikler çalışıyor."
 
   - task: "FlightDetailModal.jsx - Uçuş Bilgisi Modal Component"
     implemented: true
