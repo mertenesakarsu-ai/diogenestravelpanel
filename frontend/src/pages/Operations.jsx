@@ -524,8 +524,8 @@ const Operations = () => {
                             {/* Uçak Kodları - Geliş, Transfer (varsa), Dönüş */}
                             <span className="font-semibold">
                               {operation.arrivalFlight?.flightCode}
-                              {operation.returnFlight && ` - ${operation.returnFlight.flightCode}`}
                               {operation.transferFlight && ` - ${operation.transferFlight.flightCode}`}
+                              {operation.returnFlight && ` - ${operation.returnFlight.flightCode}`}
                             </span>
                           </div>
                         </div>
