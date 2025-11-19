@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
+import { X, Search, Filter, Calendar as CalendarIcon, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import JourneyTimeline from './JourneyTimeline';
 
 const ReservationMonitor = ({ isOpen, onClose }) => {
@@ -15,6 +15,8 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
   const [selectedPax, setSelectedPax] = useState(null);
   const [selectedReservationId, setSelectedReservationId] = useState(null);
   const [showJourneyTimeline, setShowJourneyTimeline] = useState(false);
+  const [checkInSort, setCheckInSort] = useState('asc'); // 'asc', 'desc', or null
+  const [checkOutSort, setCheckOutSort] = useState(null); // 'asc', 'desc', or null
 
   useEffect(() => {
     if (isOpen) {
