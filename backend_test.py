@@ -337,7 +337,7 @@ class BackendTester:
         """Test POST /api/login with correct admin credentials"""
         try:
             login_data = {
-                "email": "admin@diogenes.com",
+                "email": "admin@diogenestravel.com",
                 "password": "admin123"
             }
             
