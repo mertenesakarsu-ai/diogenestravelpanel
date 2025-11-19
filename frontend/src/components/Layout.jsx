@@ -15,7 +15,8 @@ import {
   Camera,
   Upload as UploadIcon,
   Monitor,
-  CalendarRange
+  CalendarRange,
+  Hotel
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
