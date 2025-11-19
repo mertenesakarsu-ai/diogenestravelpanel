@@ -52,27 +52,27 @@ export const AuthProvider = ({ children }) => {
       },
       flight: {
         flights: ['read', 'create', 'update', 'delete', 'upload'],
-        reservations: [],
-        operations: [],
+        reservations: ['read'],
+        operations: ['read'],
         users: [],
         logs: [],
-        management: []
+        management: ['read']
       },
       reservation: {
-        flights: [],
+        flights: ['read'],
         reservations: ['read', 'create', 'update', 'delete', 'upload'],
-        operations: [],
+        operations: ['read'],
         users: [],
         logs: [],
-        management: []
+        management: ['read']
       },
       operation: {
-        flights: [],
-        reservations: [],
+        flights: ['read'],
+        reservations: ['read'],
         operations: ['read', 'create', 'update', 'delete', 'upload'],
         users: [],
         logs: [],
-        management: []
+        management: ['read']
       },
       management: {
         flights: ['read'],
