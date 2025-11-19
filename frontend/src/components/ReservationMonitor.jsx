@@ -236,7 +236,13 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     return <ArrowUpDown className="w-4 h-4 inline ml-1 opacity-50" />;
   };
 
-  const handleReservationClick = (reservationId) => {
+  const handleReservationClick = (reservationId, event) => {
+    // Kullanıcı metin seçimi yapmışsa (copy-paste için) modal açma
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
+    
     setSelectedReservationId(reservationId);
     setShowJourneyTimeline(true);
   };
