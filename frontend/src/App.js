@@ -93,6 +93,14 @@ function AppRoutes() {
           } 
         />
         <Route 
+          path="hotels" 
+          element={
+            <ProtectedRoute page="hotels">
+              <Hotels />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
           path="admin" 
           element={
             <ProtectedRoute page="admin">
