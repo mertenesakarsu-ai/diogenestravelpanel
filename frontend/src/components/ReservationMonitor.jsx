@@ -385,14 +385,26 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
             <thead className="sticky top-0 bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md z-10">
               <tr>
                 <th className="px-3 py-4 text-left text-base font-semibold">Tarih</th>
-                <th className="px-3 py-4 text-left text-base font-semibold">Kaynak Acenta</th>
+                <th className="px-3 py-4 text-left text-base font-semibold">Kaynak</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Acente</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Yolcu</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Otel</th>
                 <th className="px-3 py-4 text-center text-base font-semibold">⭐</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Destinasyon</th>
-                <th className="px-3 py-4 text-left text-base font-semibold">Giriş</th>
-                <th className="px-3 py-4 text-left text-base font-semibold">Çıkış</th>
+                <th 
+                  className="px-3 py-4 text-left text-base font-semibold cursor-pointer hover:bg-cyan-700 transition-colors"
+                  onClick={toggleCheckInSort}
+                  title="Sıralamak için tıklayın"
+                >
+                  Giriş {getSortIcon(checkInSort)}
+                </th>
+                <th 
+                  className="px-3 py-4 text-left text-base font-semibold cursor-pointer hover:bg-cyan-700 transition-colors"
+                  onClick={toggleCheckOutSort}
+                  title="Sıralamak için tıklayın"
+                >
+                  Çıkış {getSortIcon(checkOutSort)}
+                </th>
                 <th className="px-3 py-4 text-center text-base font-semibold">Gece</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Oda</th>
                 <th className="px-3 py-4 text-left text-base font-semibold">Pansiyon</th>
