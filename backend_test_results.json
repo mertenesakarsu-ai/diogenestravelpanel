@@ -1,16 +1,16 @@
 {
   "summary": {
-    "total": 23,
-    "passed": 19,
-    "failed": 4,
-    "timestamp": "2025-11-19T07:39:19.324165"
+    "total": 31,
+    "passed": 26,
+    "failed": 5,
+    "timestamp": "2025-11-19T11:21:12.093199"
   },
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "System is healthy and database connected",
-      "timestamp": "2025-11-19T07:39:16.232977",
+      "timestamp": "2025-11-19T11:21:08.667219",
       "response_data": {
         "database": "connected",
         "total_flights": 0,
@@ -24,7 +24,7 @@
       "test": "Get Users",
       "success": true,
       "message": "All 5 expected users found",
-      "timestamp": "2025-11-19T07:39:16.250453",
+      "timestamp": "2025-11-19T11:21:08.680723",
       "response_data": {
         "count": 5,
         "users": [
@@ -40,7 +40,7 @@
       "test": "Initialize Users",
       "success": true,
       "message": "Users initialization: Users already initialized",
-      "timestamp": "2025-11-19T07:39:16.300571",
+      "timestamp": "2025-11-19T11:21:08.729364",
       "response_data": {
         "message": "Users already initialized",
         "count": 5
@@ -50,82 +50,82 @@
       "test": "Login Success - Admin",
       "success": true,
       "message": "Admin login successful: Admin User (admin)",
-      "timestamp": "2025-11-19T07:39:16.586179",
+      "timestamp": "2025-11-19T11:21:09.061265",
       "response_data": {
-        "id": "b4464247-9a07-4bb2-95e8-2ac016e9fd16",
+        "id": "71bef2e9-3b3e-400b-a953-0ee25f788043",
         "name": "Admin User",
         "email": "admin@diogenestravel.com",
         "role": "admin",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T07:38:27.422970Z"
+        "created_at": "2025-11-19T11:13:42.118000"
       }
     },
     {
       "test": "Login Success - Reservation",
       "success": true,
-      "message": "Reservation login successful: Rezervasyon Manager (reservation)",
-      "timestamp": "2025-11-19T07:39:16.871210",
+      "message": "Reservation login successful: Reservation Manager (reservation)",
+      "timestamp": "2025-11-19T11:21:09.396832",
       "response_data": {
-        "id": "9b37dd57-3b22-4afe-8161-966df5e64d7c",
-        "name": "Rezervasyon Manager",
+        "id": "12c688b4-5e45-428e-aa8c-b9daf33ec1c5",
+        "name": "Reservation Manager",
         "email": "reservation@diogenestravel.com",
         "role": "reservation",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T07:38:27.441059Z"
+        "created_at": "2025-11-19T11:13:43.091000"
       }
     },
     {
       "test": "Login Success - Operation",
       "success": true,
-      "message": "Operation login successful: Operasyon Manager (operation)",
-      "timestamp": "2025-11-19T07:39:17.157398",
+      "message": "Operation login successful: Operation Manager (operation)",
+      "timestamp": "2025-11-19T11:21:09.773047",
       "response_data": {
-        "id": "519addba-fe9d-4124-8a1d-57e05cd00404",
-        "name": "Operasyon Manager",
+        "id": "e38c07d5-b37d-4c97-9011-506ba37dfc46",
+        "name": "Operation Manager",
         "email": "operation@diogenestravel.com",
         "role": "operation",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T07:38:27.442469Z"
+        "created_at": "2025-11-19T11:13:44.007000"
       }
     },
     {
       "test": "Login Success - Flight",
       "success": true,
-      "message": "Flight login successful: U\u00e7ak Manager (flight)",
-      "timestamp": "2025-11-19T07:39:17.438422",
+      "message": "Flight login successful: Flight Manager (flight)",
+      "timestamp": "2025-11-19T11:21:10.106086",
       "response_data": {
-        "id": "73b7c092-2bad-4e99-9087-99675eefca3c",
-        "name": "U\u00e7ak Manager",
+        "id": "c04aeec6-6b0f-4d07-8313-346a1f5e8962",
+        "name": "Flight Manager",
         "email": "flight@diogenestravel.com",
         "role": "flight",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T07:38:27.443552Z"
+        "created_at": "2025-11-19T11:13:44.903000"
       }
     },
     {
       "test": "Login Success - Management",
       "success": true,
-      "message": "Management login successful: Y\u00f6netim Manager (management)",
-      "timestamp": "2025-11-19T07:39:17.719289",
+      "message": "Management login successful: Management User (management)",
+      "timestamp": "2025-11-19T11:21:10.444260",
       "response_data": {
-        "id": "6692bb17-303c-4cea-8913-413076150e57",
-        "name": "Y\u00f6netim Manager",
+        "id": "909f68fb-aab1-4e68-9a21-ca125c7baaf3",
+        "name": "Management User",
         "email": "management@diogenestravel.com",
         "role": "management",
         "status": "active",
         "profile_picture": null,
-        "created_at": "2025-11-19T07:38:27.444736Z"
+        "created_at": "2025-11-19T11:13:45.914000"
       }
     },
     {
       "test": "Login Wrong Password",
       "success": true,
       "message": "Correctly rejected wrong password with 401",
-      "timestamp": "2025-11-19T07:39:18.000282",
+      "timestamp": "2025-11-19T11:21:10.775160",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -134,7 +134,7 @@
       "test": "Login Nonexistent Email",
       "success": true,
       "message": "Correctly rejected non-existent email with 401",
-      "timestamp": "2025-11-19T07:39:18.011782",
+      "timestamp": "2025-11-19T11:21:10.784867",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -143,7 +143,7 @@
       "test": "Login Empty Credentials",
       "success": true,
       "message": "Correctly rejected empty credentials with 401",
-      "timestamp": "2025-11-19T07:39:18.063803",
+      "timestamp": "2025-11-19T11:21:10.793253",
       "response_data": {
         "detail": "Email veya \u015fifre hatal\u0131"
       }
@@ -152,7 +152,7 @@
       "test": "Get Flights",
       "success": true,
       "message": "Retrieved 0 flights",
-      "timestamp": "2025-11-19T07:39:18.128806",
+      "timestamp": "2025-11-19T11:21:10.850330",
       "response_data": {
         "count": 0
       }
@@ -161,7 +161,7 @@
       "test": "Get Reservations",
       "success": true,
       "message": "Retrieved 0 reservations",
-      "timestamp": "2025-11-19T07:39:18.195929",
+      "timestamp": "2025-11-19T11:21:10.876603",
       "response_data": {
         "count": 0
       }
@@ -170,7 +170,7 @@
       "test": "Get Operations",
       "success": true,
       "message": "Retrieved 0 operations",
-      "timestamp": "2025-11-19T07:39:18.263543",
+      "timestamp": "2025-11-19T11:21:10.892851",
       "response_data": {
         "count": 0
       }
@@ -179,57 +179,137 @@
       "test": "Flights Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T07:39:18.282100",
+      "timestamp": "2025-11-19T11:21:10.963536",
       "response_data": null
     },
     {
       "test": "Reservations Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T07:39:18.289222",
+      "timestamp": "2025-11-19T11:21:10.968700",
       "response_data": null
     },
     {
       "test": "Operations Upload",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T07:39:18.295814",
+      "timestamp": "2025-11-19T11:21:10.971940",
       "response_data": null
     },
     {
       "test": "Flights Compare",
       "success": false,
       "message": "Error: No module named 'et_xmlfile'",
-      "timestamp": "2025-11-19T07:39:18.300646",
+      "timestamp": "2025-11-19T11:21:10.975216",
       "response_data": null
+    },
+    {
+      "test": "Operations Filtering - Single Date",
+      "success": true,
+      "message": "Successfully retrieved operations for date 2025-01-15 (count: 0)",
+      "timestamp": "2025-11-19T11:21:10.993941",
+      "response_data": {
+        "date": "2025-01-15",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Date Range",
+      "success": true,
+      "message": "Successfully retrieved operations for date range 2025-01-10 to 2025-01-20 (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.015910",
+      "response_data": {
+        "start_date": "2025-01-10",
+        "end_date": "2025-01-20",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Type 'all'",
+      "success": true,
+      "message": "Successfully retrieved operations with type filter 'all' (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.032101",
+      "response_data": {
+        "type": "all",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Type 'arrival'",
+      "success": true,
+      "message": "Successfully retrieved operations with type filter 'arrival' (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.040905",
+      "response_data": {
+        "type": "arrival",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Type 'departure'",
+      "success": true,
+      "message": "Successfully retrieved operations with type filter 'departure' (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.049974",
+      "response_data": {
+        "type": "departure",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Type 'transfer'",
+      "success": true,
+      "message": "Successfully retrieved operations with type filter 'transfer' (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.058595",
+      "response_data": {
+        "type": "transfer",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Filtering - Combined Filters",
+      "success": true,
+      "message": "Successfully retrieved operations with combined filters: 2025-01-10 to 2025-01-20, type 'arrival' (count: 0)",
+      "timestamp": "2025-11-19T11:21:11.075749",
+      "response_data": {
+        "start_date": "2025-01-10",
+        "end_date": "2025-01-20",
+        "type": "arrival",
+        "count": 0
+      }
+    },
+    {
+      "test": "Operations Data Structure",
+      "success": true,
+      "message": "No operations data returned, but API call successful",
+      "timestamp": "2025-11-19T11:21:11.091496",
+      "response_data": {
+        "count": 0
+      }
     },
     {
       "test": "Flight Details API - Success",
       "success": true,
       "message": "Successfully retrieved comprehensive flight details for TK2412",
-      "timestamp": "2025-11-19T07:39:18.327409",
+      "timestamp": "2025-11-19T11:21:11.544532",
       "response_data": {
         "flight_number": "TK 2412",
         "airline": "Turkish Airlines",
-        "status": "Boarding",
+        "status": "Arrived",
         "departure_airport": "Istanbul",
         "arrival_airport": "Antalya"
       }
     },
     {
       "test": "Flight Details API - Permission Denied",
-      "success": true,
-      "message": "Correctly denied access for reservation user with 403",
-      "timestamp": "2025-11-19T07:39:18.353790",
-      "response_data": {
-        "detail": "You don't have permission to view flight details"
-      }
+      "success": false,
+      "message": "Expected 403, got HTTP 200: {\"flight_number\":\"TK 2412\",\"callsign\":\"\",\"status\":\"Arrived\",\"airline\":{\"name\":\"Turkish Airlines\",\"iata\":\"TK\",\"icao\":\"THY\"},\"aircraft\":{\"model\":\"Airbus A321\",\"registration\":\"\",\"image\":\"\"},\"departure\":{\"airport\":\"Istanbul\",\"iata\":\"IST\",\"icao\":\"LTFM\",\"terminal\":\"\",\"gate\":\"G3J\",\"scheduled_time\":\"2025-11-19 10:55+03:00\",\"estimated_time\":\"\",\"actual_time\":\"\",\"delay\":0},\"arrival\":{\"airport\":\"Antalya\",\"iata\":\"AYT\",\"icao\":\"LTAI\",\"terminal\":\"D\",\"gate\":\"\",\"baggage\":\"307-308\",\"scheduled_time\":\"2025-11-19 12:20+03:00\",\"estimated_time\":\"\",\"actual_time\":\"\",\"delay\":0},\"duration\":0,\"distance\":0,\"last_updated\":\"2025-11-19T11:21:11.104624+00:00\"}",
+      "timestamp": "2025-11-19T11:21:11.562715",
+      "response_data": null
     },
     {
       "test": "Flight Details API - No Auth",
       "success": true,
       "message": "Correctly rejected request without authentication with 401",
-      "timestamp": "2025-11-19T07:39:18.405970",
+      "timestamp": "2025-11-19T11:21:11.612021",
       "response_data": {
         "detail": "Authentication required"
       }
@@ -238,7 +318,7 @@
       "test": "Flight Details API - Invalid Flight",
       "success": true,
       "message": "Correctly handled invalid flight code with API error",
-      "timestamp": "2025-11-19T07:39:19.245019",
+      "timestamp": "2025-11-19T11:21:12.024905",
       "response_data": {
         "detail": "Error fetching flight details: 204: Flight API error: "
       }
@@ -247,10 +327,10 @@
       "test": "Flight Details API - Cache Test",
       "success": true,
       "message": "Cache working - First call: 0.05s, Second call: 0.01s",
-      "timestamp": "2025-11-19T07:39:19.323851",
+      "timestamp": "2025-11-19T11:21:12.092860",
       "response_data": {
-        "first_call_time": 0.05325508117675781,
-        "second_call_time": 0.011040925979614258,
+        "first_call_time": 0.04914259910583496,
+        "second_call_time": 0.008982181549072266,
         "flight_number": "TK 2412"
       }
     }
