@@ -372,6 +372,7 @@ PERMISSIONS = {
         "flights": ["read"],
         "reservations": ["read", "create", "update", "delete", "upload"],
         "operations": ["read"],
+        "hotels": ["read", "create", "update", "delete", "upload"],
         "users": [],
         "logs": [],
         "management": ["read"]
