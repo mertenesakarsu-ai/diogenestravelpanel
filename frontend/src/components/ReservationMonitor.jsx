@@ -432,8 +432,8 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                   >
                     <td className="px-3 py-4 text-base font-semibold text-slate-700">{reservation.date}</td>
                     <td className="px-3 py-4">
-                      <span className={`px-3 py-1.5 rounded-full text-sm font-bold ${getAgencyBadgeColor(reservation.sourceAgency)}`}>
-                        {reservation.sourceAgency}
+                      <span className={`px-2.5 py-1.5 rounded-full text-xs font-bold ${getAgencyBadgeColor(reservation.sourceAgency)}`}>
+                        {getAgencyDisplayName(reservation.sourceAgency)}
                       </span>
                     </td>
                     <td className="px-3 py-4 text-base text-slate-700">{reservation.agency}</td>
