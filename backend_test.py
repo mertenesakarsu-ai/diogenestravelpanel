@@ -456,6 +456,34 @@ class BackendTester:
                 self.log_test(f"Login Success - {user['role'].title()}", False, 
                             f"Error testing {user['email']}: {str(e)}")
 
+    def test_get_users(self):
+        """Test GET /api/users to check if users exist"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/users", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                user_emails = [user.get('email', '') for user in data]
+                expected_emails = [
+                    'admin@diogenestravel.com',
+                    'reservation@diogenestravel.com', 
+                    'operation@diogenestravel.com',
+                    'flight@diogenestravel.com',
+                    'management@diogenestravel.com'
+                ]
+                
+                missing_users = [email for email in expected_emails if email not in user_emails]
+                
+                if len(data) == 0:
+                    self.log_test("Get Users", False, "No users found in database", {"count": 0, "users": []})
+                elif missing_users:
+                    self.log_test("Get Users", False, f"Missing users: {missing_users}", {"count": len(data), "missing": missing_users, "existing": user_emails})
+                else:
+                    self.log_test("Get Users", True, f"All {len(data)} expected users found", {"count": len(data), "users": user_emails})
+            else:
+                self.log_test("Get Users", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Users", False, f"Error: {str(e)}")
+
     def test_initialize_users(self):
         """Test POST /api/users/init to ensure default users exist"""
         try:
