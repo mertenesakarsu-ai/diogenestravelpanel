@@ -193,7 +193,14 @@ class BackendTester:
     def test_get_flights(self):
         """Test GET /api/flights"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/flights", timeout=10)
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("Get Flights", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/flights", headers=headers, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self.log_test("Get Flights", True, f"Retrieved {len(data)} flights", {"count": len(data)})
@@ -205,7 +212,14 @@ class BackendTester:
     def test_get_reservations(self):
         """Test GET /api/reservations"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/reservations", timeout=10)
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("Get Reservations", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/reservations", headers=headers, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self.log_test("Get Reservations", True, f"Retrieved {len(data)} reservations", {"count": len(data)})
@@ -217,7 +231,14 @@ class BackendTester:
     def test_get_operations(self):
         """Test GET /api/operations"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/operations", timeout=10)
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("Get Operations", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/operations", headers=headers, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self.log_test("Get Operations", True, f"Retrieved {len(data)} operations", {"count": len(data)})
