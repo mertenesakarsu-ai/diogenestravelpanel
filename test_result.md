@@ -465,7 +465,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Operations sayfasında Uçuş Detayı butonu ve modal testi"
+    - "Operations filtering system testing completed"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
