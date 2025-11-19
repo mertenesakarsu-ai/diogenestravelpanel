@@ -507,25 +507,38 @@ class BackendTester:
         print(f"Testing backend at: {BACKEND_URL}")
         print()
         
-        # Test basic endpoints first
+        # 1. Backend Health Check
+        print("1. BACKEND HEALTH CHECK")
+        print("-" * 40)
         self.test_health_endpoint()
         
-        print("\n" + "-" * 40)
-        print("LOGIN SYSTEM TESTS")
+        # 2. User Control - Check if users exist
+        print("\n2. KULLANICI KONTROLÜ")
         print("-" * 40)
+        self.test_get_users()
         
-        # Initialize users first
+        # 3. User Re-creation if needed
+        print("\n3. KULLANICI YENİDEN OLUŞTURMA")
+        print("-" * 40)
         self.test_initialize_users()
         
-        # Test login functionality
+        # 4. Login Tests
+        print("\n4. LOGİN TESTLERİ")
+        print("-" * 40)
+        
+        # Test admin login first
         self.test_login_success_admin()
+        
+        # Test different users
+        self.test_login_all_users()
+        
+        # Test error scenarios
         self.test_login_wrong_password()
         self.test_login_nonexistent_email()
         self.test_login_empty_credentials()
-        self.test_login_all_users()
         
         print("\n" + "-" * 40)
-        print("BASIC ENDPOINT TESTS")
+        print("ADDITIONAL BACKEND TESTS")
         print("-" * 40)
         
         self.test_get_flights()
