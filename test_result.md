@@ -312,6 +312,9 @@ backend:
         - working: true
           agent: "main"
           comment: "Tüm kullanıcı email adresleri @diogenes.com'dan @diogenestravel.com'a güncellendi. /api/users/init endpoint'i ile yeni kullanıcılar oluşturuldu. Login testi başarılı (admin@diogenestravel.com/admin123)."
+        - working: true
+          agent: "testing"
+          comment: "✅ LOGİN SORUNU ÇÖZÜLDÜ - Kullanıcı şikayeti test edildi ve çözüm doğrulandı. SORUN: Kullanıcılar database'den kaybolmuştu, bu yüzden doğru şifre girilse bile 'Email veya şifre hatalı' hatası alınıyordu. ÇÖZÜM: /api/users/init endpoint'i ile 5 kullanıcı yeniden oluşturuldu. TEST SONUÇLARI (6/6 başarılı): 1) Backend sağlıklı ve database bağlı, 2) 5 kullanıcı database'de mevcut, 3) admin@diogenestravel.com/admin123 giriş başarılı, 4) reservation@diogenestravel.com/reservation123 giriş başarılı, 5) operation@diogenestravel.com/operation123 giriş başarılı, 6) Yanlış şifre doğru şekilde reddediliyor. TÜM KULLANICILAR AKTİF: admin, reservation, operation, flight, management - hepsi @diogenestravel.com domain'i ile."
 
   - task: "Backend servisi"
     implemented: true
