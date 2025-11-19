@@ -495,7 +495,7 @@ const Operations = () => {
                                     </div>
                                     <div>
                                       <div className="text-xs text-slate-500">Tarih & Saat</div>
-                                      <div className="font-semibold">{operation.arrivalFlight.date} {operation.arrivalFlight.time}</div>
+                                      <div className="font-semibold">{formatDate(operation.arrivalFlight.date)} {operation.arrivalFlight.time}</div>
                                     </div>
                                   </div>
                                 </div>
