@@ -115,7 +115,7 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
         reservation.hotel.toLowerCase().includes(searchLower) ||
         reservation.destination.toLowerCase().includes(searchLower) ||
         reservation.sourceAgency.toLowerCase().includes(searchLower) ||
-        reservation.note.toLowerCase().includes(searchLower);
+        reservation.voucherNo.toLowerCase().includes(searchLower);
 
       // Status filter
       const matchesStatus = statusFilter === 'ALL' || reservation.status === statusFilter;
