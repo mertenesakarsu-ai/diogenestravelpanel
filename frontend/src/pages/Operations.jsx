@@ -201,6 +201,14 @@ const Operations = () => {
           hotelCheckIn: "2025-01-10 19:45",
           hotelCheckOut: "2025-01-25 19:00",
           passengers: 6,
+          passengerNames: [
+            { firstName: "Michael", lastName: "Müller" },
+            { firstName: "Sarah", lastName: "Müller" },
+            { firstName: "Emma", lastName: "Müller" },
+            { firstName: "Sophie", lastName: "Müller" },
+            { firstName: "Max", lastName: "Müller" },
+            { firstName: "Lena", lastName: "Müller" }
+          ],
           type: "departure",
           transferTime: "19:45",
           notes: "2 otobüs gerekli, büyük aile",
