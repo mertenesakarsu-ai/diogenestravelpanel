@@ -125,6 +125,12 @@ const Operations = () => {
           hotelCheckIn: selectedDate + " 15:00",
           hotelCheckOut: "2025-01-20 12:00",
           passengers: 4,
+          passengerNames: [
+            { firstName: "Mehmet", lastName: "Demir" },
+            { firstName: "Fatma", lastName: "Demir" },
+            { firstName: "Can", lastName: "Demir" },
+            { firstName: "Zeynep", lastName: "Demir" }
+          ],
           type: "arrival",
           transferTime: "16:00",
           notes: "Grup transferi, lüks araç gerekli",
