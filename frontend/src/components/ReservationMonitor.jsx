@@ -333,11 +333,11 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
               <select
                 value={agencyFilter}
                 onChange={(e) => setAgencyFilter(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-base bg-white"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm bg-white"
               >
                 <option value="ALL">Tüm Acentalar</option>
                 {sourceAgencies.map(agency => (
-                  <option key={agency} value={agency}>{agency}</option>
+                  <option key={agency.value} value={agency.value}>{agency.label}</option>
                 ))}
               </select>
             </div>
