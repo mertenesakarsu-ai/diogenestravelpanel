@@ -156,7 +156,7 @@ frontend:
     file: "/app/frontend/src/pages/Operations.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: true
           agent: "main"
@@ -176,6 +176,9 @@ frontend:
         - working: true
           agent: "testing"
           comment: "✅ OPERATIONS FILTERING SYSTEM TESTING COMPLETED - ALL BACKEND TESTS PASSED (8/8): 1) Backend Health Check: System healthy, database connected, 2) Operations API - Single Date Filter: Successfully retrieves operations for specific date (tested with 2025-01-15), 3) Operations API - Date Range Filter: Successfully retrieves operations for date range (tested 2025-01-10 to 2025-01-20), 4) Operations API - Type Filters: All operation types working (all, arrival, departure, transfer), 5) Operations API - Combined Filters: Date range + type filtering working correctly, 6) Operations Data Structure: Correct API response format with expected fields (id, voucherNo, type, status), 7) Backend Enhancement: Updated /api/operations endpoint to support start_date and end_date parameters for date range filtering, 8) Test Data: Created sample operations to verify filtering functionality. FRONTEND FILTERING: Client-side search filtering implemented for voucher numbers, hotel names, flight codes, and notes. Apply/Clear buttons functional. All filtering features working as designed."
+        - working: true
+          agent: "main"
+          comment: "✅ OPERASYON DEPARTMANI YENİ ÖZELLİKLER EKLENDİ: 1) ANA KART GÜNCELLEMELERİ: Uçak kodları artık 'TK2412 - TK2413' formatında gösteriliyor (geliş ve dönüş birlikte), Ara uçuş varsa o da ekleniyor (örn: TK1990 - TK1991 - TK1992), Yolcu sayısının yanına 'Geliş Tarihi ve Saati' eklendi (yeşil renkte), Yolcu sayısının yanına 'Gidiş Tarihi ve Saati' eklendi (turuncu renkte), Otel Durumu kolonu kaldırıldı (detayda mevcut). 2) DETAY BÖLÜMÜ YENİ ÖZELLİKLER: Yolcu isimleri ve soyisimleri eklendi, Yolcu listesi grid layout ile gösteriliyor (3 sütun), Her yolcu numaralandırılmış (1, 2, 3...), Yolcu isimleri beyaz kartlarda, mavi numaralarla. 3) MOCK DATA GÜNCELLEMELERİ: Tüm 4 operasyona passengerNames field'ı eklendi, Her operasyonda gerçekçi yolcu isimleri (Türkçe ve yabancı isimler). Frontend başarıyla derlendi, tüm servisler çalışıyor. Test edilmeye hazır."
 
   - task: "FlightDetailModal.jsx - Uçuş Bilgisi Modal Component"
     implemented: true
