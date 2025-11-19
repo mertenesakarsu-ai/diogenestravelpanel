@@ -272,7 +272,7 @@ const Operations = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-lg">
-              <Plane className="w-7 h-7 text-white" />
+              <Bus className="w-7 h-7 text-white" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-slate-800">Operasyon Departmanı</h2>
