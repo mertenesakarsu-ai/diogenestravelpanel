@@ -36,7 +36,7 @@ const Operations = () => {
       if (!response.data || response.data.length === 0) {
         console.log("No operations from API, using mock data for development");
         // Mock data for development - Comprehensive operation data
-      setOperations([
+        setOperations([
         {
           id: 1,
           voucherNo: "THV-2025-001",
