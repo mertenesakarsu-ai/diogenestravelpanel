@@ -135,6 +135,16 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
       return matchesSearch && matchesStatus && matchesDestination && matchesAgency && matchesDateRange;
     })
     .sort((a, b) => {
+      // Sort by date (reservation date)
+      if (dateSort) {
+        const parseDate = (dateStr) => {
+          const [day, month, year] = dateStr.split('.');
+          return new Date(`${year}-${month}-${day}`);
+        };
+        const dateA = parseDate(a.date);
+        const dateB = parseDate(b.date);
+        return dateSort === 'asc' ? dateA - dateB : dateB - dateA;
+      }
       // Sort by check-in date
       if (checkInSort) {
         const dateA = new Date(a.checkIn);
@@ -146,6 +156,12 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
         const dateA = new Date(a.checkOut);
         const dateB = new Date(b.checkOut);
         return checkOutSort === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+      // Sort by pax (total passengers)
+      if (paxSort) {
+        const paxA = a.paxAdults + a.paxChildren + a.paxInfants;
+        const paxB = b.paxAdults + b.paxChildren + b.paxInfants;
+        return paxSort === 'asc' ? paxA - paxB : paxB - paxA;
       }
       // Default sort by check-in date ascending
       return new Date(a.checkIn) - new Date(b.checkIn);
