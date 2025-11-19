@@ -435,6 +435,7 @@ const Admin = () => {
                   <option value="flights">Uçuşlar (Flights)</option>
                   <option value="reservations">Rezervasyonlar (Reservations)</option>
                   <option value="operations">Operasyonlar (Operations)</option>
+                  <option value="hotels">Oteller (Hotels)</option>
                 </select>
               </div>
 
