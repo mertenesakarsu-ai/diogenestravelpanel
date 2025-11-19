@@ -421,6 +421,18 @@ backend:
           agent: "main"
           comment: "Kullanıcılar database'de bulunmuyordu, /api/users/init endpoint'i çağrılarak 5 kullanıcı başarıyla oluşturuldu. Login sistemi artık çalışıyor. Email adresleri: admin@diogenestravel.com, reservation@diogenestravel.com, operation@diogenestravel.com, flight@diogenestravel.com, management@diogenestravel.com - Tüm şifreler: [rol]123"
 
+  - task: "Flight API Integration - RapidAPI Aerodatabox"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "RapidAPI Aerodatabox entegrasyonu eklendi. /api/operations/flight-details/{flight_code} endpoint'i oluşturuldu. API key .env dosyasına eklendi. 15 dakika cache mekanizması ile API sorgu sayısı optimize edildi. Kapsamlı uçuş bilgileri: Uçuş kimliği, havayolu bilgisi, uçak bilgileri, kalkış bilgileri (STD/ETD/ATD, terminal, gate, rötar), varış bilgileri (STA/ETA/ATA, terminal, gate, bagaj bandı, rötar), uçuş süresi ve mesafe. Test edilmeye hazır."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
