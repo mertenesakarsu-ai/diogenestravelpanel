@@ -319,6 +319,19 @@ const Operations = () => {
                           size="sm"
                           variant="outline"
                           className="flex-1"
+                          onClick={() => setFlightDetailModal({ 
+                            isOpen: true, 
+                            flightCode: operation.flightCode,
+                            airportCode: operation.type === 'arrival' ? operation.to : operation.from
+                          })}
+                        >
+                          <Info className="w-4 h-4 mr-2" />
+                          Uçuş Detayı
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
                         >
                           Düzenle
                         </Button>
