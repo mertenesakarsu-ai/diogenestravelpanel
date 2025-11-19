@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "timestamp": "2025-11-19T07:40:33.546206"
+  },
+  "results": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "message": "Backend is running and database is connected",
+      "timestamp": "2025-11-19T07:40:32.660658",
+      "response_data": {
+        "database": "connected",
+        "total_flights": 0,
+        "total_reservations": 0,
+        "total_users": 5,
+        "total_logs": 1,
+        "status": "healthy"
+      }
+    },
+    {
+      "test": "Flight Details - Main Feature",
+      "success": true,
+      "message": "Successfully retrieved comprehensive flight information for TK2412",
+      "timestamp": "2025-11-19T07:40:32.694932",
+      "response_data": {
+        "flight_number": "TK 2412",
+        "callsign": "",
+        "airline_name": "Turkish Airlines",
+        "airline_iata": "TK",
+        "aircraft_model": "Boeing 737-900",
+        "aircraft_registration": "",
+        "departure_airport": "Istanbul",
+        "departure_terminal": "",
+        "departure_gate": "G3J",
+        "departure_std": "2025-11-19 10:55+03:00",
+        "departure_etd": "",
+        "departure_atd": "",
+        "departure_delay": 0,
+        "arrival_airport": "Antalya",
+        "arrival_terminal": "D",
+        "arrival_gate": "",
+        "arrival_baggage": "307-308",
+        "arrival_sta": "2025-11-19 12:20+03:00",
+        "arrival_eta": "",
+        "arrival_ata": "",
+        "arrival_delay": 0,
+        "duration": 0,
+        "distance": 0,
+        "status": "Boarding"
+      }
+    },
+    {
+      "test": "Permission Test - Operation User",
+      "success": true,
+      "message": "Operation user has correct access to flight details",
+      "timestamp": "2025-11-19T07:40:32.793663",
+      "response_data": null
+    },
+    {
+      "test": "Permission Test - Reservation User",
+      "success": true,
+      "message": "Reservation user correctly denied access with 403",
+      "timestamp": "2025-11-19T07:40:32.820749",
+      "response_data": null
+    },
+    {
+      "test": "Cache Test",
+      "success": true,
+      "message": "Cache working effectively - Second call 78.6% faster",
+      "timestamp": "2025-11-19T07:40:32.893034",
+      "response_data": {
+        "first_call_time": 0.051,
+        "second_call_time": 0.011,
+        "speed_improvement": "78.6%",
+        "flight_number": "TK 2412"
+      }
+    },
+    {
+      "test": "Error Handling - Invalid Flight",
+      "success": true,
+      "message": "Gracefully handled invalid flight code with appropriate error",
+      "timestamp": "2025-11-19T07:40:33.536883",
+      "response_data": null
+    },
+    {
+      "test": "Error Handling - No Auth",
+      "success": true,
+      "message": "Correctly rejected request without authentication",
+      "timestamp": "2025-11-19T07:40:33.545987",
+      "response_data": null
+    }
+  ]
+}
