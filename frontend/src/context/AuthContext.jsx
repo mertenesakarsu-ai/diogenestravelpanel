@@ -135,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         reservations: true,
         operations: true,
         management: true,
+        hotels: false,
         admin: false
       }
     };
