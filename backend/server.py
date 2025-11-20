@@ -2775,10 +2775,11 @@ async def get_admin_packages(
     limit: int = Query(default=100, ge=1, le=1000),
     offset: int = Query(default=0, ge=0),
     search: Optional[str] = Query(default=None),
-    x_user_id: Optional[str] = Header(None)
+    x_user_id: Optional[str] = Header(None),
+    sql_db: Session = Depends(get_db)
 ):
     """
-    Get tour packages from DIOGENESSEJOUR database (Kontenj table)
+    Get tour packages from diogenesDB database (packages table)
     """
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
@@ -2792,60 +2793,34 @@ async def get_admin_packages(
         raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
-        from diogenes_service import get_diogenes_connection
+        # Build query
+        query = sql_db.query(SQLPackage)
         
-        conn = get_diogenes_connection()
-        cursor = conn.cursor(as_dict=True)
-        
-        # Count query
-        count_query = "SELECT COUNT(*) as total FROM Kontenj"
-        where_conditions = []
-        params = []
-        
+        # Apply search filter
         if search:
-            where_conditions.append("(Otel LIKE %s OR Aciklama LIKE %s)")
-            search_param = f"%{search}%"
-            params.extend([search_param, search_param])
+            search_pattern = f"%{search}%"
+            query = query.filter(
+                (SQLPackage.hotel_code.like(search_pattern)) | 
+                (SQLPackage.description.like(search_pattern))
+            )
         
-        if where_conditions:
-            count_query += " WHERE " + " AND ".join(where_conditions)
+        # Get total count
+        total = query.count()
         
-        cursor.execute(count_query, params)
-        total = cursor.fetchone()['total']
+        # Apply pagination and ordering
+        packages = query.order_by(SQLPackage.check_in_date.desc()).offset(offset).limit(limit).all()
         
-        # Data query
-        data_query = f"""
-            SELECT TOP {limit}
-                RecNo, Otel, GirTarih, CikTarih, 
-                Aciklama, KontKod, Turop
-            FROM Kontenj
-        """
-        
-        if where_conditions:
-            data_query += " WHERE " + " AND ".join(where_conditions)
-        
-        data_query += f" ORDER BY GirTarih DESC OFFSET {offset} ROWS"
-        
-        if params:
-            cursor.execute(data_query, params)
-        else:
-            cursor.execute(data_query)
-            
-        packages = cursor.fetchall()
-        
-        conn.close()
-        
-        # Map to English field names
+        # Map to response format
         mapped_packages = []
         for pkg in packages:
             mapped_packages.append({
-                'id': pkg.get('RecNo', 0),
-                'hotelCode': pkg.get('Otel', ''),
-                'checkIn': pkg.get('GirTarih').strftime('%Y-%m-%d') if pkg.get('GirTarih') else '',
-                'checkOut': pkg.get('CikTarih').strftime('%Y-%m-%d') if pkg.get('CikTarih') else '',
-                'description': pkg.get('Aciklama', ''),
-                'packageCode': pkg.get('KontKod', ''),
-                'tourOperator': pkg.get('Turop', '')
+                'id': pkg.id,
+                'hotelCode': pkg.hotel_code or '',
+                'checkIn': pkg.check_in_date.strftime('%Y-%m-%d') if pkg.check_in_date else '',
+                'checkOut': pkg.check_out_date.strftime('%Y-%m-%d') if pkg.check_out_date else '',
+                'description': pkg.description or '',
+                'packageCode': pkg.package_code or '',
+                'tourOperator': pkg.tour_operator or ''
             })
         
         return {
