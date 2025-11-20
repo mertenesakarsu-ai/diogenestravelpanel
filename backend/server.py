@@ -2861,6 +2861,9 @@ async def get_admin_packages(
 
 
 
+# Include the router in the main app (MUST BE AFTER ALL ENDPOINT DEFINITIONS)
+app.include_router(api_router)
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
