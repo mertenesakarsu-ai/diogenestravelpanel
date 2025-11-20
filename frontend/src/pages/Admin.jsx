@@ -16,7 +16,11 @@ const Admin = () => {
       host: 'N/A',
       database: 'N/A',
       type: 'İlişkisel Veritabanı (SQL Server)',
-      status: 'Yükleniyor...'
+      status: 'Yükleniyor...',
+      tables: {},
+      total_operations: 0,
+      total_customers: 0,
+      total_hotels: 0
     },
     mongodb: { 
       connected: false, 
@@ -28,6 +32,21 @@ const Admin = () => {
     }
   });
 
+  const [statistics, setStatistics] = useState({
+    total_operations: 0,
+    total_customers: 0,
+    total_hotels: 0,
+    active_reservations: 0,
+    total_passengers: 0,
+    hotels_by_region: [],
+    operations_by_date: [],
+    recent_reservations: []
+  });
+
+  const [packages, setPackages] = useState([]);
+  const [loadingPackages, setLoadingPackages] = useState(true);
+  const [packageSearch, setPackageSearch] = useState('');
+
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadType, setUploadType] = useState("flights");
   const [uploadProgress, setUploadProgress] = useState(null);
@@ -36,12 +55,7 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
-  const mockLogs = [
-    { id: 1, user: "admin@diogenestravel.com", action: "CREATE", entity: "reservations", entityId: "DG2024-005", time: "2024-12-15 14:30" },
-    { id: 2, user: "operation@diogenestravel.com", action: "UPDATE", entity: "flights", entityId: "TK1234", time: "2024-12-15 13:15" },
-    { id: 3, user: "flight@diogenestravel.com", action: "IMPORT_EXCEL", entity: "flights", entityId: "batch_001", time: "2024-12-15 11:45" },
-    { id: 4, user: "reservation@diogenestravel.com", action: "UPDATE", entity: "reservations", entityId: "DG2024-003", time: "2024-12-15 10:20" },
-  ];
+  const [logs, setLogs] = useState([]);
   
   // User management state
   const [showUserModal, setShowUserModal] = useState(false);
