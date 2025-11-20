@@ -751,14 +751,26 @@ async def login(credentials: UserLogin, sql_db: Session = Depends(get_db)):
     }
 
 @api_router.get("/users", response_model=List[User])
-async def get_users(x_user_id: Optional[str] = Header(None)):
-    # For login dropdown - allow unauthenticated access
-    # In production, this should be protected or return limited info
-    users = await db.users.find({}, {"_id": 0}).to_list(1000)
-    for user in users:
-        if 'created_at' in user and isinstance(user['created_at'], str):
-            user['created_at'] = datetime.fromisoformat(user['created_at'])
-    return users
+async def get_users(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
+    # Get users from SQL Server
+    try:
+        sql_users = sql_db.query(SQLUser).all()
+        users = []
+        for sql_user in sql_users:
+            users.append({
+                'id': sql_user.id,
+                'name': sql_user.name,
+                'email': sql_user.email,
+                'password': sql_user.password,
+                'role': sql_user.role,
+                'status': sql_user.status,
+                'profile_picture': sql_user.profile_picture,
+                'created_at': sql_user.created_at
+            })
+        return users
+    except Exception as e:
+        logger.error(f"Error getting users: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get users: {str(e)}")
 
 @api_router.get("/users/{user_id}/permissions")
 async def get_user_permissions(user_id: str):
