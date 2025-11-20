@@ -13,16 +13,22 @@ const Hotels = () => {
   const [filterRegion, setFilterRegion] = useState("all");
   const [expandedHotel, setExpandedHotel] = useState(null);
   
-  // Load hotels
+  // Load hotels from DIOGENESSEJOUR database
   const loadHotels = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/hotels', {
-        params: { active_only: false }
+      const response = await api.get('/api/diogenes/hotels', {
+        params: { limit: 100, offset: 0 }
       });
-      setHotels(response.data);
+      // API returns { hotels: [...], total: N }
+      if (response.data && response.data.hotels) {
+        setHotels(response.data.hotels);
+      } else {
+        setHotels([]);
+      }
     } catch (error) {
-      console.error("Failed to load hotels:", error);
+      console.error("Failed to load hotels from DIOGENESSEJOUR:", error);
+      setHotels([]);
     } finally {
       setLoading(false);
     }
