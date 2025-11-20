@@ -2346,7 +2346,7 @@ async def test_diogenes_db(x_user_id: Optional[str] = Header(None)):
 
 @api_router.get("/diogenes/customers")
 async def get_diogenes_customers(
-    limit: int = Query(default=100, ge=1, le=1000),
+    limit: int = Query(default=100000, ge=1, le=100000),
     offset: int = Query(default=0, ge=0),
     search: Optional[str] = Query(default=None),
     x_user_id: Optional[str] = Header(None)
@@ -2355,7 +2355,7 @@ async def get_diogenes_customers(
     Get customers from DIOGENESSEJOUR database (Musteri table)
     
     Query params:
-        - limit: Number of records per page (default: 100)
+        - limit: Number of records per page (default: 100000 - tüm kayıtlar)
         - offset: Offset for pagination (default: 0)
         - search: Search term for name/title
     """
