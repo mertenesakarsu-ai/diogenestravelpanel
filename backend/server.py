@@ -1967,6 +1967,66 @@ async def health_check(sql_db: Session = Depends(get_db)):
             status="unhealthy"
         )
 
+
+# ===== DATABASE STATUS =====
+@api_router.get("/database/status")
+async def get_database_status(sql_db: Session = Depends(get_db)):
+    """Get detailed database connection status"""
+    try:
+        # SQL Server status
+        sql_server_host = os.getenv('SQL_SERVER_HOST', 'N/A')
+        sql_server_db = os.getenv('SQL_SERVER_DB', 'N/A')
+        
+        # Get counts from SQL Server
+        users_count = sql_db.query(func.count(SQLUser.id)).scalar()
+        flights_count = sql_db.query(func.count(SQLFlight.id)).scalar()
+        reservations_count = sql_db.query(func.count(SQLReservation.id)).scalar()
+        operations_count = sql_db.query(func.count(SQLOperation.id)).scalar()
+        hotels_count = sql_db.query(func.count(SQLHotel.id)).scalar()
+        
+        total_sql_records = users_count + flights_count + reservations_count + operations_count + hotels_count
+        
+        # MongoDB status
+        mongo_host = os.getenv('MONGO_URL', 'N/A')
+        logs_count = await mongo_db.logs.count_documents({})
+        
+        return {
+            "sqlserver": {
+                "connected": True,
+                "host": sql_server_host,
+                "database": sql_server_db,
+                "type": "İlişkisel Veritabanı (SQL Server)",
+                "records": total_sql_records,
+                "breakdown": {
+                    "users": users_count,
+                    "flights": flights_count,
+                    "reservations": reservations_count,
+                    "operations": operations_count,
+                    "hotels": hotels_count
+                },
+                "status": "Sistem verilerini SQL Server'da saklıyor"
+            },
+            "mongodb": {
+                "connected": True,
+                "host": mongo_host.split('@')[-1] if '@' in mongo_host else mongo_host,
+                "database": os.getenv('DB_NAME', 'N/A'),
+                "type": "Doküman Veritabanı (MongoDB)",
+                "records": logs_count,
+                "status": "Sadece log kayıtları için kullanılıyor"
+            }
+        }
+    except Exception as e:
+        return {
+            "sqlserver": {
+                "connected": False,
+                "error": str(e)
+            },
+            "mongodb": {
+                "connected": False,
+                "error": str(e)
+            }
+        }
+
 # ===== HELPER FUNCTIONS =====
 async def log_action(user: str, action: str, entity: str, entity_id: str, details: str = ""):
     """Log system actions"""
