@@ -137,6 +137,30 @@ const Admin = () => {
     }
   };
 
+  // Load statistics
+  const loadStatistics = async () => {
+    try {
+      const response = await api.get('/api/admin/statistics');
+      setStatistics(response.data);
+    } catch (error) {
+      console.error('Error loading statistics:', error);
+    }
+  };
+
+  // Load packages
+  const loadPackages = async () => {
+    try {
+      setLoadingPackages(true);
+      const params = packageSearch ? { search: packageSearch } : {};
+      const response = await api.get('/api/admin/packages', { params });
+      setPackages(response.data.packages || []);
+    } catch (error) {
+      console.error('Error loading packages:', error);
+    } finally {
+      setLoadingPackages(false);
+    }
+  };
+
   // Load users
   const loadUsers = async () => {
     try {
@@ -153,7 +177,13 @@ const Admin = () => {
   React.useEffect(() => {
     loadUsers();
     loadDatabaseStatus();
+    loadStatistics();
+    loadPackages();
   }, []);
+
+  React.useEffect(() => {
+    loadPackages();
+  }, [packageSearch]);
 
   // Open modal for new user
   const openNewUserModal = () => {
