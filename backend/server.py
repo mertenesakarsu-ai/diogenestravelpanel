@@ -2038,19 +2038,25 @@ async def startup_db():
                         name="Management User",
                         email="management@diogenestravel.com",
                         password=pwd_context.hash("management123"),
-                    "role": "management",
-                    "status": "active",
-                    "profile_picture": None,
-                    "created_at": datetime.now(timezone.utc)
-                }
-            ]
+                        role="management",
+                        status="active",
+                        profile_picture=None,
+                        created_at=datetime.now(timezone.utc)
+                    )
+                ]
+                
+                sql_db.add_all(default_users)
+                sql_db.commit()
+                print(f"✅ Successfully initialized {len(default_users)} default users in SQL Server")
+            else:
+                print(f"ℹ️  Found {users_count} users in SQL Server")
+        finally:
+            sql_db.close()
             
-            await db.users.insert_many(default_users)
-            print(f"✅ Successfully initialized {len(default_users)} default users")
-        else:
-            print(f"ℹ️  Found {users_count} users in database")
     except Exception as e:
         print(f"❌ Error during startup initialization: {e}")
+        import traceback
+        traceback.print_exc()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
