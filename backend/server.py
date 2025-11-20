@@ -2068,9 +2068,6 @@ async def log_action(user: str, action: str, entity: str, entity_id: str, detail
     doc['timestamp'] = doc['timestamp'].isoformat()
     await db.logs.insert_one(doc)
 
-# Include the router in the main app
-app.include_router(api_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
