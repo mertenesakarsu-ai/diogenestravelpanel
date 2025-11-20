@@ -355,26 +355,54 @@ const Admin = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg">
+            <div className={`w-12 h-12 rounded-xl ${dbStatus.sqlserver.connected ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-red-500 to-red-600'} flex items-center justify-center shadow-lg`}>
               <Database className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-800">PostgreSQL</h3>
-              <p className="text-sm text-slate-500">İlişkisel Veritabanı</p>
+              <h3 className="text-lg font-bold text-slate-800">SQL Server</h3>
+              <p className="text-sm text-slate-500">{dbStatus.sqlserver.type}</p>
             </div>
           </div>
           
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-slate-600">Bağlantı Durumu</span>
-            <div className="flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-500" />
-              <span className="font-semibold text-red-600">Bağlı Değil</span>
+          <div className="space-y-3 mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-600">Bağlantı Durumu</span>
+              <div className="flex items-center gap-2">
+                {dbStatus.sqlserver.connected ? (
+                  <>
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="font-semibold text-green-600">Bağlı</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-red-500" />
+                    <span className="font-semibold text-red-600">Bağlı Değil</span>
+                  </>
+                )}
+              </div>
             </div>
+
+            {dbStatus.sqlserver.connected && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Host</span>
+                  <span className="font-medium text-slate-800 text-xs">{dbStatus.sqlserver.host}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Database</span>
+                  <span className="font-medium text-slate-800">{dbStatus.sqlserver.database}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Toplam Kayıt</span>
+                  <span className="font-bold text-slate-800">{dbStatus.sqlserver.records}</span>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-700">
-              PostgreSQL desteği henüz mevcut değil. Veritabanı entegrasyonu beklemede.
+          <div className={`p-4 ${dbStatus.sqlserver.connected ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'} border rounded-lg`}>
+            <p className={`text-sm ${dbStatus.sqlserver.connected ? 'text-blue-700' : 'text-red-700'}`}>
+              {dbStatus.sqlserver.status}
             </p>
           </div>
         </div>
