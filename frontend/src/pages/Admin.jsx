@@ -110,6 +110,19 @@ const Admin = () => {
     }
   };
 
+  // Load database status
+  const loadDatabaseStatus = async () => {
+    try {
+      const response = await api.get('/api/database/status');
+      setDbStatus({
+        sqlserver: response.data.sqlserver || dbStatus.sqlserver,
+        mongodb: response.data.mongodb || dbStatus.mongodb
+      });
+    } catch (error) {
+      console.error('Error loading database status:', error);
+    }
+  };
+
   // Load users
   const loadUsers = async () => {
     try {
@@ -125,6 +138,7 @@ const Admin = () => {
 
   React.useEffect(() => {
     loadUsers();
+    loadDatabaseStatus();
   }, []);
 
   // Open modal for new user
