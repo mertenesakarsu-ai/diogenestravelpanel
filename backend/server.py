@@ -412,12 +412,13 @@ PERMISSIONS = {
     }
 }
 
-async def get_current_user(x_user_id: Optional[str] = Header(None)) -> Optional[Dict]:
-    """Get current user from header"""
+def get_current_user_sync(x_user_id: Optional[str], sql_db: Session) -> Optional[Dict]:
+    """Get current user from header - SQL Server"""
     if not x_user_id:
         return None
     
-    user = await db.users.find_one({"id": x_user_id}, {"_id": 0})
+    from sql_helpers import get_user_by_id_sql
+    user = get_user_by_id_sql(sql_db, x_user_id)
     return user
 
 def check_permission(resource: str, action: str):
