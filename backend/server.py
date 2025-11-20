@@ -18,6 +18,7 @@ import requests
 import json
 import pymssql
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
