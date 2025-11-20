@@ -42,7 +42,7 @@ def test_diogenes_connection() -> bool:
 # ==================== MUSTERI (CUSTOMERS) ====================
 
 def get_customers(
-    limit: int = 100,
+    limit: int = 100000,
     offset: int = 0,
     search: Optional[str] = None
 ) -> Dict[str, Any]:
@@ -50,7 +50,7 @@ def get_customers(
     Musteri tablosundan müşteri listesi çek
     
     Args:
-        limit: Sayfa başına kayıt sayısı
+        limit: Sayfa başına kayıt sayısı (varsayılan: 100000 - tüm kayıtlar)
         offset: Başlangıç offset'i
         search: Arama terimi (Adi, Unvan)
     
@@ -77,6 +77,9 @@ def get_customers(
         cursor.execute(count_query, params)
         total = cursor.fetchone()['total']
         
+        # Use a very high limit if -1 is passed (means fetch all)
+        actual_limit = 100000 if limit == -1 else limit
+        
         # Data query with pagination
         data_query = """
             SELECT TOP %s 
@@ -90,7 +93,7 @@ def get_customers(
         
         data_query += " ORDER BY Turop, Voucher, Sira OFFSET %s ROWS"
         
-        cursor.execute(data_query, [limit] + params + [offset])
+        cursor.execute(data_query, [actual_limit] + params + [offset])
         customers = cursor.fetchall()
         
         conn.close()
