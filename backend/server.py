@@ -2340,6 +2340,36 @@ async def get_schema(
     return result
 
 
+@api_router.get("/database/{database_name}/tables/{table_name}/data")
+async def get_data(
+    database_name: str,
+    table_name: str,
+    schema_name: str = Query(default='dbo'),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=100, ge=1, le=1000),
+    x_user_id: Optional[str] = Header(None)
+):
+    """Get paginated data from a table"""
+    # Check permission - only admin can view table data
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can view table data")
+    
+    result = get_table_data(database_name, table_name, schema_name, page, page_size)
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Failed to get table data'))
+    
+    return result
+
+
 # ==================== DIOGENESSEJOUR DATABASE ENDPOINTS ====================
 
 from diogenes_service import (
