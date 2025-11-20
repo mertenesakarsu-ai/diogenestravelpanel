@@ -2177,7 +2177,7 @@ async def startup_db():
 
 from restore_service import (
     start_restore, check_restore_status, wait_for_restore,
-    list_databases, get_database_tables, get_table_schema
+    list_databases, get_database_tables, get_table_schema, get_table_data
 )
 
 @api_router.post("/database/restore")
