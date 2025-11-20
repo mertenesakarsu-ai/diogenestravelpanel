@@ -2587,7 +2587,7 @@ async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: S
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
-    current_user = await get_current_user(x_user_id)
+    current_user = get_current_user_sync(x_user_id, sql_db)
     if not current_user:
         raise HTTPException(status_code=401, detail="User not found")
     
