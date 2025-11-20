@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://sqlmigration-kura.preview.emergentagent.com/api"
+BACKEND_URL = "https://guesttrack-app.preview.emergentagent.com/api"
 
 class LoginTester:
     def __init__(self):
