@@ -214,12 +214,8 @@ const Admin = () => {
     loadUsers();
     loadDatabaseStatus();
     loadStatistics();
-    loadPackages();
+    loadTables();
   }, []);
-
-  React.useEffect(() => {
-    loadPackages();
-  }, [packageSearch]);
 
   // Open modal for new user
   const openNewUserModal = () => {
