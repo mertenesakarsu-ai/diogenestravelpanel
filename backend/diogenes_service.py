@@ -356,7 +356,7 @@ def get_reservations(
         raise
 
 def get_operations(
-    limit: int = 100,
+    limit: int = 100000,
     offset: int = 0,
     search: Optional[str] = None,
     date_from: Optional[str] = None,
@@ -367,7 +367,7 @@ def get_operations(
     MusteriOpr tablosundan operasyon listesi çek
     
     Args:
-        limit: Sayfa başına kayıt sayısı
+        limit: Sayfa başına kayıt sayısı (varsayılan: 100000 - tüm kayıtlar)
         offset: Başlangıç offset'i
         search: Arama terimi (Voucher)
         date_from: Başlangıç tarihi (YYYY-MM-DD)
@@ -408,6 +408,9 @@ def get_operations(
         cursor.execute(count_query, params)
         total = cursor.fetchone()['total']
         
+        # Use a very high limit if -1 is passed (means fetch all)
+        actual_limit = 100000 if limit == -1 else limit
+        
         # Data query with JOIN to Musteri table for passenger count
         data_query = """
             SELECT TOP %s
@@ -422,7 +425,7 @@ def get_operations(
         
         data_query += " ORDER BY mo.GirTarih DESC OFFSET %s ROWS"
         
-        cursor.execute(data_query, [limit] + params + [offset])
+        cursor.execute(data_query, [actual_limit] + params + [offset])
         operations = cursor.fetchall()
         
         conn.close()
