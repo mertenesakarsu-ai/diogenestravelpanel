@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Search, Filter, Users, Calendar, Hotel } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Filter, Users, Calendar, Hotel, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockReservations } from "@/lib/mockReservationData";
 import {
   Select,
   SelectContent,
@@ -10,18 +9,85 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
 
 const Reservations = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-
-  const filteredReservations = mockReservations.filter(reservation => {
-    const matchesSearch = 
-      reservation.voucherNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reservation.leader.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || reservation.status === filterStatus;
-    return matchesSearch && matchesStatus;
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    limit: 50,
+    offset: 0
   });
+
+  // Fetch reservations from DIOGENESSEJOUR database
+  const fetchReservations = async () => {
+    if (!user?.id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const backendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL;
+      const params = new URLSearchParams({
+        limit: pagination.limit.toString(),
+        offset: pagination.offset.toString()
+      });
+      
+      if (searchTerm) params.append('search', searchTerm);
+      if (dateFrom) params.append('date_from', dateFrom);
+      if (dateTo) params.append('date_to', dateTo);
+      
+      const response = await fetch(`${backendUrl}/diogenes/reservations?${params}`, {
+        headers: {
+          'x-user-id': user.id
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch reservations');
+      }
+      
+      const data = await response.json();
+      setReservations(data.reservations || []);
+      setPagination(prev => ({
+        ...prev,
+        total: data.total || 0
+      }));
+    } catch (err) {
+      console.error('Error fetching reservations:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchReservations();
+  }, [user?.id, pagination.offset]);
+
+  // Apply filters
+  const handleApplyFilters = () => {
+    setPagination(prev => ({ ...prev, offset: 0 }));
+    fetchReservations();
+  };
+
+  // Clear filters
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setDateFrom("");
+    setDateTo("");
+    setPagination(prev => ({ ...prev, offset: 0 }));
+    fetchReservations();
+  };
+
+  const filteredReservations = reservations;
 
   return (
     <div className="space-y-6" data-testid="reservations-page">
