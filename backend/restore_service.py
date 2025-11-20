@@ -130,7 +130,7 @@ def check_restore_status(task_id: int = None):
                 created_at,
                 updated_at
             FROM msdb.dbo.rds_task_status
-            WHERE task_id = ?
+            WHERE task_id = %s
             ORDER BY created_at DESC
             """
             cursor.execute(sql, (task_id,))
