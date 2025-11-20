@@ -203,57 +203,98 @@ const Reservations = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full" data-testid="reservations-table">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Voucher No</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Grup Lideri</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Ürün</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Otel</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Tarihler</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Pax</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Durum</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredReservations.map((reservation) => (
-                <tr 
-                  key={reservation.id} 
-                  className="hover:bg-slate-50 transition-colors"
-                  data-testid={`reservation-row-${reservation.id}`}
-                >
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-slate-800">{reservation.voucherNo}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-medium text-slate-800">{reservation.leader.name}</p>
-                      <p className="text-xs text-slate-500">{reservation.leader.passport}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-medium text-slate-800">{reservation.product.code}</p>
-                      <p className="text-xs text-slate-500">{reservation.product.name}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-slate-700">{reservation.hotel}</td>
-                  <td className="px-6 py-4 text-slate-700">
-                    {reservation.arrivalDate} - {reservation.departureDate}
-                  </td>
-                  <td className="px-6 py-4 text-slate-700">{reservation.pax}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
-                    }`}>
-                      {reservation.status === 'confirmed' ? 'Onaylı' : 'Bekleyen'}
-                    </span>
-                  </td>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+              <span className="ml-3 text-slate-600">Yükleniyor...</span>
+            </div>
+          ) : filteredReservations.length === 0 ? (
+            <div className="text-center py-12">
+              <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-500">Rezervasyon bulunamadı</p>
+            </div>
+          ) : (
+            <table className="w-full" data-testid="reservations-table">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Voucher No</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Tur Operatörü</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Müşteri Adı</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Uyruk</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Giriş Tarihi</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase">Transfer No</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredReservations.map((reservation, index) => (
+                  <tr 
+                    key={`${reservation.voucherNo}-${index}`} 
+                    className="hover:bg-slate-50 transition-colors"
+                    data-testid={`reservation-row-${index}`}
+                  >
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-slate-800">{reservation.voucherNo}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-slate-700">{reservation.tourOperator}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-medium text-slate-800">{reservation.customerName || '-'}</p>
+                        {reservation.customerTitle && (
+                          <p className="text-xs text-slate-500">{reservation.customerTitle}</p>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-700">{reservation.nationality || '-'}</td>
+                    <td className="px-6 py-4 text-slate-700">{reservation.checkInDate || '-'}</td>
+                    <td className="px-6 py-4">
+                      <div className="space-y-1">
+                        {reservation.arrivalTransferNo && (
+                          <p className="text-xs text-green-700">
+                            <span className="font-semibold">G:</span> {reservation.arrivalTransferNo}
+                          </p>
+                        )}
+                        {reservation.departureTransferNo && (
+                          <p className="text-xs text-orange-700">
+                            <span className="font-semibold">D:</span> {reservation.departureTransferNo}
+                          </p>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
+        
+        {/* Pagination */}
+        {!loading && pagination.total > pagination.limit && (
+          <div className="flex items-center justify-between pt-4 border-t border-slate-200 mt-4">
+            <p className="text-sm text-slate-600">
+              Gösterilen: {pagination.offset + 1} - {Math.min(pagination.offset + pagination.limit, pagination.total)} / {pagination.total}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.offset === 0}
+                onClick={() => setPagination(prev => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }))}
+              >
+                Önceki
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.offset + pagination.limit >= pagination.total}
+                onClick={() => setPagination(prev => ({ ...prev, offset: prev.offset + prev.limit }))}
+              >
+                Sonraki
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
