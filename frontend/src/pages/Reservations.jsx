@@ -134,14 +134,25 @@ const Reservations = () => {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-slate-800">Rezervasyon Listesi</h3>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-slate-800">Rezervasyon Listesi</h3>
+            <Button 
+              onClick={fetchReservations}
+              variant="outline"
+              size="sm"
+              disabled={loading}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Yenile
+            </Button>
+          </div>
           
-          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-            <div className="relative flex-1 lg:w-64">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
-                placeholder="Voucher veya isim ara..."
+                placeholder="Voucher ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -149,18 +160,46 @@ const Reservations = () => {
               />
             </div>
             
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full sm:w-48" data-testid="status-filter">
+            <Input
+              type="date"
+              placeholder="Başlangıç Tarihi"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              data-testid="date-from"
+            />
+            
+            <Input
+              type="date"
+              placeholder="Bitiş Tarihi"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              data-testid="date-to"
+            />
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleApplyFilters}
+                disabled={loading}
+                className="flex-1"
+              >
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm Rezervasyonlar</SelectItem>
-                <SelectItem value="confirmed">Onaylı</SelectItem>
-                <SelectItem value="pending">Bekleyen</SelectItem>
-              </SelectContent>
-            </Select>
+                Filtrele
+              </Button>
+              <Button 
+                onClick={handleClearFilters}
+                variant="outline"
+                disabled={loading}
+              >
+                Temizle
+              </Button>
+            </div>
           </div>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
         </div>
 
         <div className="overflow-x-auto">
