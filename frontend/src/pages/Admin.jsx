@@ -127,7 +127,7 @@ const Admin = () => {
   // Load database status
   const loadDatabaseStatus = async () => {
     try {
-      const response = await api.get('/api/database/status');
+      const response = await api.get('/api/database/status/admin');
       setDbStatus({
         sqlserver: response.data.sqlserver || dbStatus.sqlserver,
         mongodb: response.data.mongodb || dbStatus.mongodb
