@@ -51,20 +51,28 @@ const Operations = () => {
   const fetchOperations = async () => {
     setLoading(true);
     try {
-      const params = { type: filterType };
+      const params = { limit: 50, offset: 0 };
       
       // Eğer tarih aralığı uygulandıysa onu kullan, yoksa tek tarih kullan
       if (appliedStartDate && appliedEndDate) {
-        params.start_date = appliedStartDate;
-        params.end_date = appliedEndDate;
-      } else {
-        params.date = selectedDate;
+        params.date_from = appliedStartDate;
+        params.date_to = appliedEndDate;
+      } else if (selectedDate) {
+        params.date_from = selectedDate;
+        params.date_to = selectedDate;
       }
       
-      const response = await api.get('/api/operations', { params });
+      if (appliedSearchQuery) {
+        params.search = appliedSearchQuery;
+      }
       
-      // If API returns empty data, use mock data for development
-      if (!response.data || response.data.length === 0) {
+      const response = await api.get('/api/diogenes/operations', { params });
+      
+      // If API returns data, use it
+      if (response.data && response.data.operations) {
+        console.log("Loaded operations from DIOGENESSEJOUR:", response.data.operations.length);
+        setOperations(response.data.operations);
+      } else if (!response.data || response.data.length === 0) {
         console.log("No operations from API, using mock data for development");
         // Mock data for development - Comprehensive operation data
         setOperations([
