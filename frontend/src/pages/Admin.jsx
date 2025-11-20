@@ -43,9 +43,14 @@ const Admin = () => {
     recent_reservations: []
   });
 
-  const [packages, setPackages] = useState([]);
-  const [loadingPackages, setLoadingPackages] = useState(true);
-  const [packageSearch, setPackageSearch] = useState('');
+  const [tables, setTables] = useState([]);
+  const [loadingTables, setLoadingTables] = useState(true);
+  const [tableSearch, setTableSearch] = useState('');
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [loadingTableData, setLoadingTableData] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadType, setUploadType] = useState("flights");
