@@ -2565,6 +2565,335 @@ async def get_diogenes_reservation_details(
 
 
 
+# ==================== ADMIN PANEL ENDPOINTS ====================
+
+@api_router.get("/database/status")
+async def get_database_status(x_user_id: Optional[str] = Header(None)):
+    """
+    Get comprehensive database status including SQL Server and MongoDB statistics
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Check admin permission
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        # SQL Server statistics from DIOGENESSEJOUR
+        from diogenes_service import get_diogenes_connection, test_diogenes_connection
+        
+        sqlserver_status = {
+            'connected': False,
+            'records': 0,
+            'host': os.environ.get('SQL_SERVER_HOST', 'N/A'),
+            'database': 'DIOGENESSEJOUR',
+            'type': 'İlişkisel Veritabanı (SQL Server)',
+            'status': 'Bağlantı kontrol ediliyor...',
+            'tables': {},
+            'total_operations': 0,
+            'total_customers': 0,
+            'total_hotels': 0
+        }
+        
+        try:
+            # Test connection
+            if test_diogenes_connection():
+                conn = get_diogenes_connection()
+                cursor = conn.cursor()
+                
+                # Get MusteriOpr count (Operations/Reservations)
+                cursor.execute("SELECT COUNT(*) as total FROM MusteriOpr")
+                operations_count = cursor.fetchone()[0]
+                
+                # Get Musteri count (Customers)
+                cursor.execute("SELECT COUNT(*) as total FROM Musteri")
+                customers_count = cursor.fetchone()[0]
+                
+                # Get Otel count (Hotels)
+                cursor.execute("SELECT COUNT(*) as total FROM Otel")
+                hotels_count = cursor.fetchone()[0]
+                
+                # Get total records
+                total_records = operations_count + customers_count + hotels_count
+                
+                conn.close()
+                
+                sqlserver_status.update({
+                    'connected': True,
+                    'records': total_records,
+                    'status': f'✅ Bağlı ve aktif ({total_records:,} toplam kayıt)',
+                    'tables': {
+                        'MusteriOpr': operations_count,
+                        'Musteri': customers_count,
+                        'Otel': hotels_count
+                    },
+                    'total_operations': operations_count,
+                    'total_customers': customers_count,
+                    'total_hotels': hotels_count
+                })
+            else:
+                sqlserver_status['status'] = '❌ Bağlantı başarısız'
+        except Exception as e:
+            logger.error(f"SQL Server status check failed: {e}")
+            sqlserver_status['status'] = f'❌ Hata: {str(e)}'
+        
+        # MongoDB statistics (for logs only)
+        mongodb_status = {
+            'connected': False,
+            'records': 0,
+            'host': os.environ.get('MONGO_URL', 'N/A').split('@')[-1] if '@' in os.environ.get('MONGO_URL', '') else 'localhost:27017',
+            'database': os.environ.get('DB_NAME', 'test_database'),
+            'type': 'Doküman Veritabanı (MongoDB - Sadece Loglar)',
+            'status': 'Bağlantı kontrol ediliyor...'
+        }
+        
+        try:
+            # Test MongoDB connection
+            await mongo_db.command('ping')
+            
+            # Get logs count
+            logs_count = await mongo_db.logs.count_documents({})
+            
+            mongodb_status.update({
+                'connected': True,
+                'records': logs_count,
+                'status': f'✅ Bağlı ve aktif ({logs_count} log kaydı)'
+            })
+        except Exception as e:
+            logger.error(f"MongoDB status check failed: {e}")
+            mongodb_status.update({
+                'status': f'⚠️ Log servisi: {str(e)}'
+            })
+        
+        return {
+            'sqlserver': sqlserver_status,
+            'mongodb': mongodb_status
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in get_database_status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch database status: {str(e)}")
+
+
+@api_router.get("/admin/statistics")
+async def get_admin_statistics(x_user_id: Optional[str] = Header(None)):
+    """
+    Get comprehensive statistics for admin dashboard
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Check admin permission
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        from diogenes_service import get_diogenes_connection
+        
+        conn = get_diogenes_connection()
+        cursor = conn.cursor(as_dict=True)
+        
+        # Get various statistics
+        stats = {
+            'total_operations': 0,
+            'total_customers': 0,
+            'total_hotels': 0,
+            'active_reservations': 0,
+            'total_passengers': 0,
+            'hotels_by_region': [],
+            'operations_by_date': [],
+            'recent_reservations': []
+        }
+        
+        # Total operations
+        cursor.execute("SELECT COUNT(*) as total FROM MusteriOpr")
+        stats['total_operations'] = cursor.fetchone()['total']
+        
+        # Total customers
+        cursor.execute("SELECT COUNT(*) as total FROM Musteri")
+        stats['total_customers'] = cursor.fetchone()['total']
+        
+        # Total hotels
+        cursor.execute("SELECT COUNT(*) as total FROM Otel")
+        stats['total_hotels'] = cursor.fetchone()['total']
+        
+        # Active reservations (with future check-in dates)
+        cursor.execute("""
+            SELECT COUNT(*) as total 
+            FROM MusteriOpr 
+            WHERE GirTarih >= CAST(GETDATE() AS DATE)
+        """)
+        stats['active_reservations'] = cursor.fetchone()['total']
+        
+        # Total passengers (total customer records)
+        stats['total_passengers'] = stats['total_customers']
+        
+        # Hotels by region (top 10)
+        cursor.execute("""
+            SELECT TOP 10 
+                Bolge as region, 
+                COUNT(*) as count 
+            FROM Otel 
+            WHERE Bolge IS NOT NULL AND Bolge != ''
+            GROUP BY Bolge 
+            ORDER BY count DESC
+        """)
+        stats['hotels_by_region'] = [
+            {'region': row['region'], 'count': row['count']}
+            for row in cursor.fetchall()
+        ]
+        
+        # Operations by date (last 30 days)
+        cursor.execute("""
+            SELECT TOP 30
+                CAST(GirTarih AS DATE) as date,
+                COUNT(*) as count
+            FROM MusteriOpr
+            WHERE GirTarih >= DATEADD(day, -30, GETDATE())
+            GROUP BY CAST(GirTarih AS DATE)
+            ORDER BY date DESC
+        """)
+        stats['operations_by_date'] = [
+            {
+                'date': row['date'].strftime('%Y-%m-%d') if row['date'] else '',
+                'count': row['count']
+            }
+            for row in cursor.fetchall()
+        ]
+        
+        # Recent reservations (last 10)
+        cursor.execute("""
+            SELECT TOP 10
+                mo.Voucher,
+                mo.Turop,
+                mo.GirTarih,
+                m.Adi as CustomerName,
+                (SELECT COUNT(*) FROM Musteri WHERE Turop = mo.Turop AND Voucher = mo.Voucher) as PaxCount
+            FROM MusteriOpr mo
+            LEFT JOIN Musteri m ON mo.Turop = m.Turop AND mo.Voucher = m.Voucher AND m.Sira = 1
+            ORDER BY mo.GirTarih DESC
+        """)
+        stats['recent_reservations'] = [
+            {
+                'voucher': row['Voucher'],
+                'tourOperator': row['Turop'],
+                'checkInDate': row['GirTarih'].strftime('%Y-%m-%d') if row['GirTarih'] else '',
+                'customerName': row['CustomerName'] or 'N/A',
+                'paxCount': row['PaxCount']
+            }
+            for row in cursor.fetchall()
+        ]
+        
+        conn.close()
+        
+        return stats
+        
+    except Exception as e:
+        logger.error(f"Error in get_admin_statistics: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
+
+
+@api_router.get("/admin/packages")
+async def get_admin_packages(
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    search: Optional[str] = Query(default=None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get tour packages from DIOGENESSEJOUR database (Kontenj table)
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Check admin permission
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        from diogenes_service import get_diogenes_connection
+        
+        conn = get_diogenes_connection()
+        cursor = conn.cursor(as_dict=True)
+        
+        # Count query
+        count_query = "SELECT COUNT(*) as total FROM Kontenj"
+        where_conditions = []
+        params = []
+        
+        if search:
+            where_conditions.append("(Otel LIKE %s OR Aciklama LIKE %s)")
+            search_param = f"%{search}%"
+            params.extend([search_param, search_param])
+        
+        if where_conditions:
+            count_query += " WHERE " + " AND ".join(where_conditions)
+        
+        cursor.execute(count_query, params)
+        total = cursor.fetchone()['total']
+        
+        # Data query
+        data_query = f"""
+            SELECT TOP {limit}
+                RecNo, Otel, GirTarih, CikTarih, 
+                Aciklama, KontKod, Turop
+            FROM Kontenj
+        """
+        
+        if where_conditions:
+            data_query += " WHERE " + " AND ".join(where_conditions)
+        
+        data_query += f" ORDER BY GirTarih DESC OFFSET {offset} ROWS"
+        
+        if params:
+            cursor.execute(data_query, params)
+        else:
+            cursor.execute(data_query)
+            
+        packages = cursor.fetchall()
+        
+        conn.close()
+        
+        # Map to English field names
+        mapped_packages = []
+        for pkg in packages:
+            mapped_packages.append({
+                'id': pkg.get('RecNo', 0),
+                'hotelCode': pkg.get('Otel', ''),
+                'checkIn': pkg.get('GirTarih').strftime('%Y-%m-%d') if pkg.get('GirTarih') else '',
+                'checkOut': pkg.get('CikTarih').strftime('%Y-%m-%d') if pkg.get('CikTarih') else '',
+                'description': pkg.get('Aciklama', ''),
+                'packageCode': pkg.get('KontKod', ''),
+                'tourOperator': pkg.get('Turop', '')
+            })
+        
+        return {
+            'packages': mapped_packages,
+            'total': total,
+            'limit': limit,
+            'offset': offset
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in get_admin_packages: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch packages: {str(e)}")
+
+
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
