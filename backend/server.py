@@ -1970,58 +1970,74 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup_db():
-    """Initialize users on startup if database is empty"""
+    """Initialize SQL Server tables and users on startup"""
     try:
-        users_count = await db.users.count_documents({})
-        if users_count == 0:
-            print("⚠️  No users found in database. Initializing default users...")
+        # Test SQL Server connection
+        print("\n" + "=" * 60)
+        print("  SQL SERVER INITIALIZATION")
+        print("=" * 60)
+        
+        if not test_sql_connection():
+            print("❌ SQL Server connection failed!")
+            return
+        
+        # Create tables if not exist
+        init_sql_db()
+        
+        # Check if users exist in SQL Server
+        sql_db = SessionLocal()
+        try:
+            users_count = sql_db.query(SQLUser).count()
             
-            default_users = [
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Admin User",
-                    "email": "admin@diogenestravel.com",
-                    "password": pwd_context.hash("admin123"),
-                    "role": "admin",
-                    "status": "active",
-                    "profile_picture": None,
-                    "created_at": datetime.now(timezone.utc)
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Reservation Manager",
-                    "email": "reservation@diogenestravel.com",
-                    "password": pwd_context.hash("reservation123"),
-                    "role": "reservation",
-                    "status": "active",
-                    "profile_picture": None,
-                    "created_at": datetime.now(timezone.utc)
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Operation Manager",
-                    "email": "operation@diogenestravel.com",
-                    "password": pwd_context.hash("operation123"),
-                    "role": "operation",
-                    "status": "active",
-                    "profile_picture": None,
-                    "created_at": datetime.now(timezone.utc)
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Flight Manager",
-                    "email": "flight@diogenestravel.com",
-                    "password": pwd_context.hash("flight123"),
-                    "role": "flight",
-                    "status": "active",
-                    "profile_picture": None,
-                    "created_at": datetime.now(timezone.utc)
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Management User",
-                    "email": "management@diogenestravel.com",
-                    "password": pwd_context.hash("management123"),
+            if users_count == 0:
+                print("⚠️  No users found in SQL Server. Initializing default users...")
+                
+                default_users = [
+                    SQLUser(
+                        id=str(uuid.uuid4()),
+                        name="Admin User",
+                        email="admin@diogenestravel.com",
+                        password=pwd_context.hash("admin123"),
+                        role="admin",
+                        status="active",
+                        profile_picture=None,
+                        created_at=datetime.now(timezone.utc)
+                    ),
+                    SQLUser(
+                        id=str(uuid.uuid4()),
+                        name="Reservation Manager",
+                        email="reservation@diogenestravel.com",
+                        password=pwd_context.hash("reservation123"),
+                        role="reservation",
+                        status="active",
+                        profile_picture=None,
+                        created_at=datetime.now(timezone.utc)
+                    ),
+                    SQLUser(
+                        id=str(uuid.uuid4()),
+                        name="Operation Manager",
+                        email="operation@diogenestravel.com",
+                        password=pwd_context.hash("operation123"),
+                        role="operation",
+                        status="active",
+                        profile_picture=None,
+                        created_at=datetime.now(timezone.utc)
+                    ),
+                    SQLUser(
+                        id=str(uuid.uuid4()),
+                        name="Flight Manager",
+                        email="flight@diogenestravel.com",
+                        password=pwd_context.hash("flight123"),
+                        role="flight",
+                        status="active",
+                        profile_picture=None,
+                        created_at=datetime.now(timezone.utc)
+                    ),
+                    SQLUser(
+                        id=str(uuid.uuid4()),
+                        name="Management User",
+                        email="management@diogenestravel.com",
+                        password=pwd_context.hash("management123"),
                     "role": "management",
                     "status": "active",
                     "profile_picture": None,
