@@ -1969,9 +1969,9 @@ async def health_check(sql_db: Session = Depends(get_db)):
 
 
 # ===== DATABASE STATUS =====
-@api_router.get("/database/status")
-async def get_database_status(sql_db: Session = Depends(get_db)):
-    """Get detailed database connection status"""
+@api_router.get("/database/status/simple")
+async def get_database_status_simple(sql_db: Session = Depends(get_db)):
+    """Get simple database connection status (no auth required)"""
     try:
         # SQL Server status
         sql_server_host = os.getenv('SQL_SERVER_HOST', 'N/A')
