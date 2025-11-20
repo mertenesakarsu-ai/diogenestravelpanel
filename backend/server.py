@@ -2567,10 +2567,10 @@ async def get_diogenes_reservation_details(
 
 # ==================== ADMIN PANEL ENDPOINTS ====================
 
-@api_router.get("/database/status")
-async def get_database_status(x_user_id: Optional[str] = Header(None)):
+@api_router.get("/database/status/admin")
+async def get_database_status_admin(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
     """
-    Get comprehensive database status including SQL Server and MongoDB statistics
+    Get comprehensive database status including SQL Server and MongoDB statistics (Admin only)
     """
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
@@ -2584,14 +2584,12 @@ async def get_database_status(x_user_id: Optional[str] = Header(None)):
         raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
-        # SQL Server statistics from DIOGENESSEJOUR
-        from diogenes_service import get_diogenes_connection, test_diogenes_connection
-        
+        # SQL Server statistics from diogenesDB
         sqlserver_status = {
             'connected': False,
             'records': 0,
             'host': os.environ.get('SQL_SERVER_HOST', 'N/A'),
-            'database': 'DIOGENESSEJOUR',
+            'database': os.environ.get('SQL_SERVER_DB', 'diogenesDB'),
             'type': 'İlişkisel Veritabanı (SQL Server)',
             'status': 'Bağlantı kontrol ediliyor...',
             'tables': {},
@@ -2601,43 +2599,33 @@ async def get_database_status(x_user_id: Optional[str] = Header(None)):
         }
         
         try:
-            # Test connection
-            if test_diogenes_connection():
-                conn = get_diogenes_connection()
-                cursor = conn.cursor()
-                
-                # Get MusteriOpr count (Operations/Reservations)
-                cursor.execute("SELECT COUNT(*) as total FROM MusteriOpr")
-                operations_count = cursor.fetchone()[0]
-                
-                # Get Musteri count (Customers)
-                cursor.execute("SELECT COUNT(*) as total FROM Musteri")
-                customers_count = cursor.fetchone()[0]
-                
-                # Get Otel count (Hotels)
-                cursor.execute("SELECT COUNT(*) as total FROM Otel")
-                hotels_count = cursor.fetchone()[0]
-                
-                # Get total records
-                total_records = operations_count + customers_count + hotels_count
-                
-                conn.close()
-                
-                sqlserver_status.update({
-                    'connected': True,
-                    'records': total_records,
-                    'status': f'✅ Bağlı ve aktif ({total_records:,} toplam kayıt)',
-                    'tables': {
-                        'MusteriOpr': operations_count,
-                        'Musteri': customers_count,
-                        'Otel': hotels_count
-                    },
-                    'total_operations': operations_count,
-                    'total_customers': customers_count,
-                    'total_hotels': hotels_count
-                })
-            else:
-                sqlserver_status['status'] = '❌ Bağlantı başarısız'
+            # Get counts from SQL Server using SQLAlchemy
+            users_count = sql_db.query(func.count(SQLUser.id)).scalar()
+            flights_count = sql_db.query(func.count(SQLFlight.id)).scalar()
+            reservations_count = sql_db.query(func.count(SQLReservation.id)).scalar()
+            operations_count = sql_db.query(func.count(SQLOperation.id)).scalar()
+            hotels_count = sql_db.query(func.count(SQLHotel.id)).scalar()
+            packages_count = sql_db.query(func.count(SQLPackage.id)).scalar()
+            
+            # Get total records
+            total_records = users_count + flights_count + reservations_count + operations_count + hotels_count + packages_count
+            
+            sqlserver_status.update({
+                'connected': True,
+                'records': total_records,
+                'status': f'✅ Bağlı ve aktif ({total_records:,} toplam kayıt)',
+                'tables': {
+                    'users': users_count,
+                    'flights': flights_count,
+                    'reservations': reservations_count,
+                    'operations': operations_count,
+                    'hotels': hotels_count,
+                    'packages': packages_count
+                },
+                'total_operations': operations_count,
+                'total_customers': reservations_count,  # Using reservations as customers proxy
+                'total_hotels': hotels_count
+            })
         except Exception as e:
             logger.error(f"SQL Server status check failed: {e}")
             sqlserver_status['status'] = f'❌ Hata: {str(e)}'
