@@ -99,7 +99,7 @@ const Reservations = () => {
             </div>
             <div>
               <p className="text-sm text-slate-500">Toplam Rezervasyon</p>
-              <p className="text-3xl font-bold text-slate-800">{mockReservations.length}</p>
+              <p className="text-3xl font-bold text-slate-800">{pagination.total}</p>
             </div>
           </div>
         </div>
@@ -110,9 +110,9 @@ const Reservations = () => {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Onaylı</p>
+              <p className="text-sm text-slate-500">Gösterilen</p>
               <p className="text-3xl font-bold text-slate-800">
-                {mockReservations.filter(r => r.status === 'confirmed').length}
+                {reservations.length}
               </p>
             </div>
           </div>
@@ -124,9 +124,9 @@ const Reservations = () => {
               <Hotel className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Bekleyen</p>
+              <p className="text-sm text-slate-500">Sayfa</p>
               <p className="text-3xl font-bold text-slate-800">
-                {mockReservations.filter(r => r.status === 'pending').length}
+                {Math.floor(pagination.offset / pagination.limit) + 1}
               </p>
             </div>
           </div>
