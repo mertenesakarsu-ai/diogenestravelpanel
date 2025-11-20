@@ -152,18 +152,49 @@ const Admin = () => {
     }
   };
 
-  // Load packages
-  const loadPackages = async () => {
+  // Load tables from DIOGENESSEJOUR database
+  const loadTables = async () => {
     try {
-      setLoadingPackages(true);
-      const params = packageSearch ? { search: packageSearch } : {};
-      const response = await api.get('/api/admin/packages', { params });
-      setPackages(response.data.packages || []);
+      setLoadingTables(true);
+      const response = await api.get('/api/database/DIOGENESSEJOUR/tables');
+      setTables(response.data.tables || []);
     } catch (error) {
-      console.error('Error loading packages:', error);
+      console.error('Error loading tables:', error);
     } finally {
-      setLoadingPackages(false);
+      setLoadingTables(false);
     }
+  };
+
+  // Load table data with pagination
+  const loadTableData = async (tableName, page = 1) => {
+    try {
+      setLoadingTableData(true);
+      const response = await api.get(`/api/database/DIOGENESSEJOUR/tables/${tableName}/data`, {
+        params: { page, page_size: 50 }
+      });
+      setTableData(response.data.data || []);
+      setPagination(response.data.pagination);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error loading table data:', error);
+    } finally {
+      setLoadingTableData(false);
+    }
+  };
+
+  // Open table modal
+  const openTableModal = (table) => {
+    setSelectedTable(table);
+    setCurrentPage(1);
+    loadTableData(table.table_name, 1);
+  };
+
+  // Close table modal
+  const closeTableModal = () => {
+    setSelectedTable(null);
+    setTableData([]);
+    setPagination(null);
+    setCurrentPage(1);
   };
 
   // Load users
