@@ -2567,8 +2567,8 @@ async def get_diogenes_reservation_details(
 
 # ==================== ADMIN PANEL ENDPOINTS ====================
 
-@api_router.get("/database/status/admin")
-async def get_database_status_admin(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
+@api_router.get("/database/status")
+async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
     """
     Get comprehensive database status including SQL Server and MongoDB statistics (Admin only)
     """
