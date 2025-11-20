@@ -9,9 +9,23 @@ import { useAuth } from "@/context/AuthContext";
 
 const Admin = () => {
   const { hasPermission } = useAuth();
-  const [dbStatus] = useState({
-    postgresql: { connected: false, records: 0 },
-    mongodb: { connected: true, records: 1247 }
+  const [dbStatus, setDbStatus] = useState({
+    sqlserver: { 
+      connected: false, 
+      records: 0,
+      host: 'N/A',
+      database: 'N/A',
+      type: 'İlişkisel Veritabanı (SQL Server)',
+      status: 'Yükleniyor...'
+    },
+    mongodb: { 
+      connected: false, 
+      records: 0,
+      host: 'N/A',
+      database: 'N/A',
+      type: 'Doküman Veritabanı (MongoDB)',
+      status: 'Yükleniyor...'
+    }
   });
 
   const [uploadFile, setUploadFile] = useState(null);
