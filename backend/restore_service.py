@@ -62,8 +62,8 @@ def start_restore(s3_key: str, target_db_name: str = 'DIOGENESSEJOUR'):
         # This procedure handles the S3 download and restore
         sql = """
         EXEC msdb.dbo.rds_restore_database 
-            @restore_db_name=?, 
-            @s3_arn_to_restore_from=?
+            @restore_db_name=%s, 
+            @s3_arn_to_restore_from=%s
         """
         
         cursor.execute(sql, (target_db_name, s3_arn))
