@@ -384,7 +384,7 @@ def get_table_schema(database_name: str, table_name: str, schema_name: str = 'db
         """
         
         full_table_name = f"{schema_name}.{table_name}"
-        cursor.execute(sql, (full_table_name,))
+        cursor.execute(sql.replace('?', '%s'), (full_table_name,))
         
         columns = []
         for row in cursor:
