@@ -117,10 +117,10 @@ def check_restore_status(task_id: int = None):
         conn = get_connection('master')
         cursor = conn.cursor(as_dict=True)
         
-        # Query restore task status
+        # Query restore task status using AWS RDS function
         if task_id:
             sql = """
-            SELECT 
+            SELECT TOP 10
                 task_id,
                 task_type,
                 database_name,
@@ -128,8 +128,8 @@ def check_restore_status(task_id: int = None):
                 lifecycle,
                 task_info,
                 created_at,
-                updated_at
-            FROM msdb.dbo.rds_task_status
+                last_updated
+            FROM msdb.dbo.rds_fn_task_status(NULL, 0)
             WHERE task_id = %s
             ORDER BY created_at DESC
             """
@@ -145,8 +145,8 @@ def check_restore_status(task_id: int = None):
                 lifecycle,
                 task_info,
                 created_at,
-                updated_at
-            FROM msdb.dbo.rds_task_status
+                last_updated
+            FROM msdb.dbo.rds_fn_task_status(NULL, 0)
             WHERE task_type = 'RESTORE_DB'
             ORDER BY created_at DESC
             """
