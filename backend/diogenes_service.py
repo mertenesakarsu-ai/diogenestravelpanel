@@ -131,7 +131,7 @@ def get_customers(
 # ==================== OTEL (HOTELS) ====================
 
 def get_hotels(
-    limit: int = 100,
+    limit: int = 100000,
     offset: int = 0,
     search: Optional[str] = None,
     region: Optional[str] = None
@@ -140,7 +140,7 @@ def get_hotels(
     Otel tablosundan otel listesi çek
     
     Args:
-        limit: Sayfa başına kayıt sayısı
+        limit: Sayfa başına kayıt sayısı (varsayılan: 100000 - tüm kayıtlar)
         offset: Başlangıç offset'i
         search: Arama terimi (Adi)
         region: Bölge filtresi (Bolge)
@@ -171,6 +171,9 @@ def get_hotels(
         cursor.execute(count_query, params)
         total = cursor.fetchone()['total']
         
+        # Use a very high limit if -1 is passed (means fetch all)
+        actual_limit = 100000 if limit == -1 else limit
+        
         # Data query with pagination
         data_query = """
             SELECT TOP %s 
@@ -185,7 +188,7 @@ def get_hotels(
         
         data_query += " ORDER BY Adi OFFSET %s ROWS"
         
-        cursor.execute(data_query, [limit] + params + [offset])
+        cursor.execute(data_query, [actual_limit] + params + [offset])
         hotels = cursor.fetchall()
         
         conn.close()
