@@ -254,7 +254,7 @@ def get_hotel_regions() -> List[str]:
 # ==================== MUSTERIOPR (RESERVATIONS/OPERATIONS) ====================
 
 def get_reservations(
-    limit: int = 100,
+    limit: int = 100000,
     offset: int = 0,
     search: Optional[str] = None,
     date_from: Optional[str] = None,
@@ -264,7 +264,7 @@ def get_reservations(
     MusteriOpr ve Musteri tablolarından rezervasyon listesi çek
     
     Args:
-        limit: Sayfa başına kayıt sayısı
+        limit: Sayfa başına kayıt sayısı (varsayılan: 100000 - tüm kayıtlar)
         offset: Başlangıç offset'i
         search: Arama terimi (Voucher, Turop)
         date_from: Başlangıç tarihi (YYYY-MM-DD)
@@ -305,6 +305,9 @@ def get_reservations(
         cursor.execute(count_query, params)
         total = cursor.fetchone()['total']
         
+        # Use a very high limit if -1 is passed (means fetch all)
+        actual_limit = 100000 if limit == -1 else limit
+        
         # Data query with JOIN to Musteri table
         data_query = """
             SELECT TOP %s
@@ -320,7 +323,7 @@ def get_reservations(
         
         data_query += " ORDER BY mo.GirTarih DESC OFFSET %s ROWS"
         
-        cursor.execute(data_query, [limit] + params + [offset])
+        cursor.execute(data_query, [actual_limit] + params + [offset])
         reservations = cursor.fetchall()
         
         conn.close()
