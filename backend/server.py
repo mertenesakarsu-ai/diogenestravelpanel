@@ -2256,6 +2256,255 @@ async def get_schema(
     return result
 
 
+# ==================== DIOGENESSEJOUR DATABASE ENDPOINTS ====================
+
+from diogenes_service import (
+    get_customers, get_hotels, get_hotel_regions,
+    get_reservations, get_operations, get_reservation_details,
+    test_diogenes_connection
+)
+
+@api_router.get("/diogenes/test")
+async def test_diogenes_db(x_user_id: Optional[str] = Header(None)):
+    """Test DIOGENESSEJOUR database connection"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    try:
+        is_connected = test_diogenes_connection()
+        return {
+            "success": is_connected,
+            "message": "DIOGENESSEJOUR database connection successful" if is_connected else "Connection failed"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Connection test failed: {str(e)}")
+
+
+@api_router.get("/diogenes/customers")
+async def get_diogenes_customers(
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    search: Optional[str] = Query(default=None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get customers from DIOGENESSEJOUR database (Musteri table)
+    
+    Query params:
+        - limit: Number of records per page (default: 100)
+        - offset: Offset for pagination (default: 0)
+        - search: Search term for name/title
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Permission check
+    user_role = current_user.get('role', '')
+    if not check_permission(user_role, "reservations", "read"):
+        raise HTTPException(status_code=403, detail="No permission to view customers")
+    
+    try:
+        result = get_customers(limit=limit, offset=offset, search=search)
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_customers: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch customers: {str(e)}")
+
+
+@api_router.get("/diogenes/hotels")
+async def get_diogenes_hotels(
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    search: Optional[str] = Query(default=None),
+    region: Optional[str] = Query(default=None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get hotels from DIOGENESSEJOUR database (Otel table)
+    
+    Query params:
+        - limit: Number of records per page (default: 100)
+        - offset: Offset for pagination (default: 0)
+        - search: Search term for hotel name
+        - region: Filter by region
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Permission check
+    user_role = current_user.get('role', '')
+    if not check_permission(user_role, "hotels", "read"):
+        raise HTTPException(status_code=403, detail="No permission to view hotels")
+    
+    try:
+        result = get_hotels(limit=limit, offset=offset, search=search, region=region)
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_hotels: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch hotels: {str(e)}")
+
+
+@api_router.get("/diogenes/hotels/regions")
+async def get_diogenes_hotel_regions(x_user_id: Optional[str] = Header(None)):
+    """Get all hotel regions from DIOGENESSEJOUR database"""
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    try:
+        regions = get_hotel_regions()
+        return {"regions": regions}
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_hotel_regions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch regions: {str(e)}")
+
+
+@api_router.get("/diogenes/reservations")
+async def get_diogenes_reservations(
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    search: Optional[str] = Query(default=None),
+    date_from: Optional[str] = Query(default=None),
+    date_to: Optional[str] = Query(default=None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get reservations from DIOGENESSEJOUR database (MusteriOpr + Musteri tables)
+    
+    Query params:
+        - limit: Number of records per page (default: 100)
+        - offset: Offset for pagination (default: 0)
+        - search: Search term for voucher/tour operator
+        - date_from: Filter by check-in date (YYYY-MM-DD)
+        - date_to: Filter by check-in date (YYYY-MM-DD)
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Permission check
+    user_role = current_user.get('role', '')
+    if not check_permission(user_role, "reservations", "read"):
+        raise HTTPException(status_code=403, detail="No permission to view reservations")
+    
+    try:
+        result = get_reservations(
+            limit=limit, 
+            offset=offset, 
+            search=search,
+            date_from=date_from,
+            date_to=date_to
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_reservations: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reservations: {str(e)}")
+
+
+@api_router.get("/diogenes/operations")
+async def get_diogenes_operations(
+    limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    search: Optional[str] = Query(default=None),
+    date_from: Optional[str] = Query(default=None),
+    date_to: Optional[str] = Query(default=None),
+    operation_type: Optional[str] = Query(default=None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get operations from DIOGENESSEJOUR database (MusteriOpr table)
+    
+    Query params:
+        - limit: Number of records per page (default: 100)
+        - offset: Offset for pagination (default: 0)
+        - search: Search term for voucher
+        - date_from: Filter by operation date (YYYY-MM-DD)
+        - date_to: Filter by operation date (YYYY-MM-DD)
+        - operation_type: Filter by operation type
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Permission check
+    user_role = current_user.get('role', '')
+    if not check_permission(user_role, "operations", "read"):
+        raise HTTPException(status_code=403, detail="No permission to view operations")
+    
+    try:
+        result = get_operations(
+            limit=limit,
+            offset=offset,
+            search=search,
+            date_from=date_from,
+            date_to=date_to,
+            operation_type=operation_type
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_operations: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch operations: {str(e)}")
+
+
+@api_router.get("/diogenes/reservations/{voucher}/{tour_operator}")
+async def get_diogenes_reservation_details(
+    voucher: str,
+    tour_operator: str,
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Get detailed reservation info including passenger list
+    
+    Path params:
+        - voucher: Voucher number
+        - tour_operator: Tour operator code
+    """
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Permission check
+    user_role = current_user.get('role', '')
+    if not check_permission(user_role, "reservations", "read"):
+        raise HTTPException(status_code=403, detail="No permission to view reservation details")
+    
+    try:
+        result = get_reservation_details(voucher, tour_operator)
+        if not result:
+            raise HTTPException(status_code=404, detail="Reservation not found")
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_diogenes_reservation_details: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reservation details: {str(e)}")
+
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
