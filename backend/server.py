@@ -2669,7 +2669,7 @@ async def get_database_status_admin(x_user_id: Optional[str] = Header(None), sql
 
 
 @api_router.get("/admin/statistics")
-async def get_admin_statistics(x_user_id: Optional[str] = Header(None)):
+async def get_admin_statistics(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
     """
     Get comprehensive statistics for admin dashboard
     """
@@ -2685,12 +2685,7 @@ async def get_admin_statistics(x_user_id: Optional[str] = Header(None)):
         raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
-        from diogenes_service import get_diogenes_connection
-        
-        conn = get_diogenes_connection()
-        cursor = conn.cursor(as_dict=True)
-        
-        # Get various statistics
+        # Get various statistics from diogenesDB using SQLAlchemy
         stats = {
             'total_operations': 0,
             'total_customers': 0,
@@ -2703,85 +2698,70 @@ async def get_admin_statistics(x_user_id: Optional[str] = Header(None)):
         }
         
         # Total operations
-        cursor.execute("SELECT COUNT(*) as total FROM MusteriOpr")
-        stats['total_operations'] = cursor.fetchone()['total']
+        stats['total_operations'] = sql_db.query(func.count(SQLOperation.id)).scalar()
         
-        # Total customers
-        cursor.execute("SELECT COUNT(*) as total FROM Musteri")
-        stats['total_customers'] = cursor.fetchone()['total']
+        # Total customers (using reservations as proxy)
+        stats['total_customers'] = sql_db.query(func.count(SQLReservation.id)).scalar()
         
         # Total hotels
-        cursor.execute("SELECT COUNT(*) as total FROM Otel")
-        stats['total_hotels'] = cursor.fetchone()['total']
+        stats['total_hotels'] = sql_db.query(func.count(SQLHotel.id)).scalar()
         
         # Active reservations (with future check-in dates)
-        cursor.execute("""
-            SELECT COUNT(*) as total 
-            FROM MusteriOpr 
-            WHERE GirTarih >= CAST(GETDATE() AS DATE)
-        """)
-        stats['active_reservations'] = cursor.fetchone()['total']
+        from datetime import date
+        stats['active_reservations'] = sql_db.query(func.count(SQLReservation.id)).filter(
+            SQLReservation.check_in_date >= date.today()
+        ).scalar()
         
-        # Total passengers (total customer records)
-        stats['total_passengers'] = stats['total_customers']
+        # Total passengers
+        total_pax = sql_db.query(func.sum(SQLReservation.pax)).scalar()
+        stats['total_passengers'] = int(total_pax) if total_pax else 0
         
         # Hotels by region (top 10)
-        cursor.execute("""
-            SELECT TOP 10 
-                Bolge as region, 
-                COUNT(*) as count 
-            FROM Otel 
-            WHERE Bolge IS NOT NULL AND Bolge != ''
-            GROUP BY Bolge 
-            ORDER BY count DESC
-        """)
+        hotel_regions = sql_db.query(
+            SQLHotel.region,
+            func.count(SQLHotel.id).label('count')
+        ).filter(
+            SQLHotel.region.isnot(None),
+            SQLHotel.region != ''
+        ).group_by(SQLHotel.region).order_by(func.count(SQLHotel.id).desc()).limit(10).all()
+        
         stats['hotels_by_region'] = [
-            {'region': row['region'], 'count': row['count']}
-            for row in cursor.fetchall()
+            {'region': region, 'count': count}
+            for region, count in hotel_regions
         ]
         
         # Operations by date (last 30 days)
-        cursor.execute("""
-            SELECT TOP 30
-                CAST(GirTarih AS DATE) as date,
-                COUNT(*) as count
-            FROM MusteriOpr
-            WHERE GirTarih >= DATEADD(day, -30, GETDATE())
-            GROUP BY CAST(GirTarih AS DATE)
-            ORDER BY date DESC
-        """)
+        from datetime import datetime, timedelta
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+        
+        operations_by_date = sql_db.query(
+            func.date(SQLOperation.date).label('date'),
+            func.count(SQLOperation.id).label('count')
+        ).filter(
+            SQLOperation.date >= thirty_days_ago
+        ).group_by(func.date(SQLOperation.date)).order_by(func.date(SQLOperation.date).desc()).limit(30).all()
+        
         stats['operations_by_date'] = [
             {
-                'date': row['date'].strftime('%Y-%m-%d') if row['date'] else '',
-                'count': row['count']
+                'date': op_date.strftime('%Y-%m-%d') if op_date else '',
+                'count': count
             }
-            for row in cursor.fetchall()
+            for op_date, count in operations_by_date
         ]
         
         # Recent reservations (last 10)
-        cursor.execute("""
-            SELECT TOP 10
-                mo.Voucher,
-                mo.Turop,
-                mo.GirTarih,
-                m.Adi as CustomerName,
-                (SELECT COUNT(*) FROM Musteri WHERE Turop = mo.Turop AND Voucher = mo.Voucher) as PaxCount
-            FROM MusteriOpr mo
-            LEFT JOIN Musteri m ON mo.Turop = m.Turop AND mo.Voucher = m.Voucher AND m.Sira = 1
-            ORDER BY mo.GirTarih DESC
-        """)
+        recent_reservations = sql_db.query(SQLReservation).order_by(SQLReservation.check_in_date.desc()).limit(10).all()
+        
         stats['recent_reservations'] = [
             {
-                'voucher': row['Voucher'],
-                'tourOperator': row['Turop'],
-                'checkInDate': row['GirTarih'].strftime('%Y-%m-%d') if row['GirTarih'] else '',
-                'customerName': row['CustomerName'] or 'N/A',
-                'paxCount': row['PaxCount']
+                'voucher': res.id[:8] if res.id else 'N/A',
+                'tourOperator': 'N/A',
+                'checkInDate': res.check_in_date.strftime('%Y-%m-%d') if res.check_in_date else '',
+                'customerName': res.passenger_name or 'N/A',
+                'paxCount': res.pax or 0
             }
-            for row in cursor.fetchall()
+            for res in recent_reservations
         ]
-        
-        conn.close()
         
         return stats
         
