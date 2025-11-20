@@ -422,6 +422,73 @@ def get_table_schema(database_name: str, table_name: str, schema_name: str = 'db
         }
 
 
+def get_table_data(database_name: str, table_name: str, schema_name: str = 'dbo', page: int = 1, page_size: int = 100):
+    """Get paginated data from a table"""
+    try:
+        conn = get_connection(database_name)
+        cursor = conn.cursor(as_dict=True)
+        
+        # Calculate offset
+        offset = (page - 1) * page_size
+        
+        # Get total count
+        count_sql = f"SELECT COUNT(*) as total FROM [{schema_name}].[{table_name}]"
+        cursor.execute(count_sql)
+        total_rows = cursor.fetchone()['total']
+        
+        # Get paginated data
+        data_sql = f"""
+        SELECT * FROM [{schema_name}].[{table_name}]
+        ORDER BY (SELECT NULL)
+        OFFSET {offset} ROWS
+        FETCH NEXT {page_size} ROWS ONLY
+        """
+        
+        cursor.execute(data_sql)
+        rows = cursor.fetchall()
+        
+        # Convert datetime objects to strings
+        data = []
+        for row in rows:
+            row_dict = {}
+            for key, value in row.items():
+                if isinstance(value, datetime):
+                    row_dict[key] = value.isoformat()
+                elif value is None:
+                    row_dict[key] = None
+                else:
+                    row_dict[key] = str(value)
+            data.append(row_dict)
+        
+        cursor.close()
+        conn.close()
+        
+        total_pages = (total_rows + page_size - 1) // page_size
+        
+        return {
+            "success": True,
+            "database": database_name,
+            "table": table_name,
+            "schema": schema_name,
+            "data": data,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total_rows": total_rows,
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            }
+        }
+        
+    except Exception as e:
+        print(f"❌ Error getting table data: {e}")
+        return {
+            "success": False,
+            "message": str(e)
+        }
+
+
 if __name__ == "__main__":
     # Test connection
     print("Testing SQL Server connection...")
