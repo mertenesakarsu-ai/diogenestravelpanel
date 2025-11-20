@@ -161,7 +161,7 @@ def check_restore_status(task_id: int = None):
                 "lifecycle": row['lifecycle'],
                 "task_info": row['task_info'],
                 "created_at": str(row['created_at']) if row['created_at'] else None,
-                "updated_at": str(row['updated_at']) if row['updated_at'] else None
+                "updated_at": str(row['last_updated']) if row['last_updated'] else None
             })
         
         cursor.close()
