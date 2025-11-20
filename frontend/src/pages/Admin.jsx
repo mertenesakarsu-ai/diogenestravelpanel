@@ -409,33 +409,54 @@ const Admin = () => {
 
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+            <div className={`w-12 h-12 rounded-xl ${dbStatus.mongodb.connected ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-gray-500 to-gray-600'} flex items-center justify-center shadow-lg`}>
               <Database className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">MongoDB</h3>
-              <p className="text-sm text-slate-500">Doküman Veritabanı</p>
+              <p className="text-sm text-slate-500">{dbStatus.mongodb.type}</p>
             </div>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-3 mb-4">
             <div className="flex items-center justify-between">
               <span className="text-slate-600">Bağlantı Durumu</span>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="font-semibold text-green-600">Bağlı</span>
+                {dbStatus.mongodb.connected ? (
+                  <>
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="font-semibold text-green-600">Bağlı</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-gray-500" />
+                    <span className="font-semibold text-gray-600">Bağlı Değil</span>
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <span className="text-slate-600">Toplam Kayıt</span>
-              <span className="font-bold text-slate-800">{dbStatus.mongodb.records}</span>
-            </div>
+            {dbStatus.mongodb.connected && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Host</span>
+                  <span className="font-medium text-slate-800 text-xs">{dbStatus.mongodb.host}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Database</span>
+                  <span className="font-medium text-slate-800">{dbStatus.mongodb.database}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Log Kayıtları</span>
+                  <span className="font-bold text-slate-800">{dbStatus.mongodb.records}</span>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-700">
-              Sistem şu anda MongoDB ile çalışıyor. Log kayıtları için kullanılıyor.
+          <div className={`p-4 ${dbStatus.mongodb.connected ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} border rounded-lg`}>
+            <p className={`text-sm ${dbStatus.mongodb.connected ? 'text-green-700' : 'text-gray-700'}`}>
+              {dbStatus.mongodb.status}
             </p>
           </div>
         </div>
