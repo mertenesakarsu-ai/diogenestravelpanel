@@ -607,6 +607,73 @@ const Admin = () => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Data Tab - SQL Server Tables */}
+          <TabsContent value="data" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">SQL Server Tabloları</h3>
+                  <p className="text-sm text-slate-600">DIOGENESSEJOUR veritabanındaki tablolar ve kayıt sayıları</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Tablo ara..."
+                    value={tableSearch}
+                    onChange={(e) => setTableSearch(e.target.value)}
+                    className="w-64"
+                  />
+                  <Button onClick={loadTables} variant="outline">
+                    Yenile
+                  </Button>
+                </div>
+              </div>
+
+              {loadingTables ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto"></div>
+                  <p className="text-slate-600 mt-4">Tablolar yükleniyor...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {tables
+                    .filter(table => 
+                      !tableSearch || 
+                      table.table_name.toLowerCase().includes(tableSearch.toLowerCase())
+                    )
+                    .map((table) => (
+                      <div
+                        key={table.table_name}
+                        onClick={() => openTableModal(table)}
+                        className="p-4 border border-slate-200 rounded-lg hover:border-cyan-400 hover:shadow-md transition-all cursor-pointer bg-gradient-to-br from-white to-slate-50"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Database className="w-5 h-5 text-cyan-600" />
+                            <h4 className="font-semibold text-slate-800 text-sm">{table.table_name}</h4>
+                          </div>
+                          <span className="text-xs px-2 py-1 bg-slate-100 rounded-full text-slate-600">
+                            {table.schema_name}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-600">Kayıt Sayısı</span>
+                          <span className="text-lg font-bold text-cyan-600">{table.row_count.toLocaleString('tr-TR')}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {!loadingTables && tables.length === 0 && (
+                <div className="text-center py-12 text-slate-500">
+                  <Database className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>Tablo bulunamadı</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Upload Tab */}
           <TabsContent value="upload" className="space-y-6">
             <div className="space-y-6">
