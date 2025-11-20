@@ -16,18 +16,34 @@ from functools import wraps
 from passlib.context import CryptContext
 import requests
 import json
-
+import pymssql
+from sqlalchemy.orm import Session
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
+# MongoDB connection - Used ONLY for logging
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+mongo_db = client[os.environ['DB_NAME']]
+
+# SQL Server connection - Used for all business data
+from sql_models import (
+    SessionLocal, engine, 
+    SQLUser, SQLFlight, SQLReservation, SQLOperation, SQLHotel, SQLPackage, SQLPackageLeg,
+    test_sql_connection, init_sql_db
+)
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Dependency to get SQL database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # Create the main app without a prefix
 app = FastAPI()
