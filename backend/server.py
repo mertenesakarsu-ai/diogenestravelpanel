@@ -745,8 +745,12 @@ async def login(credentials: UserLogin, sql_db: Session = Depends(get_db)):
             "email": user.email,
             "role": user.role,
             "status": user.status,
-        "created_at": user["created_at"]
-    }
+            "profile_picture": user.profile_picture,
+            "created_at": user.created_at
+        }
+    except Exception as e:
+        print(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail=f"Login error: {str(e)}")
 
 @api_router.get("/users", response_model=List[User])
 async def get_users(x_user_id: Optional[str] = Header(None)):
