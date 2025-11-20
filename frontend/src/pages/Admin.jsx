@@ -854,37 +854,44 @@ const Admin = () => {
             <h3 className="text-lg font-bold text-slate-800 mb-4">Sistem Logları</h3>
             
             <div className="space-y-3">
-              {mockLogs.map((log) => (
-                <div 
-                  key={log.id} 
-                  className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                  data-testid={`log-entry-${log.id}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                        <Activity className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                            log.action === 'CREATE' ? 'bg-green-100 text-green-800' :
-                            log.action === 'UPDATE' ? 'bg-blue-100 text-blue-800' :
-                            'bg-purple-100 text-purple-800'
-                          }`}>
-                            {log.action}
-                          </span>
-                          <span className="text-sm text-slate-600">{log.entity}</span>
-                        </div>
-                        <p className="text-sm text-slate-700">
-                          <strong>{log.user}</strong> - {log.entityId}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm text-slate-500">{log.time}</span>
-                  </div>
+              {logs.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Henüz log kaydı bulunmuyor</p>
                 </div>
-              ))}
+              ) : (
+                logs.map((log) => (
+                  <div 
+                    key={log.id} 
+                    className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                    data-testid={`log-entry-${log.id}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                          <Activity className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                              log.action === 'CREATE' ? 'bg-green-100 text-green-800' :
+                              log.action === 'UPDATE' ? 'bg-blue-100 text-blue-800' :
+                              'bg-purple-100 text-purple-800'
+                            }`}>
+                              {log.action}
+                            </span>
+                            <span className="text-sm text-slate-600">{log.entity}</span>
+                          </div>
+                          <p className="text-sm text-slate-700">
+                            <strong>{log.user}</strong> - {log.entityId}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-sm text-slate-500">{log.time}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </TabsContent>
 
