@@ -2381,7 +2381,7 @@ async def get_diogenes_customers(
 
 @api_router.get("/diogenes/hotels")
 async def get_diogenes_hotels(
-    limit: int = Query(default=100, ge=1, le=1000),
+    limit: int = Query(default=100000, ge=1, le=100000),
     offset: int = Query(default=0, ge=0),
     search: Optional[str] = Query(default=None),
     region: Optional[str] = Query(default=None),
@@ -2391,7 +2391,7 @@ async def get_diogenes_hotels(
     Get hotels from DIOGENESSEJOUR database (Otel table)
     
     Query params:
-        - limit: Number of records per page (default: 100)
+        - limit: Number of records per page (default: 100000 - tüm kayıtlar)
         - offset: Offset for pagination (default: 0)
         - search: Search term for hotel name
         - region: Filter by region
