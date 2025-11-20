@@ -395,6 +395,45 @@ const Admin = () => {
       )}
 
       <div className="space-y-6" data-testid="admin-page">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium opacity-90">Toplam Operasyon</h4>
+            <Package className="w-5 h-5 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{statistics.total_operations.toLocaleString('tr-TR')}</p>
+          <p className="text-xs opacity-75 mt-1">MusteriOpr tablosu</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium opacity-90">Toplam Müşteri</h4>
+            <Users className="w-5 h-5 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{statistics.total_customers.toLocaleString('tr-TR')}</p>
+          <p className="text-xs opacity-75 mt-1">Musteri tablosu</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium opacity-90">Toplam Otel</h4>
+            <Database className="w-5 h-5 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{statistics.total_hotels.toLocaleString('tr-TR')}</p>
+          <p className="text-xs opacity-75 mt-1">Otel tablosu</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium opacity-90">Aktif Rezervasyon</h4>
+            <Activity className="w-5 h-5 opacity-80" />
+          </div>
+          <p className="text-3xl font-bold">{statistics.active_reservations.toLocaleString('tr-TR')}</p>
+          <p className="text-xs opacity-75 mt-1">Gelecek tarihli</p>
+        </div>
+      </div>
+
       {/* Database Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
