@@ -1031,6 +1031,107 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Table Data Modal */}
+      {selectedTable && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-800">{selectedTable.table_name}</h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  Schema: {selectedTable.schema_name} • Toplam Kayıt: {selectedTable.row_count.toLocaleString('tr-TR')}
+                </p>
+              </div>
+              <button
+                onClick={closeTableModal}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Body - Scrollable Table */}
+            <div className="flex-1 overflow-auto p-6">
+              {loadingTableData ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto"></div>
+                  <p className="text-slate-600 mt-4">Veriler yükleniyor...</p>
+                </div>
+              ) : tableData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-100 sticky top-0">
+                      <tr>
+                        {Object.keys(tableData[0]).map((column) => (
+                          <th
+                            key={column}
+                            className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider border-b-2 border-slate-200"
+                          >
+                            {column}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {tableData.map((row, index) => (
+                        <tr key={index} className="hover:bg-slate-50 transition-colors">
+                          {Object.values(row).map((value, cellIndex) => (
+                            <td key={cellIndex} className="px-4 py-3 text-slate-700 whitespace-nowrap">
+                              {value === null ? (
+                                <span className="text-slate-400 italic">NULL</span>
+                              ) : (
+                                String(value).length > 100 ? String(value).substring(0, 100) + '...' : String(value)
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-slate-500">
+                  <Database className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>Bu tabloda veri bulunmuyor</p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer - Pagination */}
+            {pagination && (
+              <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-slate-50">
+                <div className="text-sm text-slate-600">
+                  Sayfa {pagination.page} / {pagination.total_pages} • 
+                  Gösterilen: {(pagination.page - 1) * pagination.page_size + 1} - {Math.min(pagination.page * pagination.page_size, pagination.total_rows)} / {pagination.total_rows.toLocaleString('tr-TR')} kayıt
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => loadTableData(selectedTable.table_name, currentPage - 1)}
+                    disabled={!pagination.has_prev}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Önceki
+                  </Button>
+                  <span className="px-3 py-1 bg-white border border-slate-200 rounded text-sm">
+                    {currentPage}
+                  </span>
+                  <Button
+                    onClick={() => loadTableData(selectedTable.table_name, currentPage + 1)}
+                    disabled={!pagination.has_next}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Sonraki
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
