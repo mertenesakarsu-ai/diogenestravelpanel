@@ -2089,6 +2089,173 @@ async def startup_db():
         import traceback
         traceback.print_exc()
 
+# ==================== DATABASE RESTORE ENDPOINTS ====================
+
+from restore_service import (
+    start_restore, check_restore_status, wait_for_restore,
+    list_databases, get_database_tables, get_table_schema
+)
+
+@api_router.post("/database/restore")
+async def restore_database(
+    s3_key: str = Body(..., embed=True),
+    target_db_name: str = Body(default='DIOGENESSEJOUR', embed=True),
+    wait_for_completion: bool = Body(default=True, embed=True),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Restore database from S3 .bak file
+    
+    Args:
+        s3_key: S3 object key (e.g., 'sql-backups/DIOGENESSEJOUR_26_02.bak')
+        target_db_name: Target database name (default: DIOGENESSEJOUR)
+        wait_for_completion: Wait for restore to complete before returning (default: True)
+    """
+    # Check permission - only admin can restore database
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can restore database")
+    
+    # Start restore
+    result = start_restore(s3_key, target_db_name)
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Restore failed'))
+    
+    task_id = result.get('task_id')
+    
+    # Wait for completion if requested
+    if wait_for_completion and task_id:
+        wait_result = wait_for_restore(task_id, timeout=1200)  # 20 minutes timeout
+        
+        return {
+            "message": "Restore process completed",
+            "restore_start": result,
+            "restore_completion": wait_result,
+            "database_name": target_db_name
+        }
+    else:
+        return {
+            "message": "Restore process started",
+            "task_id": task_id,
+            "restore_info": result,
+            "database_name": target_db_name,
+            "note": "Use /api/database/restore/status endpoint to check progress"
+        }
+
+
+@api_router.get("/database/restore/status")
+async def get_restore_status(
+    task_id: Optional[int] = Query(None),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Check restore task status
+    
+    Args:
+        task_id: Optional task ID to check specific task
+    """
+    # Check permission - only admin can check restore status
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can check restore status")
+    
+    result = check_restore_status(task_id)
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Failed to get status'))
+    
+    return result
+
+
+@api_router.get("/database/list")
+async def list_all_databases(x_user_id: Optional[str] = Header(None)):
+    """List all databases on SQL Server"""
+    # Check permission - only admin can list databases
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can list databases")
+    
+    result = list_databases()
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Failed to list databases'))
+    
+    return result
+
+
+@api_router.get("/database/{database_name}/tables")
+async def get_tables(database_name: str, x_user_id: Optional[str] = Header(None)):
+    """Get all tables in a database"""
+    # Check permission - only admin can view database tables
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can view database tables")
+    
+    result = get_database_tables(database_name)
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Failed to get tables'))
+    
+    return result
+
+
+@api_router.get("/database/{database_name}/tables/{table_name}/schema")
+async def get_schema(
+    database_name: str,
+    table_name: str,
+    schema_name: str = Query(default='dbo'),
+    x_user_id: Optional[str] = Header(None)
+):
+    """Get detailed schema for a table"""
+    # Check permission - only admin can view table schema
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    current_user = await get_current_user(x_user_id)
+    if not current_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    user_role = current_user.get('role', '')
+    if user_role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admin can view table schema")
+    
+    result = get_table_schema(database_name, table_name, schema_name)
+    
+    if not result.get('success'):
+        raise HTTPException(status_code=500, detail=result.get('message', 'Failed to get table schema'))
+    
+    return result
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
