@@ -692,32 +692,59 @@ async def compare_flights(file: UploadFile = File(...), x_user_id: Optional[str]
 
 # ===== USERS ENDPOINTS =====
 @api_router.post("/login", response_model=UserResponse)
-async def login(credentials: UserLogin):
-    """Login with email and password"""
-    # Find user by email
-    user = await db.users.find_one({"email": credentials.email}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
-    
-    # Verify password
-    if not pwd_context.verify(credentials.password, user.get('password', '')):
-        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
-    
-    # Check if user is active
-    if user.get('status') != 'active':
-        raise HTTPException(status_code=403, detail="Kullanıcı hesabı aktif değil")
-    
-    # Convert created_at if needed
-    if 'created_at' in user and isinstance(user['created_at'], str):
-        user['created_at'] = datetime.fromisoformat(user['created_at'])
-    
-    # Return user without password
-    return {
-        "id": user["id"],
-        "name": user["name"],
-        "email": user["email"],
-        "role": user["role"],
-        "status": user["status"],
+async def login(credentials: UserLogin, sql_db: Session = Depends(get_db)):
+    """Login with email and password - Using SQL Server"""
+    try:
+        # Find user by email in SQL Server
+        user = sql_db.query(SQLUser).filter(SQLUser.email == credentials.email).first()
+        
+        if not user:
+            # Log failed login attempt to MongoDB
+            await mongo_db.logs.insert_one({
+                "id": str(uuid.uuid4()),
+                "user": credentials.email,
+                "action": "LOGIN_FAILED",
+                "entity": "users",
+                "details": "User not found",
+                "timestamp": datetime.now(timezone.utc)
+            })
+            raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+        
+        # Verify password
+        if not pwd_context.verify(credentials.password, user.password):
+            # Log failed login attempt to MongoDB
+            await mongo_db.logs.insert_one({
+                "id": str(uuid.uuid4()),
+                "user": credentials.email,
+                "action": "LOGIN_FAILED",
+                "entity": "users",
+                "details": "Wrong password",
+                "timestamp": datetime.now(timezone.utc)
+            })
+            raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+        
+        # Check if user is active
+        if user.status != 'active':
+            raise HTTPException(status_code=403, detail="Kullanıcı hesabı aktif değil")
+        
+        # Log successful login to MongoDB
+        await mongo_db.logs.insert_one({
+            "id": str(uuid.uuid4()),
+            "user": user.email,
+            "action": "LOGIN_SUCCESS",
+            "entity": "users",
+            "entityId": user.id,
+            "details": f"User {user.email} logged in successfully",
+            "timestamp": datetime.now(timezone.utc)
+        })
+        
+        # Return user without password
+        return {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "status": user.status,
         "created_at": user["created_at"]
     }
 
