@@ -585,9 +585,9 @@ const Admin = () => {
               <Users className="w-4 h-4 mr-2" />
               Kullanıcılar
             </TabsTrigger>
-            <TabsTrigger value="packages" data-testid="packages-tab">
-              <Package className="w-4 h-4 mr-2" />
-              Paketler
+            <TabsTrigger value="data" data-testid="data-tab">
+              <Database className="w-4 h-4 mr-2" />
+              Veriler
             </TabsTrigger>
             <TabsTrigger value="upload" data-testid="upload-tab">
               <Upload className="w-4 h-4 mr-2" />
