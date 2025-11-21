@@ -16,7 +16,7 @@ const Admin = () => {
       host: 'N/A',
       database: 'N/A',
       type: 'İlişkisel Veritabanı (SQL Server)',
-      status: 'Yükleniyor...',
+      status: 'Bağlantı kontrol ediliyor...',
       tables: {},
       total_operations: 0,
       total_customers: 0,
@@ -26,9 +26,9 @@ const Admin = () => {
       connected: false, 
       records: 0,
       host: 'N/A',
-      database: 'N/A',
+      database: 'DiogenesLOG',
       type: 'Doküman Veritabanı (MongoDB)',
-      status: 'Yükleniyor...'
+      status: 'Bağlantı kontrol ediliyor...'
     }
   });
 
