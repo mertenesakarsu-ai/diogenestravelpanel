@@ -25,7 +25,13 @@ load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection - Used ONLY for logging
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = AsyncIOMotorClient(
+    mongo_url,
+    tls=True,
+    tlsAllowInvalidCertificates=True,
+    serverSelectionTimeoutMS=30000,
+    connectTimeoutMS=30000
+)
 mongo_db = client[os.environ['DB_NAME']]
 
 # SQL Server connection - Used for all business data
