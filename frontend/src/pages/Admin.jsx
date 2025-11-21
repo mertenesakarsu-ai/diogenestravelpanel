@@ -139,6 +139,19 @@ const Admin = () => {
       });
     } catch (error) {
       console.error('Error loading database status:', error);
+      // Set error status immediately instead of keeping "Loading..."
+      setDbStatus(prev => ({
+        sqlserver: {
+          ...prev.sqlserver,
+          status: '❌ Bağlantı hatası - Yetki gerekli',
+          connected: false
+        },
+        mongodb: {
+          ...prev.mongodb,
+          status: '❌ Bağlantı hatası - Yetki gerekli',
+          connected: false
+        }
+      }));
     }
   };
 
