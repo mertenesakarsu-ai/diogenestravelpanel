@@ -2695,7 +2695,7 @@ async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: S
             'connected': False,
             'records': 0,
             'host': os.environ.get('MONGO_URL', 'N/A').split('@')[-1] if '@' in os.environ.get('MONGO_URL', '') else 'localhost:27017',
-            'database': os.environ.get('DB_NAME', 'test_database'),
+            'database': 'DiogenesLOG',
             'type': 'Doküman Veritabanı (MongoDB - Sadece Loglar)',
             'status': 'Bağlantı kontrol ediliyor...'
         }
