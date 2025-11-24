@@ -484,67 +484,17 @@ const Admin = () => {
 
       {/* Database Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className={`w-12 h-12 rounded-xl ${dbStatus.sqlserver.connected ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-red-500 to-red-600'} flex items-center justify-center shadow-lg`}>
-              <Database className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-800">SQL Server</h3>
-              <p className="text-sm text-slate-500">{dbStatus.sqlserver.type}</p>
-            </div>
+        {/* MongoDB Atlas - Primary Database */}
+        <div className="bg-white rounded-2xl border-2 border-green-300 shadow-xl p-6 relative overflow-hidden">
+          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+            ANA VERİTABANI
           </div>
-          
-          <div className="space-y-3 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-600">Bağlantı Durumu</span>
-              <div className="flex items-center gap-2">
-                {dbStatus.sqlserver.connected ? (
-                  <>
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="font-semibold text-green-600">Bağlı</span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-5 h-5 text-red-500" />
-                    <span className="font-semibold text-red-600">Bağlı Değil</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {dbStatus.sqlserver.connected && (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Host</span>
-                  <span className="font-medium text-slate-800 text-xs">{dbStatus.sqlserver.host}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Database</span>
-                  <span className="font-medium text-slate-800">{dbStatus.sqlserver.database}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Toplam Kayıt</span>
-                  <span className="font-bold text-slate-800">{dbStatus.sqlserver.records}</span>
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className={`p-4 ${dbStatus.sqlserver.connected ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'} border rounded-lg`}>
-            <p className={`text-sm ${dbStatus.sqlserver.connected ? 'text-blue-700' : 'text-red-700'}`}>
-              {dbStatus.sqlserver.status}
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-12 h-12 rounded-xl ${dbStatus.mongodb.connected ? 'bg-gradient-to-br from-green-500 to-green-600' : 'bg-gradient-to-br from-gray-500 to-gray-600'} flex items-center justify-center shadow-lg`}>
               <Database className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-800">MongoDB</h3>
+              <h3 className="text-lg font-bold text-slate-800">MongoDB Atlas</h3>
               <p className="text-sm text-slate-500">{dbStatus.mongodb.type}</p>
             </div>
           </div>
@@ -578,16 +528,88 @@ const Admin = () => {
                   <span className="font-medium text-slate-800">{dbStatus.mongodb.database}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Log Kayıtları</span>
+                  <span className="text-slate-600">Toplam Kayıt</span>
                   <span className="font-bold text-slate-800">{dbStatus.mongodb.records}</span>
                 </div>
+                {dbStatus.mongodb.collections && Object.keys(dbStatus.mongodb.collections).length > 0 && (
+                  <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+                    <p className="text-xs font-semibold text-slate-600 mb-2">Koleksiyonlar:</p>
+                    {Object.entries(dbStatus.mongodb.collections).map(([key, value]) => (
+                      <div key={key} className="flex justify-between text-xs text-slate-700">
+                        <span>{key}:</span>
+                        <span className="font-semibold">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
 
           <div className={`p-4 ${dbStatus.mongodb.connected ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} border rounded-lg`}>
-            <p className={`text-sm ${dbStatus.mongodb.connected ? 'text-green-700' : 'text-gray-700'}`}>
+            <p className={`text-sm font-medium ${dbStatus.mongodb.connected ? 'text-green-700' : 'text-gray-700'}`}>
               {dbStatus.mongodb.status}
+            </p>
+            {dbStatus.mongodb.connection_info && (
+              <p className="text-xs text-green-600 mt-1">{dbStatus.mongodb.connection_info}</p>
+            )}
+          </div>
+        </div>
+
+        {/* SQL Server - Optional/Secondary */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 opacity-70">
+          <div className="absolute top-2 right-2 bg-slate-400 text-white text-xs px-3 py-1 rounded-full">
+            OPSİYONEL
+          </div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`w-12 h-12 rounded-xl ${dbStatus.sqlserver.connected ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-slate-400 to-slate-500'} flex items-center justify-center shadow-lg`}>
+              <Database className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">SQL Server</h3>
+              <p className="text-sm text-slate-500">{dbStatus.sqlserver.type}</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3 mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-600">Bağlantı Durumu</span>
+              <div className="flex items-center gap-2">
+                {dbStatus.sqlserver.connected ? (
+                  <>
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="font-semibold text-green-600">Bağlı</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-slate-400" />
+                    <span className="font-semibold text-slate-500">Bağlı Değil</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {dbStatus.sqlserver.connected && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Host</span>
+                  <span className="font-medium text-slate-800 text-xs">{dbStatus.sqlserver.host}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Database</span>
+                  <span className="font-medium text-slate-800">{dbStatus.sqlserver.database}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Toplam Kayıt</span>
+                  <span className="font-bold text-slate-800">{dbStatus.sqlserver.records}</span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className={`p-4 ${dbStatus.sqlserver.connected ? 'bg-blue-50 border-blue-200' : 'bg-slate-50 border-slate-200'} border rounded-lg`}>
+            <p className={`text-sm ${dbStatus.sqlserver.connected ? 'text-blue-700' : 'text-slate-600'}`}>
+              {dbStatus.sqlserver.status}
             </p>
           </div>
         </div>
