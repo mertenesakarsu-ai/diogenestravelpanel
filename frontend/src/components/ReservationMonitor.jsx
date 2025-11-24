@@ -109,8 +109,10 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
     .filter(reservation => {
       // Search filter
       const searchLower = searchQuery.toLowerCase();
+      const passengerNamesStr = reservation.passengerNames ? reservation.passengerNames.join(' ').toLowerCase() : '';
       const matchesSearch = !searchQuery || 
         reservation.passenger.toLowerCase().includes(searchLower) ||
+        passengerNamesStr.includes(searchLower) ||
         reservation.agency.toLowerCase().includes(searchLower) ||
         reservation.hotel.toLowerCase().includes(searchLower) ||
         reservation.destination.toLowerCase().includes(searchLower) ||
