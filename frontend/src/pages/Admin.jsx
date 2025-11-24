@@ -1297,6 +1297,106 @@ const Admin = () => {
           </div>
         </div>
       )}
+
+      {/* MongoDB Collection Data Modal */}
+      {selectedCollection && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-green-50 to-emerald-50">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-800">{selectedCollection.name}</h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  MongoDB Atlas • Toplam Kayıt: {selectedCollection.count.toLocaleString('tr-TR')}
+                </p>
+              </div>
+              <button
+                onClick={closeMongoCollectionModal}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Body - Scrollable Table */}
+            <div className="flex-1 overflow-auto p-6">
+              {loadingMongoData ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+                  <p className="text-slate-600 mt-4">Veriler yükleniyor...</p>
+                </div>
+              ) : mongoCollectionData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-green-100 sticky top-0">
+                      <tr>
+                        {Object.keys(mongoCollectionData[0]).map((key) => (
+                          <th key={key} className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider border-b-2 border-green-200">
+                            {key}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {mongoCollectionData.map((row, idx) => (
+                        <tr key={idx} className="hover:bg-green-50 transition-colors">
+                          {Object.entries(row).map(([key, value], colIdx) => (
+                            <td key={colIdx} className="px-4 py-3 text-slate-700 whitespace-nowrap">
+                              {typeof value === 'object' && value !== null ? (
+                                <span className="text-xs text-slate-500">
+                                  {JSON.stringify(value).length > 50 
+                                    ? JSON.stringify(value).substring(0, 50) + '...' 
+                                    : JSON.stringify(value)}
+                                </span>
+                              ) : (
+                                String(value || '-')
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-slate-500">
+                  <p>Bu koleksiyonda veri bulunamadı</p>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer - Pagination */}
+            {mongoPagination && mongoPagination.total_pages > 1 && (
+              <div className="p-4 border-t border-slate-200 bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-slate-600">
+                    Sayfa {mongoPagination.page} / {mongoPagination.total_pages} • 
+                    Toplam {mongoPagination.total.toLocaleString('tr-TR')} kayıt
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => loadMongoCollectionData(selectedCollection.name, mongoCurrentPage - 1)}
+                      disabled={mongoCurrentPage === 1}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Önceki
+                    </Button>
+                    <Button
+                      onClick={() => loadMongoCollectionData(selectedCollection.name, mongoCurrentPage + 1)}
+                      disabled={mongoCurrentPage === mongoPagination.total_pages}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Sonraki
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
