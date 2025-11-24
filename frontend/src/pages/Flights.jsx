@@ -106,6 +106,82 @@ const Flights = () => {
     if (fileInput) fileInput.value = "";
   };
 
+  // Handle ET Export file upload
+  const handleETExportUpload = async () => {
+    if (!etExportFile) {
+      setEtUploadError("Lütfen bir ET Export Excel dosyası seçin");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", etExportFile);
+
+    try {
+      setEtUploadProgress("Yükleniyor...");
+      setEtUploadError(null);
+
+      const response = await api.post(
+        '/api/flights/upload-et-export',
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setEtUploadProgress(`Başarıyla yüklendi! ${response.data.count} kayıt MongoDB'ye kaydedildi.`);
+      setEtExportFile(null);
+      
+      const fileInput = document.getElementById("et-export-upload");
+      if (fileInput) fileInput.value = "";
+      
+    } catch (error) {
+      setEtUploadError(error.response?.data?.detail || "ET Export yükleme başarısız oldu");
+      setEtUploadProgress(null);
+    }
+  };
+
+  // Handle Flight Department comparison with ET Export
+  const handleCompareWithET = async () => {
+    if (!flightDeptFile) {
+      setComparisonError("Lütfen Flight Department Excel dosyası seçin");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", flightDeptFile);
+
+    try {
+      setIsComparingWithET(true);
+      setComparisonError(null);
+
+      const response = await api.post(
+        '/api/flights/compare-with-et',
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setComparisonResult(response.data);
+    } catch (error) {
+      setComparisonError(error.response?.data?.detail || "Karşılaştırma başarısız oldu");
+    } finally {
+      setIsComparingWithET(false);
+    }
+  };
+
+  const resetETComparison = () => {
+    setFlightDeptFile(null);
+    setComparisonResult(null);
+    setComparisonError(null);
+    const fileInput = document.getElementById("flight-dept-upload");
+    if (fileInput) fileInput.value = "";
+  };
+
   return (
     <div className="space-y-6" data-testid="flights-page">
       {/* Warning Panel */}
