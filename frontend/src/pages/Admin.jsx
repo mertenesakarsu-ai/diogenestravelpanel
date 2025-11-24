@@ -65,6 +65,16 @@ const Admin = () => {
 
   const [logs, setLogs] = useState([]);
   
+  // MongoDB Atlas state
+  const [mongoCollections, setMongoCollections] = useState([]);
+  const [loadingCollections, setLoadingCollections] = useState(true);
+  const [collectionSearch, setCollectionSearch] = useState('');
+  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [mongoCollectionData, setMongoCollectionData] = useState([]);
+  const [loadingMongoData, setLoadingMongoData] = useState(false);
+  const [mongoCurrentPage, setMongoCurrentPage] = useState(1);
+  const [mongoPagination, setMongoPagination] = useState(null);
+  
   // User management state
   const [showUserModal, setShowUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
