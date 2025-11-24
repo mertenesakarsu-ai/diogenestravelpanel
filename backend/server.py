@@ -220,6 +220,7 @@ class ReservationCreate(BaseModel):
     pax_adults: int = 2
     pax_children: int = 0
     pax_infants: int = 0
+    passenger_names: List[str] = []  # New field: List of all passenger names
     status: str = "pending"
     source_agency: str = "THV"
     package_id: Optional[str] = None
