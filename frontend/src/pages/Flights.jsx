@@ -263,6 +263,228 @@ const Flights = () => {
         </div>
       </div>
 
+      {/* ET Export & Flight Department Comparison Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ET Export Upload */}
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-300 shadow-lg p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5 text-green-600" />
+              ET Export Yükleme
+            </h3>
+            <p className="text-sm text-slate-600 mt-1">
+              Referans veri olarak ET Export Excel'i MongoDB'ye yükleyin
+            </p>
+          </div>
+
+          <div className="border-2 border-dashed border-green-300 rounded-xl p-6 text-center bg-white hover:border-green-400 transition-colors">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                <Upload className="w-7 h-7 text-green-600" />
+              </div>
+              
+              <div>
+                <label htmlFor="et-export-upload" className="cursor-pointer">
+                  <span className="text-green-600 hover:text-green-700 font-semibold">
+                    ET Export Excel seçin
+                  </span>
+                </label>
+                <input
+                  id="et-export-upload"
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={(e) => {
+                    setEtExportFile(e.target.files[0]);
+                    setEtUploadError(null);
+                    setEtUploadProgress(null);
+                  }}
+                  className="hidden"
+                />
+                <p className="text-xs text-slate-500 mt-2">Excel (.xlsx, .xls)</p>
+              </div>
+
+              {etExportFile && (
+                <div className="flex items-center gap-3 px-4 py-2 bg-green-100 rounded-lg">
+                  <FileSpreadsheet className="w-5 h-5 text-green-700" />
+                  <span className="font-medium text-green-800 text-sm">{etExportFile.name}</span>
+                </div>
+              )}
+
+              <Button
+                onClick={handleETExportUpload}
+                disabled={!etExportFile || etUploadProgress === "Yükleniyor..."}
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {etUploadProgress === "Yükleniyor..." ? "Yükleniyor..." : "MongoDB'ye Kaydet"}
+              </Button>
+            </div>
+          </div>
+
+          {etUploadProgress && etUploadProgress !== "Yükleniyor..." && (
+            <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-green-800">Başarılı!</p>
+                <p className="text-sm text-green-700">{etUploadProgress}</p>
+              </div>
+            </div>
+          )}
+
+          {etUploadError && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-red-800">Hata!</p>
+                <p className="text-sm text-red-700">{etUploadError}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs text-blue-800 font-semibold mb-1">Beklenen Kolonlar:</p>
+            <p className="text-xs text-blue-700">
+              Reservation no, Name and Surname, Airline, PNR, Arrival date, flight no, 
+              Airline.1, PNR.1, Departure date, Flight no
+            </p>
+          </div>
+        </div>
+
+        {/* Flight Department Comparison */}
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-300 shadow-lg p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5 text-purple-600" />
+              Flight Department Karşılaştırma
+            </h3>
+            <p className="text-sm text-slate-600 mt-1">
+              Flight Dept. Excel'ini ET Export ile karşılaştırın
+            </p>
+          </div>
+
+          {!comparisonResult ? (
+            <>
+              <div className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center bg-white hover:border-purple-400 transition-colors">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Upload className="w-7 h-7 text-purple-600" />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="flight-dept-upload" className="cursor-pointer">
+                      <span className="text-purple-600 hover:text-purple-700 font-semibold">
+                        Flight Dept. Excel seçin
+                      </span>
+                    </label>
+                    <input
+                      id="flight-dept-upload"
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={(e) => {
+                        setFlightDeptFile(e.target.files[0]);
+                        setComparisonError(null);
+                      }}
+                      className="hidden"
+                    />
+                    <p className="text-xs text-slate-500 mt-2">Excel (.xlsx, .xls)</p>
+                  </div>
+
+                  {flightDeptFile && (
+                    <div className="flex items-center gap-3 px-4 py-2 bg-purple-100 rounded-lg">
+                      <FileSpreadsheet className="w-5 h-5 text-purple-700" />
+                      <span className="font-medium text-purple-800 text-sm">{flightDeptFile.name}</span>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleCompareWithET}
+                    disabled={!flightDeptFile || isComparingWithET}
+                    className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-6"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    {isComparingWithET ? "Karşılaştırılıyor..." : "ET Export ile Karşılaştır"}
+                  </Button>
+                </div>
+              </div>
+
+              {comparisonError && (
+                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-800">Hata!</p>
+                    <p className="text-sm text-red-700">{comparisonError}</p>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="space-y-4">
+              {/* Summary */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-white rounded-lg border border-purple-200">
+                  <p className="text-xs text-slate-600 mb-1">ET Export Kayıt</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {comparisonResult.summary.total_et_records}
+                  </p>
+                </div>
+                <div className="p-4 bg-white rounded-lg border border-purple-200">
+                  <p className="text-xs text-slate-600 mb-1">Flight Dept. Kayıt</p>
+                  <p className="text-2xl font-bold text-purple-700">
+                    {comparisonResult.summary.total_flight_dept_records}
+                  </p>
+                </div>
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-300">
+                  <p className="text-xs text-blue-700 mb-1">Farklılık Olan</p>
+                  <p className="text-2xl font-bold text-blue-700">
+                    {comparisonResult.summary.matching_with_differences}
+                  </p>
+                </div>
+                <div className="p-4 bg-orange-50 rounded-lg border border-orange-300">
+                  <p className="text-xs text-orange-700 mb-1">Sadece Flight Dept.</p>
+                  <p className="text-2xl font-bold text-orange-700">
+                    {comparisonResult.summary.only_in_flight_dept}
+                  </p>
+                </div>
+              </div>
+
+              {/* Differences Detail */}
+              {comparisonResult.matching_with_differences.length > 0 && (
+                <div className="max-h-96 overflow-y-auto">
+                  <h4 className="font-semibold text-slate-800 mb-2 text-sm">Farklılık Olan Kayıtlar:</h4>
+                  {comparisonResult.matching_with_differences.map((record, idx) => (
+                    <div key={idx} className="mb-3 p-3 bg-white border border-blue-200 rounded-lg">
+                      <p className="font-medium text-blue-900 text-sm mb-2">
+                        {record.reservation_no} - {record.name_surname}
+                      </p>
+                      <div className="space-y-1">
+                        {record.differences.map((diff, diffIdx) => (
+                          <div key={diffIdx} className="flex items-center gap-2 text-xs">
+                            <span className="font-semibold text-slate-700">{diff.field}:</span>
+                            <span className="text-red-600">ET: {diff.et_value || '-'}</span>
+                            <span className="text-slate-400">→</span>
+                            <span className="text-green-600">Flight: {diff.flight_dept_value || '-'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button 
+                onClick={resetETComparison}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Yeni Karşılaştırma
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Excel Compare Section */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
