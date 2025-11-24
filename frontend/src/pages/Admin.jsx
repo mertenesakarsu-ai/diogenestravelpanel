@@ -286,6 +286,7 @@ const Admin = () => {
     loadDatabaseStatus();
     loadStatistics();
     loadTables();
+    loadMongoCollections();
   }, []);
 
   // Open modal for new user
