@@ -461,7 +461,11 @@ const ReservationMonitor = ({ isOpen, onClose }) => {
                       </span>
                     </td>
                     <td className="px-3 py-4 text-base text-slate-700">{reservation.agency}</td>
-                    <td className="px-3 py-4 text-base font-medium text-slate-800">{reservation.passenger}</td>
+                    <td className="px-3 py-4 text-base font-medium text-slate-800">
+                      {reservation.passengerNames && reservation.passengerNames.length > 0 
+                        ? reservation.passengerNames.join(', ') 
+                        : reservation.passenger}
+                    </td>
                     <td className="px-3 py-4 text-base text-slate-700">{reservation.hotel}</td>
                     <td className="px-3 py-4 text-center text-lg">{renderStars(reservation.stars)}</td>
                     <td className="px-3 py-4 text-base font-medium text-cyan-700">{reservation.destination}</td>
