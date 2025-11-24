@@ -10,25 +10,28 @@ import { useAuth } from "@/context/AuthContext";
 const Admin = () => {
   const { hasPermission } = useAuth();
   const [dbStatus, setDbStatus] = useState({
-    sqlserver: { 
-      connected: false, 
-      records: 0,
-      host: 'N/A',
-      database: 'N/A',
-      type: 'İlişkisel Veritabanı (SQL Server)',
-      status: 'Bağlantı kontrol ediliyor...',
-      tables: {},
-      total_operations: 0,
-      total_customers: 0,
-      total_hotels: 0
-    },
     mongodb: { 
       connected: false, 
       records: 0,
       host: 'N/A',
       database: 'DiogenesLOG',
-      type: 'Doküman Veritabanı (MongoDB)',
-      status: 'Bağlantı kontrol ediliyor...'
+      type: '🌐 MongoDB Atlas (Ana Veritabanı)',
+      status: 'Bağlantı kontrol ediliyor...',
+      collections: {},
+      connection_info: '',
+      region: ''
+    },
+    sqlserver: { 
+      connected: false, 
+      records: 0,
+      host: 'N/A',
+      database: 'N/A',
+      type: '🗄️ SQL Server (Opsiyonel)',
+      status: 'Bağlı değil (Kullanılmıyor)',
+      tables: {},
+      total_operations: 0,
+      total_customers: 0,
+      total_hotels: 0
     }
   });
 
