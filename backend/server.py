@@ -2894,7 +2894,362 @@ async def get_admin_packages(
         logger.error(f"Error in get_admin_packages: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch packages: {str(e)}")
 
+# ==================== MONGODB ATLAS ENDPOINTS ====================
 
+@api_router.get("/mongodb/collections")
+async def get_mongodb_collections(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get list of all MongoDB collections with document counts
+    """
+    try:
+        # Get all collection names
+        collection_names = await mongo_db.list_collection_names()
+        
+        # Get document count for each collection
+        collections_info = []
+        for name in collection_names:
+            collection = mongo_db[name]
+            count = await collection.count_documents({})
+            collections_info.append({
+                'name': name,
+                'count': count
+            })
+        
+        # Sort by count descending
+        collections_info.sort(key=lambda x: x['count'], reverse=True)
+        
+        return {
+            'collections': collections_info,
+            'total': len(collections_info)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching MongoDB collections: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch collections: {str(e)}")
+
+
+@api_router.get("/mongodb/collections/{collection_name}/data")
+async def get_mongodb_collection_data(
+    collection_name: str,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get paginated data from a specific MongoDB collection
+    """
+    try:
+        collection = mongo_db[collection_name]
+        
+        # Get total count
+        total = await collection.count_documents({})
+        
+        # Calculate pagination
+        skip = (page - 1) * page_size
+        
+        # Fetch documents
+        cursor = collection.find({}).skip(skip).limit(page_size)
+        documents = await cursor.to_list(length=page_size)
+        
+        # Convert ObjectId to string for JSON serialization
+        for doc in documents:
+            if '_id' in doc:
+                doc['_id'] = str(doc['_id'])
+        
+        return {
+            'collection': collection_name,
+            'data': documents,
+            'pagination': {
+                'page': page,
+                'page_size': page_size,
+                'total': total,
+                'total_pages': (total + page_size - 1) // page_size
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching data from collection {collection_name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch collection data: {str(e)}")
+
+
+# ==================== ET EXPORT & COMPARISON ENDPOINTS ====================
+
+class ETExportRecord(BaseModel):
+    """Model for ET Export flight passenger records"""
+    reservation_no: str
+    name_surname: str
+    airline_arrival: str
+    pnr_arrival: str
+    arrival_date: str
+    flight_no_arrival: str
+    airline_departure: Optional[str] = None
+    pnr_departure: Optional[str] = None
+    departure_date: Optional[str] = None
+    flight_no_departure: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+@api_router.post("/flights/upload-et-export")
+async def upload_et_export(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Upload ET Export Excel file and store in MongoDB (et_export_flights collection)
+    Replaces all existing data in the collection
+    """
+    try:
+        # Check permission
+        if not has_permission(current_user, 'flights', 'upload'):
+            raise HTTPException(status_code=403, detail="No permission to upload flight data")
+        
+        # Read Excel file
+        contents = await file.read()
+        df = pd.read_excel(io.BytesIO(contents))
+        
+        # Clear existing ET export data
+        collection = mongo_db['et_export_flights']
+        await collection.delete_many({})
+        
+        # Map Excel columns to our model
+        records = []
+        for _, row in df.iterrows():
+            record = {
+                'reservation_no': str(row.get('Reservation no', '')).strip(),
+                'name_surname': str(row.get('Name and Surname', '')).strip(),
+                'airline_arrival': str(row.get('Airline', '')).strip(),
+                'pnr_arrival': str(row.get('PNR', '')).strip(),
+                'arrival_date': str(row.get('Arrival date', '')).strip(),
+                'flight_no_arrival': str(row.get('flight no', '')).strip(),
+                'airline_departure': str(row.get('Airline.1', '')).strip() if pd.notna(row.get('Airline.1')) else None,
+                'pnr_departure': str(row.get('PNR.1', '')).strip() if pd.notna(row.get('PNR.1')) else None,
+                'departure_date': str(row.get('Departure date', '')).strip() if pd.notna(row.get('Departure date')) else None,
+                'flight_no_departure': str(row.get('Flight no', '')).strip() if pd.notna(row.get('Flight no')) else None,
+                'created_at': datetime.now(timezone.utc)
+            }
+            records.append(record)
+        
+        # Insert all records
+        if records:
+            await collection.insert_many(records)
+        
+        await log_action(
+            current_user['id'],
+            'upload_et_export',
+            'flights',
+            {'count': len(records), 'filename': file.filename}
+        )
+        
+        return {
+            'message': 'ET Export uploaded successfully',
+            'count': len(records),
+            'collection': 'et_export_flights'
+        }
+        
+    except Exception as e:
+        logger.error(f"Error uploading ET export: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload ET export: {str(e)}")
+
+
+@api_router.post("/flights/compare-with-et")
+async def compare_flight_dept_with_et(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Compare uploaded Flight Department Excel with ET Export data from MongoDB
+    Returns:
+    - Matching records with differences
+    - Records in Excel but not in ET Export
+    - Records in ET Export but not in Excel
+    """
+    try:
+        # Check permission
+        if not has_permission(current_user, 'flights', 'read'):
+            raise HTTPException(status_code=403, detail="No permission to access flight data")
+        
+        # Read uploaded Excel file
+        contents = await file.read()
+        df_flight = pd.read_excel(io.BytesIO(contents))
+        
+        # Get ET Export data from MongoDB
+        collection = mongo_db['et_export_flights']
+        et_records_cursor = collection.find({})
+        et_records = await et_records_cursor.to_list(length=None)
+        
+        if not et_records:
+            raise HTTPException(status_code=400, detail="No ET Export data found in database. Please upload ET Export first.")
+        
+        # Create dictionary for ET records (key: reservation_no + name_surname)
+        et_dict = {}
+        for record in et_records:
+            key = f"{record['reservation_no']}_{record['name_surname']}".lower().replace(' ', '')
+            et_dict[key] = record
+        
+        # Results
+        matching_with_differences = []
+        only_in_flight_dept = []
+        only_in_et = set(et_dict.keys())
+        
+        # Process Flight Department Excel
+        for idx, row in df_flight.iterrows():
+            reservation_no = str(row.get('Reservation no', '')).strip()
+            name_surname = str(row.get('Name and Surname', '')).strip()
+            
+            if not reservation_no or not name_surname:
+                continue
+            
+            key = f"{reservation_no}_{name_surname}".lower().replace(' ', '')
+            
+            # Check if exists in ET Export
+            if key in et_dict:
+                only_in_et.discard(key)
+                et_record = et_dict[key]
+                
+                # Compare fields
+                differences = []
+                
+                # Arrival PNR
+                pnr_arrival_flight = str(row.get('PNR', '')).strip()
+                pnr_arrival_et = et_record.get('pnr_arrival', '')
+                if pnr_arrival_flight != pnr_arrival_et:
+                    differences.append({
+                        'field': 'PNR (Geliş)',
+                        'et_value': pnr_arrival_et,
+                        'flight_dept_value': pnr_arrival_flight
+                    })
+                
+                # Arrival Flight No
+                flight_no_arrival_flight = str(row.get('flight no', '')).strip()
+                flight_no_arrival_et = et_record.get('flight_no_arrival', '')
+                if flight_no_arrival_flight != flight_no_arrival_et:
+                    differences.append({
+                        'field': 'Uçuş No (Geliş)',
+                        'et_value': flight_no_arrival_et,
+                        'flight_dept_value': flight_no_arrival_flight
+                    })
+                
+                # Arrival Airline
+                airline_arrival_flight = str(row.get('Airline', '')).strip()
+                airline_arrival_et = et_record.get('airline_arrival', '')
+                if airline_arrival_flight != airline_arrival_et:
+                    differences.append({
+                        'field': 'Havayolu (Geliş)',
+                        'et_value': airline_arrival_et,
+                        'flight_dept_value': airline_arrival_flight
+                    })
+                
+                # Arrival Date
+                arrival_date_flight = str(row.get('Arrival date', '')).strip()
+                arrival_date_et = et_record.get('arrival_date', '')
+                if arrival_date_flight != arrival_date_et:
+                    differences.append({
+                        'field': 'Geliş Tarihi',
+                        'et_value': arrival_date_et,
+                        'flight_dept_value': arrival_date_flight
+                    })
+                
+                # Departure PNR
+                pnr_departure_flight = str(row.get('PNR.1', '')).strip() if pd.notna(row.get('PNR.1')) else ''
+                pnr_departure_et = et_record.get('pnr_departure', '') or ''
+                if pnr_departure_flight != pnr_departure_et:
+                    differences.append({
+                        'field': 'PNR (Dönüş)',
+                        'et_value': pnr_departure_et,
+                        'flight_dept_value': pnr_departure_flight
+                    })
+                
+                # Departure Flight No
+                flight_no_departure_flight = str(row.get('Flight no', '')).strip() if pd.notna(row.get('Flight no')) else ''
+                flight_no_departure_et = et_record.get('flight_no_departure', '') or ''
+                if flight_no_departure_flight != flight_no_departure_et:
+                    differences.append({
+                        'field': 'Uçuş No (Dönüş)',
+                        'et_value': flight_no_departure_et,
+                        'flight_dept_value': flight_no_departure_flight
+                    })
+                
+                # Departure Airline
+                airline_departure_flight = str(row.get('Airline.1', '')).strip() if pd.notna(row.get('Airline.1')) else ''
+                airline_departure_et = et_record.get('airline_departure', '') or ''
+                if airline_departure_flight != airline_departure_et:
+                    differences.append({
+                        'field': 'Havayolu (Dönüş)',
+                        'et_value': airline_departure_et,
+                        'flight_dept_value': airline_departure_flight
+                    })
+                
+                # Departure Date
+                departure_date_flight = str(row.get('Departure date', '')).strip() if pd.notna(row.get('Departure date')) else ''
+                departure_date_et = et_record.get('departure_date', '') or ''
+                if departure_date_flight != departure_date_et:
+                    differences.append({
+                        'field': 'Dönüş Tarihi',
+                        'et_value': departure_date_et,
+                        'flight_dept_value': departure_date_flight
+                    })
+                
+                # If there are differences, add to result
+                if differences:
+                    matching_with_differences.append({
+                        'reservation_no': reservation_no,
+                        'name_surname': name_surname,
+                        'differences': differences
+                    })
+            else:
+                # Not found in ET Export
+                only_in_flight_dept.append({
+                    'reservation_no': reservation_no,
+                    'name_surname': name_surname,
+                    'pnr_arrival': str(row.get('PNR', '')).strip(),
+                    'flight_no_arrival': str(row.get('flight no', '')).strip(),
+                    'airline_arrival': str(row.get('Airline', '')).strip(),
+                    'arrival_date': str(row.get('Arrival date', '')).strip()
+                })
+        
+        # Convert remaining ET records to list
+        only_in_et_list = []
+        for key in only_in_et:
+            record = et_dict[key]
+            only_in_et_list.append({
+                'reservation_no': record.get('reservation_no', ''),
+                'name_surname': record.get('name_surname', ''),
+                'pnr_arrival': record.get('pnr_arrival', ''),
+                'flight_no_arrival': record.get('flight_no_arrival', ''),
+                'airline_arrival': record.get('airline_arrival', ''),
+                'arrival_date': record.get('arrival_date', '')
+            })
+        
+        await log_action(
+            current_user['id'],
+            'compare_flights',
+            'flights',
+            {
+                'filename': file.filename,
+                'matching_with_diffs': len(matching_with_differences),
+                'only_in_flight_dept': len(only_in_flight_dept),
+                'only_in_et': len(only_in_et_list)
+            }
+        )
+        
+        return {
+            'summary': {
+                'total_flight_dept_records': len(df_flight),
+                'total_et_records': len(et_records),
+                'matching_with_differences': len(matching_with_differences),
+                'only_in_flight_dept': len(only_in_flight_dept),
+                'only_in_et': len(only_in_et_list)
+            },
+            'matching_with_differences': matching_with_differences,
+            'only_in_flight_dept': only_in_flight_dept,
+            'only_in_et': only_in_et_list
+        }
+        
+    except Exception as e:
+        logger.error(f"Error comparing flight data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to compare flight data: {str(e)}")
 
 
 # Include the router in the main app (MUST BE AFTER ALL ENDPOINT DEFINITIONS)
