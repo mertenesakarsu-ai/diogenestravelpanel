@@ -137,20 +137,20 @@ const Admin = () => {
     try {
       const response = await api.get('/api/database/status');
       setDbStatus({
-        sqlserver: response.data.sqlserver || dbStatus.sqlserver,
-        mongodb: response.data.mongodb || dbStatus.mongodb
+        mongodb: response.data.mongodb || dbStatus.mongodb,
+        sqlserver: response.data.sqlserver || dbStatus.sqlserver
       });
     } catch (error) {
       console.error('Error loading database status:', error);
       // Set error status immediately instead of keeping "Loading..."
       setDbStatus(prev => ({
-        sqlserver: {
-          ...prev.sqlserver,
+        mongodb: {
+          ...prev.mongodb,
           status: '❌ Bağlantı hatası - Yetki gerekli',
           connected: false
         },
-        mongodb: {
-          ...prev.mongodb,
+        sqlserver: {
+          ...prev.sqlserver,
           status: '❌ Bağlantı hatası - Yetki gerekli',
           connected: false
         }
