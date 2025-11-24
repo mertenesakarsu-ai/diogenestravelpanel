@@ -326,6 +326,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Yetkilendirme ve filtreleme güncellemeleri: 1) Monitör butonu sadece admin, rezervasyon ve yönetim departmanı için görünür (uçak ve operasyon göremez) 2) Tarih etiketleri 'Başlangıç/Bitiş Tarihi'nden 'Giriş/Çıkış Tarihi'ne değiştirildi 3) 'Filtre Uygula' butonu eklendi - filtreler artık otomatik değil, butona tıklandığında uygulanıyor 4) Tarih filtreleme check-in tarihine göre yapılıyor. Test edilmeye hazır."
+        - working: true
+          agent: "main"
+          comment: "✅ YOLCU İSİMLERİ SORUNU ÇÖZÜLDÜ - Kullanıcı bildirdi: Kişi sayısı gösteriliyor ama yolcu isimleri kısmında sadece bir isim var. 2 kişi varsa her ikisinin de ismi olmalı. YAPILAN DEĞİŞİKLİKLER: 1) Backend Reservation modelinde passenger_names field'ı eklendi (List[str]), 2) Backend ReservationCreate modelinde passenger_names field'ı eklendi, 3) SQL modelinde passenger_names kolonu eklendi (Text - JSON array), 4) ReservationMonitor.jsx'teki tüm 20 dummy rezervasyona passengerNames array'i eklendi (kişi sayısına göre gerçekçi isimler), 5) 'Yolcular' kolonunda artık tüm yolcu isimleri gösteriliyor (virgülle ayrılmış), 6) Arama filtresine passengerNames eklendi (tüm yolcu isimlerinde arama yapılabilir). ÖRNEKLER: 2 kişi varsa 'John Smith, Sarah Smith', 4 kişi varsa 'Emma Johnson, David Johnson, Sophie Johnson, Oliver Johnson' şeklinde gösteriliyor. Backend ve frontend yeniden başlatıldı, hazır."
 
 backend:
   - task: "Login API Endpoint ve Kullanıcı Email Güncellemesi"
