@@ -2630,14 +2630,15 @@ async def get_diogenes_reservation_details(
 # ==================== ADMIN PANEL ENDPOINTS ====================
 
 @api_router.get("/database/status")
-async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
+async def get_database_status(x_user_id: Optional[str] = Header(None)):
     """
-    Get comprehensive database status including SQL Server and MongoDB statistics (Admin only)
+    Get comprehensive database status - MongoDB Atlas as primary database (Admin only)
     """
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
-    current_user = get_current_user_sync(x_user_id, sql_db)
+    # Get current user from MongoDB
+    current_user = await mongo_db.users.find_one({"id": x_user_id}, {"_id": 0})
     if not current_user:
         raise HTTPException(status_code=401, detail="User not found")
     
@@ -2646,83 +2647,80 @@ async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: S
         raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
-        # SQL Server statistics from diogenesDB
+        # MongoDB Atlas - PRIMARY DATABASE
+        mongodb_status = {
+            'connected': False,
+            'records': 0,
+            'host': os.environ.get('MONGO_URL', 'N/A').split('@')[-1].split('/')[0] if '@' in os.environ.get('MONGO_URL', '') else 'localhost:27017',
+            'database': os.environ.get('DB_NAME', 'DiogenesLOG'),
+            'type': '🌐 MongoDB Atlas (Ana Veritabanı)',
+            'status': 'Bağlantı kontrol ediliyor...',
+            'collections': {}
+        }
+        
+        try:
+            # Test MongoDB Atlas connection
+            await mongo_db.command('ping')
+            
+            # Get collection counts
+            users_count = await mongo_db.users.count_documents({})
+            logs_count = await mongo_db.logs.count_documents({})
+            flights_count = await mongo_db.flights.count_documents({}) if 'flights' in await mongo_db.list_collection_names() else 0
+            reservations_count = await mongo_db.reservations.count_documents({}) if 'reservations' in await mongo_db.list_collection_names() else 0
+            operations_count = await mongo_db.operations.count_documents({}) if 'operations' in await mongo_db.list_collection_names() else 0
+            
+            total_records = users_count + logs_count + flights_count + reservations_count + operations_count
+            
+            mongodb_status.update({
+                'connected': True,
+                'records': total_records,
+                'status': f'✅ MongoDB Atlas - Bağlı ve Aktif ({total_records:,} toplam kayıt)',
+                'collections': {
+                    'users': users_count,
+                    'logs': logs_count,
+                    'flights': flights_count,
+                    'reservations': reservations_count,
+                    'operations': operations_count
+                },
+                'connection_info': '🔒 Atlas Cluster - Güvenli Bağlantı',
+                'region': 'Cloud MongoDB (Auto-scaling)'
+            })
+        except Exception as e:
+            logger.error(f"MongoDB Atlas status check failed: {e}")
+            mongodb_status.update({
+                'status': f'❌ Bağlantı Hatası: {str(e)}'
+            })
+        
+        # SQL Server statistics - OPTIONAL/SECONDARY
         sqlserver_status = {
             'connected': False,
             'records': 0,
             'host': os.environ.get('SQL_SERVER_HOST', 'N/A'),
             'database': os.environ.get('SQL_SERVER_DB', 'diogenesDB'),
-            'type': 'İlişkisel Veritabanı (SQL Server)',
-            'status': 'Bağlantı kontrol ediliyor...',
-            'tables': {},
-            'total_operations': 0,
-            'total_customers': 0,
-            'total_hotels': 0
+            'type': '🗄️ SQL Server (Opsiyonel - Eski Veriler)',
+            'status': 'Bağlı değil (Kullanılmıyor)',
+            'tables': {}
         }
         
         try:
-            # Get counts from SQL Server using SQLAlchemy
+            # Try to connect to SQL Server if available
+            from sql_models import SessionLocal
+            sql_db = SessionLocal()
             users_count = sql_db.query(func.count(SQLUser.id)).scalar()
-            flights_count = sql_db.query(func.count(SQLFlight.id)).scalar()
-            reservations_count = sql_db.query(func.count(SQLReservation.id)).scalar()
-            operations_count = sql_db.query(func.count(SQLOperation.id)).scalar()
-            hotels_count = sql_db.query(func.count(SQLHotel.id)).scalar()
-            packages_count = sql_db.query(func.count(SQLPackage.id)).scalar()
-            
-            # Get total records
-            total_records = users_count + flights_count + reservations_count + operations_count + hotels_count + packages_count
+            sql_db.close()
             
             sqlserver_status.update({
                 'connected': True,
-                'records': total_records,
-                'status': f'✅ Bağlı ve aktif ({total_records:,} toplam kayıt)',
-                'tables': {
-                    'users': users_count,
-                    'flights': flights_count,
-                    'reservations': reservations_count,
-                    'operations': operations_count,
-                    'hotels': hotels_count,
-                    'packages': packages_count
-                },
-                'total_operations': operations_count,
-                'total_customers': reservations_count,  # Using reservations as customers proxy
-                'total_hotels': hotels_count
+                'status': f'⚠️ Bağlı ama aktif olarak kullanılmıyor',
+                'records': users_count
             })
         except Exception as e:
-            logger.error(f"SQL Server status check failed: {e}")
-            sqlserver_status['status'] = f'❌ Hata: {str(e)}'
-        
-        # MongoDB statistics (for logs only)
-        mongodb_status = {
-            'connected': False,
-            'records': 0,
-            'host': os.environ.get('MONGO_URL', 'N/A').split('@')[-1] if '@' in os.environ.get('MONGO_URL', '') else 'localhost:27017',
-            'database': 'DiogenesLOG',
-            'type': 'Doküman Veritabanı (MongoDB - Sadece Loglar)',
-            'status': 'Bağlantı kontrol ediliyor...'
-        }
-        
-        try:
-            # Test MongoDB connection
-            await mongo_db.command('ping')
-            
-            # Get logs count
-            logs_count = await mongo_db.logs.count_documents({})
-            
-            mongodb_status.update({
-                'connected': True,
-                'records': logs_count,
-                'status': f'✅ Bağlı ve aktif ({logs_count} log kaydı)'
-            })
-        except Exception as e:
-            logger.error(f"MongoDB status check failed: {e}")
-            mongodb_status.update({
-                'status': f'⚠️ Log servisi: {str(e)}'
-            })
+            logger.info(f"SQL Server not available (expected): {e}")
+            sqlserver_status['status'] = '❌ Bağlı değil (MongoDB Atlas kullanılıyor)'
         
         return {
-            'sqlserver': sqlserver_status,
-            'mongodb': mongodb_status
+            'mongodb': mongodb_status,  # MongoDB first (primary)
+            'sqlserver': sqlserver_status  # SQL Server second (optional)
         }
         
     except Exception as e:
