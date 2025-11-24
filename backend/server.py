@@ -195,6 +195,7 @@ class Reservation(BaseModel):
     pax_adults: int = 0
     pax_children: int = 0
     pax_infants: int = 0
+    passenger_names: List[str] = []  # New field: List of all passenger names
     status: str  # "confirmed", "pending", "cancelled"
     source_agency: str = "THV"  # New field: Source agency
     package_id: Optional[str] = None  # New field: Link to package if multi-leg tour
