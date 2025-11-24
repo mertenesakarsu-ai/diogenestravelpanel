@@ -772,6 +772,73 @@ const Admin = () => {
             </div>
           </TabsContent>
 
+          {/* MongoDB Atlas Tab */}
+          <TabsContent value="mongodb" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">MongoDB Atlas Koleksiyonları</h3>
+                  <p className="text-sm text-slate-600">MongoDB Atlas'taki koleksiyonlar ve kayıt sayıları</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Koleksiyon ara..."
+                    value={collectionSearch}
+                    onChange={(e) => setCollectionSearch(e.target.value)}
+                    className="w-64"
+                  />
+                  <Button onClick={loadMongoCollections} variant="outline">
+                    Yenile
+                  </Button>
+                </div>
+              </div>
+
+              {loadingCollections ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+                  <p className="text-slate-600 mt-4">Koleksiyonlar yükleniyor...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mongoCollections
+                    .filter(collection => 
+                      !collectionSearch || 
+                      collection.name.toLowerCase().includes(collectionSearch.toLowerCase())
+                    )
+                    .map((collection) => (
+                      <div
+                        key={collection.name}
+                        onClick={() => openMongoCollectionModal(collection)}
+                        className="p-4 border border-slate-200 rounded-lg hover:border-green-400 hover:shadow-md transition-all cursor-pointer bg-gradient-to-br from-white to-green-50"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Database className="w-5 h-5 text-green-600" />
+                            <h4 className="font-semibold text-slate-800 text-sm">{collection.name}</h4>
+                          </div>
+                          <span className="text-xs px-2 py-1 bg-green-100 rounded-full text-green-700">
+                            MongoDB
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-600">Kayıt Sayısı</span>
+                          <span className="text-lg font-bold text-green-600">{collection.count.toLocaleString('tr-TR')}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {!loadingCollections && mongoCollections.length === 0 && (
+                <div className="text-center py-12 text-slate-500">
+                  <Database className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>Koleksiyon bulunamadı</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           {/* Upload Tab */}
           <TabsContent value="upload" className="space-y-6">
             <div className="space-y-6">
