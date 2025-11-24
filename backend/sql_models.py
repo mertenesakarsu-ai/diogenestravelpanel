@@ -93,6 +93,7 @@ class SQLReservation(Base):
     pax_adults = Column(Integer, default=0)
     pax_children = Column(Integer, default=0)
     pax_infants = Column(Integer, default=0)
+    passenger_names = Column(Text, nullable=True)  # JSON string array of passenger names
     status = Column(String(50), nullable=False)  # confirmed, pending, cancelled
     source_agency = Column(String(100), default="THV")
     package_id = Column(String(100), nullable=True)
