@@ -223,6 +223,51 @@ const Admin = () => {
     setCurrentPage(1);
   };
 
+  // Load MongoDB collections
+  const loadMongoCollections = async () => {
+    try {
+      setLoadingCollections(true);
+      const response = await api.get('/api/mongodb/collections');
+      setMongoCollections(response.data.collections || []);
+    } catch (error) {
+      console.error('Error loading MongoDB collections:', error);
+    } finally {
+      setLoadingCollections(false);
+    }
+  };
+
+  // Load MongoDB collection data with pagination
+  const loadMongoCollectionData = async (collectionName, page = 1) => {
+    try {
+      setLoadingMongoData(true);
+      const response = await api.get(`/api/mongodb/collections/${collectionName}/data`, {
+        params: { page, page_size: 50 }
+      });
+      setMongoCollectionData(response.data.data || []);
+      setMongoPagination(response.data.pagination);
+      setMongoCurrentPage(page);
+    } catch (error) {
+      console.error('Error loading MongoDB collection data:', error);
+    } finally {
+      setLoadingMongoData(false);
+    }
+  };
+
+  // Open MongoDB collection modal
+  const openMongoCollectionModal = (collection) => {
+    setSelectedCollection(collection);
+    setMongoCurrentPage(1);
+    loadMongoCollectionData(collection.name, 1);
+  };
+
+  // Close MongoDB collection modal
+  const closeMongoCollectionModal = () => {
+    setSelectedCollection(null);
+    setMongoCollectionData([]);
+    setMongoPagination(null);
+    setMongoCurrentPage(1);
+  };
+
   // Load users
   const loadUsers = async () => {
     try {
