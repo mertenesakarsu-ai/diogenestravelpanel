@@ -22,6 +22,17 @@ const Flights = () => {
   const [isComparing, setIsComparing] = useState(false);
   const [compareError, setCompareError] = useState(null);
   const [flights, setFlights] = useState([]);
+  
+  // ET Export states
+  const [etExportFile, setEtExportFile] = useState(null);
+  const [etUploadProgress, setEtUploadProgress] = useState(null);
+  const [etUploadError, setEtUploadError] = useState(null);
+  
+  // Flight Department comparison states
+  const [flightDeptFile, setFlightDeptFile] = useState(null);
+  const [comparisonResult, setComparisonResult] = useState(null);
+  const [isComparingWithET, setIsComparingWithET] = useState(false);
+  const [comparisonError, setComparisonError] = useState(null);
 
   useEffect(() => {
     fetchFlights();
