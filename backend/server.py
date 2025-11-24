@@ -774,25 +774,25 @@ async def login(credentials: UserLogin):
     }
 
 @api_router.get("/users", response_model=List[User])
-async def get_users(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
-    # Get users from SQL Server
+async def get_users(x_user_id: Optional[str] = Header(None)):
+    # Get users from MongoDB Atlas
     try:
-        sql_users = sql_db.query(SQLUser).all()
+        mongo_users = await mongo_db.users.find({}, {"_id": 0}).to_list(length=None)
         users = []
-        for sql_user in sql_users:
+        for user in mongo_users:
             users.append({
-                'id': sql_user.id,
-                'name': sql_user.name,
-                'email': sql_user.email,
-                'password': sql_user.password,
-                'role': sql_user.role,
-                'status': sql_user.status,
-                'profile_picture': sql_user.profile_picture,
-                'created_at': sql_user.created_at
+                'id': user.get('id'),
+                'name': user.get('name'),
+                'email': user.get('email'),
+                'password': user.get('password'),
+                'role': user.get('role'),
+                'status': user.get('status'),
+                'profile_picture': user.get('profile_picture'),
+                'created_at': user.get('created_at')
             })
         return users
     except Exception as e:
-        logger.error(f"Error getting users: {e}")
+        logger.error(f"Error getting users from MongoDB: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get users: {str(e)}")
 
 @api_router.get("/users/{user_id}/permissions")
