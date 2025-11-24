@@ -736,31 +736,37 @@ async def login(credentials: UserLogin, sql_db: Session = Depends(get_db)):
     
     # Verify password
     if not pwd_context.verify(credentials.password, user.password):
-        # Log failed login attempt to MongoDB
-        await mongo_db.logs.insert_one({
-            "id": str(uuid.uuid4()),
-            "user": credentials.email,
-            "action": "LOGIN_FAILED",
-            "entity": "users",
-            "details": "Wrong password",
-            "timestamp": datetime.now(timezone.utc)
-        })
+        # Log failed login attempt to MongoDB (optional - skip if MongoDB unavailable)
+        try:
+            await mongo_db.logs.insert_one({
+                "id": str(uuid.uuid4()),
+                "user": credentials.email,
+                "action": "LOGIN_FAILED",
+                "entity": "users",
+                "details": "Wrong password",
+                "timestamp": datetime.now(timezone.utc)
+            })
+        except Exception:
+            pass  # Logging is optional, don't block login
         raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
     
     # Check if user is active
     if user.status != 'active':
         raise HTTPException(status_code=403, detail="Kullanıcı hesabı aktif değil")
     
-    # Log successful login to MongoDB
-    await mongo_db.logs.insert_one({
-        "id": str(uuid.uuid4()),
-        "user": user.email,
-        "action": "LOGIN_SUCCESS",
-        "entity": "users",
-        "entityId": user.id,
-        "details": f"User {user.email} logged in successfully",
-        "timestamp": datetime.now(timezone.utc)
-    })
+    # Log successful login to MongoDB (optional - skip if MongoDB unavailable)
+    try:
+        await mongo_db.logs.insert_one({
+            "id": str(uuid.uuid4()),
+            "user": user.email,
+            "action": "LOGIN_SUCCESS",
+            "entity": "users",
+            "entityId": user.id,
+            "details": f"User {user.email} logged in successfully",
+            "timestamp": datetime.now(timezone.utc)
+        })
+    except Exception:
+        pass  # Logging is optional, don't block login
     
     # Return user without password
     return {
