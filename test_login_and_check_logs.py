@@ -32,7 +32,7 @@ async def check_logs():
 
 def test_login():
     """Test login via API"""
-    url = "https://backend-setup-12.preview.emergentagent.com/api/login"
+    url = "https://credentials-manager.preview.emergentagent.com/api/login"
     
     print("=" * 60)
     print("TESTING LOGIN API")
