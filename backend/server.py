@@ -55,12 +55,17 @@ ADMIN_IP_WHITELIST = [ip.strip() for ip in ADMIN_IP_WHITELIST]  # Remove whitesp
 
 # API Routes that require IP whitelisting (Admin Panel API endpoints)
 ADMIN_RESTRICTED_PATHS = [
-    "/api/users",              # User management
+    "/api/users",              # User management (except login)
     "/api/admin",              # Admin statistics and operations
     "/api/database",           # Database management
     "/api/backup",             # Backup operations
     "/api/mongodb/collections", # MongoDB collections management
-    "/api/logs",               # System logs
+]
+
+# Paths that are exempt from IP restriction (even if they match ADMIN_RESTRICTED_PATHS)
+EXEMPT_PATHS = [
+    "/api/login",              # Login endpoint must be accessible
+    "/api/health",             # Health check
 ]
 
 # IP Whitelist Middleware
@@ -71,6 +76,14 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
         
         # Get the path
         path = request.url.path
+        
+        # Check if this path is exempt from IP restriction
+        is_exempt = any(path.startswith(exempt_path) for exempt_path in EXEMPT_PATHS)
+        
+        # If exempt, allow access
+        if is_exempt:
+            response = await call_next(request)
+            return response
         
         # Check if this is an admin panel request
         is_admin_request = any(path.startswith(admin_path) for admin_path in ADMIN_RESTRICTED_PATHS)
