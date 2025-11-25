@@ -1,7 +1,8 @@
-from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException, Query, Header, Depends, Body
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException, Query, Header, Depends, Body, Request
+from fastapi.responses import JSONResponse, HTMLResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
