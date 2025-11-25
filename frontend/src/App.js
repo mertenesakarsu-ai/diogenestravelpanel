@@ -10,6 +10,7 @@ import Flights from "@/pages/Flights";
 import Hotels from "@/pages/Hotels";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
+import AccessDenied from "@/pages/AccessDenied";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, page }) => {
