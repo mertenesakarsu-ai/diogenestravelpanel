@@ -2970,11 +2970,24 @@ async def get_mongodb_collection_data(
     collection_name: str,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_user)
+    x_user_id: Optional[str] = Header(None)
 ):
     """
     Get paginated data from a specific MongoDB collection
     """
+    # Check authentication
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin and management can view MongoDB collection data
+    user_role = user.get('role', '')
+    if user_role not in ['admin', 'management']:
+        raise HTTPException(status_code=403, detail="Only admin and management can view MongoDB collection data")
+    
     try:
         collection = mongo_db[collection_name]
         
