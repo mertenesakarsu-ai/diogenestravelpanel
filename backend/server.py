@@ -3276,6 +3276,69 @@ async def compare_flight_dept_with_et(
         raise HTTPException(status_code=500, detail=f"Failed to compare flight data: {str(e)}")
 
 
+# ===== MONGODB COLLECTIONS =====
+@api_router.get("/mongodb/collections")
+async def get_mongodb_collections():
+    """Get list of MongoDB Atlas collections with record counts"""
+    try:
+        # Get list of all collection names in the database
+        collection_names = await mongo_db.list_collection_names()
+        
+        # Get count for each collection
+        collections = []
+        for coll_name in collection_names:
+            count = await mongo_db[coll_name].count_documents({})
+            collections.append({
+                "name": coll_name,
+                "count": count
+            })
+        
+        return {
+            "collections": collections,
+            "total": len(collections)
+        }
+    except Exception as e:
+        logger.error(f"Error getting MongoDB collections: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get MongoDB collections: {str(e)}")
+
+
+@api_router.get("/mongodb/collections/{collection_name}/data")
+async def get_mongodb_collection_data(
+    collection_name: str,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200)
+):
+    """Get data from a specific MongoDB collection with pagination"""
+    try:
+        # Calculate skip and limit
+        skip = (page - 1) * page_size
+        
+        # Get total count
+        total = await mongo_db[collection_name].count_documents({})
+        
+        # Get data with pagination
+        cursor = mongo_db[collection_name].find({}).skip(skip).limit(page_size)
+        documents = await cursor.to_list(length=page_size)
+        
+        # Convert ObjectId to string for JSON serialization
+        for doc in documents:
+            if '_id' in doc:
+                doc['_id'] = str(doc['_id'])
+        
+        return {
+            "data": documents,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "pages": (total + page_size - 1) // page_size
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error getting MongoDB collection data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get collection data: {str(e)}")
+
+
 # Include the router in the main app (MUST BE AFTER ALL ENDPOINT DEFINITIONS)
 app.include_router(api_router)
 
