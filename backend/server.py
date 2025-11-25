@@ -901,12 +901,32 @@ async def update_user(user_id: str, user: UserCreate, x_user_id: Optional[str] =
     if user_role not in PERMISSIONS or 'update' not in PERMISSIONS[user_role].get('users', []):
         raise HTTPException(status_code=403, detail="You don't have permission to update users")
     
+    # Get old user data for comparison
+    old_user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    
     user_obj = User(id=user_id, **user.model_dump())
     doc = user_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     
     await db.users.update_one({"id": user_id}, {"$set": doc})
-    await log_action(current_user.get('email', 'admin'), "UPDATE", "users", user_id, f"Updated user {user_obj.email}")
+    
+    # Create detailed log message
+    changes = []
+    if old_user:
+        if old_user.get('name') != user_obj.name:
+            changes.append(f"Ad: '{old_user.get('name')}' → '{user_obj.name}'")
+        if old_user.get('email') != user_obj.email:
+            changes.append(f"Email: '{old_user.get('email')}' → '{user_obj.email}'")
+        if old_user.get('role') != user_obj.role:
+            changes.append(f"Rol: '{old_user.get('role')}' → '{user_obj.role}'")
+        if old_user.get('status') != user_obj.status:
+            changes.append(f"Durum: '{old_user.get('status')}' → '{user_obj.status}'")
+    
+    detail_msg = f"Kullanıcı güncellendi: {user_obj.email}"
+    if changes:
+        detail_msg += f" | Değişiklikler: {', '.join(changes)}"
+    
+    await log_action(current_user.get('email', 'admin'), "USER_UPDATED", "users", user_id, detail_msg)
     
     return user_obj
 
