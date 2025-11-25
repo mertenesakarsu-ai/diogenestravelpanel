@@ -921,6 +921,168 @@ class BackendTester:
         except Exception as e:
             self.log_test("Operations Data Structure", False, f"Error: {str(e)}")
 
+    def test_mongodb_health_check(self):
+        """Test MongoDB Atlas connection via health endpoint"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/health", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if (data.get('status') == 'healthy' and 
+                    data.get('database') == 'connected' and
+                    'total_logs' in data):
+                    self.log_test("MongoDB Health Check", True, 
+                                f"MongoDB Atlas connection active - {data.get('total_logs', 0)} logs in database", 
+                                data)
+                else:
+                    self.log_test("MongoDB Health Check", False, 
+                                f"MongoDB connection issue: {data}", data)
+            else:
+                self.log_test("MongoDB Health Check", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("MongoDB Health Check", False, f"Connection error: {str(e)}")
+
+    def test_logs_endpoint_admin_auth(self):
+        """Test GET /api/logs with admin authentication"""
+        try:
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("Logs Endpoint - Admin Auth", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/logs?limit=100", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if len(data) > 0:
+                    # Check first log for expected fields
+                    log_entry = data[0]
+                    expected_fields = ['user', 'action', 'entity', 'entityId', 'timestamp']
+                    
+                    missing_fields = [field for field in expected_fields if field not in log_entry]
+                    
+                    if not missing_fields:
+                        self.log_test("Logs Endpoint - Admin Auth", True, 
+                                    f"Successfully retrieved {len(data)} log entries from MongoDB with all required fields", 
+                                    {
+                                        "log_count": len(data),
+                                        "sample_log": {
+                                            "user": log_entry.get('user'),
+                                            "action": log_entry.get('action'),
+                                            "entity": log_entry.get('entity'),
+                                            "timestamp": log_entry.get('timestamp')
+                                        }
+                                    })
+                    else:
+                        self.log_test("Logs Endpoint - Admin Auth", False, 
+                                    f"Missing required fields in log entry: {missing_fields}", 
+                                    {"missing_fields": missing_fields, "available_fields": list(log_entry.keys())})
+                else:
+                    self.log_test("Logs Endpoint - Admin Auth", True, 
+                                "Logs endpoint accessible but no log entries found", 
+                                {"log_count": 0})
+            else:
+                self.log_test("Logs Endpoint - Admin Auth", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Logs Endpoint - Admin Auth", False, f"Error: {str(e)}")
+
+    def test_mongodb_collections_endpoint(self):
+        """Test GET /api/mongodb/collections endpoint"""
+        try:
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("MongoDB Collections Endpoint", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/mongodb/collections", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'collections' in data and isinstance(data['collections'], list):
+                    collections = data['collections']
+                    
+                    # Check for expected collections
+                    collection_names = [col.get('name') for col in collections]
+                    expected_collections = ['logs', 'users']
+                    
+                    found_collections = [name for name in expected_collections if name in collection_names]
+                    
+                    if len(found_collections) >= 2:  # At least logs and users
+                        # Check collection structure
+                        sample_collection = collections[0] if collections else {}
+                        if 'name' in sample_collection and 'count' in sample_collection:
+                            self.log_test("MongoDB Collections Endpoint", True, 
+                                        f"Successfully retrieved {len(collections)} collections including required ones: {found_collections}", 
+                                        {
+                                            "total_collections": len(collections),
+                                            "found_required": found_collections,
+                                            "all_collections": collection_names
+                                        })
+                        else:
+                            self.log_test("MongoDB Collections Endpoint", False, 
+                                        f"Collections missing required fields (name, count): {sample_collection}")
+                    else:
+                        self.log_test("MongoDB Collections Endpoint", False, 
+                                    f"Missing required collections. Found: {found_collections}, Expected: {expected_collections}")
+                else:
+                    self.log_test("MongoDB Collections Endpoint", False, 
+                                f"Invalid response format - missing 'collections' array: {data}")
+            else:
+                self.log_test("MongoDB Collections Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("MongoDB Collections Endpoint", False, f"Error: {str(e)}")
+
+    def test_mongodb_collection_data_endpoint(self):
+        """Test GET /api/mongodb/collections/logs/data endpoint"""
+        try:
+            # Get admin user ID for authentication
+            admin_user_id = self.get_user_id_by_email("admin@diogenestravel.com")
+            if not admin_user_id:
+                self.log_test("MongoDB Collection Data Endpoint", False, "Could not get admin user ID")
+                return
+                
+            headers = {"x-user-id": admin_user_id}
+            response = self.session.get(f"{BACKEND_URL}/mongodb/collections/logs/data?page=1&page_size=10", 
+                                      headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['data', 'page', 'page_size', 'total', 'total_pages']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    logs_data = data.get('data', [])
+                    pagination_info = {
+                        'page': data.get('page'),
+                        'page_size': data.get('page_size'),
+                        'total': data.get('total'),
+                        'total_pages': data.get('total_pages')
+                    }
+                    
+                    self.log_test("MongoDB Collection Data Endpoint", True, 
+                                f"Successfully retrieved logs collection data with pagination - {len(logs_data)} records on page 1", 
+                                {
+                                    "records_returned": len(logs_data),
+                                    "pagination": pagination_info
+                                })
+                else:
+                    self.log_test("MongoDB Collection Data Endpoint", False, 
+                                f"Missing required pagination fields: {missing_fields}", 
+                                {"missing_fields": missing_fields, "available_fields": list(data.keys())})
+            else:
+                self.log_test("MongoDB Collection Data Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("MongoDB Collection Data Endpoint", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
