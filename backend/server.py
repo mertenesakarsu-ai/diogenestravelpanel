@@ -47,28 +47,13 @@ from sql_models import (
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # ==================== IP WHITELIST CONFIGURATION ====================
-# Whitelist for Admin Panel access
-# Can be configured via environment variable ADMIN_IP_WHITELIST (comma-separated)
+# IP Whitelist for ALL endpoints and pages (including /login)
+# Can be configured via environment variable IP_WHITELIST (comma-separated)
 default_whitelist = "217.131.25.91,127.0.0.1,::1"
-ADMIN_IP_WHITELIST = os.environ.get('ADMIN_IP_WHITELIST', default_whitelist).split(',')
-ADMIN_IP_WHITELIST = [ip.strip() for ip in ADMIN_IP_WHITELIST]  # Remove whitespace
+IP_WHITELIST = os.environ.get('IP_WHITELIST', default_whitelist).split(',')
+IP_WHITELIST = [ip.strip() for ip in IP_WHITELIST]  # Remove whitespace
 
-# API Routes that require IP whitelisting (Admin Panel API endpoints)
-ADMIN_RESTRICTED_PATHS = [
-    "/api/users",              # User management (except login)
-    "/api/admin",              # Admin statistics and operations
-    "/api/database",           # Database management
-    "/api/backup",             # Backup operations
-    "/api/mongodb/collections", # MongoDB collections management
-]
-
-# Paths that are exempt from IP restriction (even if they match ADMIN_RESTRICTED_PATHS)
-EXEMPT_PATHS = [
-    "/api/login",              # Login endpoint must be accessible
-    "/api/health",             # Health check
-]
-
-# IP Whitelist Middleware
+# IP Whitelist Middleware - APPLIES TO ALL ENDPOINTS
 class IPWhitelistMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Get real client IP address (behind proxy/nginx/kubernetes)
@@ -89,25 +74,15 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
         # Get the path
         path = request.url.path
         
-        # Log all requests to admin endpoints for debugging
-        is_admin_request = any(path.startswith(admin_path) for admin_path in ADMIN_RESTRICTED_PATHS)
-        if is_admin_request:
-            logger.info(f"🔍 Admin request from IP: {client_ip} to path: {path}")
-            logger.info(f"   Headers: X-Forwarded-For={forwarded_for}, X-Real-IP={real_ip}, client.host={request.client.host}")
+        # Log all requests for debugging
+        logger.info(f"🔍 Request from IP: {client_ip} to path: {path}")
+        logger.info(f"   Headers: X-Forwarded-For={forwarded_for}, X-Real-IP={real_ip}, client.host={request.client.host}")
         
-        # Check if this path is exempt from IP restriction
-        is_exempt = any(path.startswith(exempt_path) for exempt_path in EXEMPT_PATHS)
-        
-        # If exempt, allow access
-        if is_exempt:
-            response = await call_next(request)
-            return response
-        
-        # If admin request and IP not in whitelist, return Access Denied
-        if is_admin_request and client_ip not in ADMIN_IP_WHITELIST:
+        # Check if IP is in whitelist
+        if client_ip not in IP_WHITELIST:
             # Log the blocked access attempt
             logger.warning(f"🚫 Access denied from IP: {client_ip} to path: {path}")
-            logger.warning(f"   Allowed IPs: {ADMIN_IP_WHITELIST}")
+            logger.warning(f"   Allowed IPs: {IP_WHITELIST}")
             
             # Return custom "Erişim yok" page
             html_content = """
@@ -167,6 +142,7 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
                     <div class="icon">🔒</div>
                     <h1>403</h1>
                     <p>Erişim yok</p>
+                    <p style="font-size: 1rem; margin-top: 1rem;">Bu siteye erişim izniniz yok.</p>
                     <div class="ip-info">IP: """ + client_ip + """</div>
                 </div>
             </body>
@@ -174,7 +150,7 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
             """
             return HTMLResponse(content=html_content, status_code=403)
         
-        # If allowed or not admin request, continue normally
+        # IP is whitelisted, allow access
         response = await call_next(request)
         return response
 
