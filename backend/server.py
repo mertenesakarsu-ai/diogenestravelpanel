@@ -53,9 +53,14 @@ default_whitelist = "217.131.25.91,127.0.0.1,::1"
 ADMIN_IP_WHITELIST = os.environ.get('ADMIN_IP_WHITELIST', default_whitelist).split(',')
 ADMIN_IP_WHITELIST = [ip.strip() for ip in ADMIN_IP_WHITELIST]  # Remove whitespace
 
-# Routes that require IP whitelisting (Admin Panel routes)
+# API Routes that require IP whitelisting (Admin Panel API endpoints)
 ADMIN_RESTRICTED_PATHS = [
-    "/admin",  # Frontend admin panel route
+    "/api/users",              # User management
+    "/api/admin",              # Admin statistics and operations
+    "/api/database",           # Database management
+    "/api/backup",             # Backup operations
+    "/api/mongodb/collections", # MongoDB collections management
+    "/api/logs",               # System logs
 ]
 
 # IP Whitelist Middleware
