@@ -35,8 +35,15 @@ api.interceptors.response.use(
       localStorage.removeItem('currentUser');
       window.location.href = '/login';
     } else if (error.response?.status === 403) {
-      // Forbidden - show error message
-      console.error('Permission denied:', error.response.data?.detail);
+      // Forbidden - Check if it's IP restriction (HTML response) or permission issue
+      const contentType = error.response.headers['content-type'];
+      if (contentType && contentType.includes('text/html')) {
+        // IP restriction - redirect to access denied page
+        window.location.href = '/access-denied';
+      } else {
+        // Permission issue - show error message
+        console.error('Permission denied:', error.response.data?.detail);
+      }
     }
     return Promise.reject(error);
   }
