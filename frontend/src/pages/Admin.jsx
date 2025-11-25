@@ -651,10 +651,7 @@ const Admin = () => {
         </div>
 
         {/* SQL Server - Optional/Secondary */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 opacity-70">
-          <div className="absolute top-2 right-2 bg-slate-400 text-white text-xs px-3 py-1 rounded-full">
-            OPSİYONEL
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className={`w-12 h-12 rounded-xl ${dbStatus.sqlserver.connected ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-slate-400 to-slate-500'} flex items-center justify-center shadow-lg`}>
               <Database className="w-6 h-6 text-white" />
