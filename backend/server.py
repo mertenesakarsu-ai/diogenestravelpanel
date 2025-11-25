@@ -71,11 +71,29 @@ EXEMPT_PATHS = [
 # IP Whitelist Middleware
 class IPWhitelistMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # Get client IP address
-        client_ip = request.client.host
+        # Get real client IP address (behind proxy/nginx/kubernetes)
+        # Priority: X-Forwarded-For > X-Real-IP > client.host
+        forwarded_for = request.headers.get('X-Forwarded-For')
+        real_ip = request.headers.get('X-Real-IP')
+        
+        if forwarded_for:
+            # X-Forwarded-For can contain multiple IPs (client, proxy1, proxy2)
+            # First IP is the real client IP
+            client_ip = forwarded_for.split(',')[0].strip()
+        elif real_ip:
+            client_ip = real_ip
+        else:
+            # Fallback to direct connection IP
+            client_ip = request.client.host
         
         # Get the path
         path = request.url.path
+        
+        # Log all requests to admin endpoints for debugging
+        is_admin_request = any(path.startswith(admin_path) for admin_path in ADMIN_RESTRICTED_PATHS)
+        if is_admin_request:
+            logger.info(f"🔍 Admin request from IP: {client_ip} to path: {path}")
+            logger.info(f"   Headers: X-Forwarded-For={forwarded_for}, X-Real-IP={real_ip}, client.host={request.client.host}")
         
         # Check if this path is exempt from IP restriction
         is_exempt = any(path.startswith(exempt_path) for exempt_path in EXEMPT_PATHS)
@@ -85,13 +103,11 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             return response
         
-        # Check if this is an admin panel request
-        is_admin_request = any(path.startswith(admin_path) for admin_path in ADMIN_RESTRICTED_PATHS)
-        
         # If admin request and IP not in whitelist, return Access Denied
         if is_admin_request and client_ip not in ADMIN_IP_WHITELIST:
             # Log the blocked access attempt
             logger.warning(f"🚫 Access denied from IP: {client_ip} to path: {path}")
+            logger.warning(f"   Allowed IPs: {ADMIN_IP_WHITELIST}")
             
             # Return custom "Erişim yok" page
             html_content = """
