@@ -40,7 +40,15 @@ const Login = () => {
       if (error.response?.status === 401) {
         setError('Email veya şifre hatalı');
       } else if (error.response?.status === 403) {
-        setError('Kullanıcı hesabı aktif değil');
+        // Check if it's IP whitelist restriction (HTML response) or user status issue
+        const contentType = error.response?.headers['content-type'];
+        if (contentType && contentType.includes('text/html')) {
+          // IP whitelist restriction - redirect to access denied page
+          navigate('/access-denied');
+        } else {
+          // User status issue
+          setError('Kullanıcı hesabı aktif değil');
+        }
       } else {
         setError('Giriş yapılırken bir hata oluştu');
       }
