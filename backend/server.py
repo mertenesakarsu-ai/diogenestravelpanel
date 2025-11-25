@@ -46,6 +46,13 @@ from sql_models import (
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # ==================== IP WHITELIST CONFIGURATION ====================
 # IP Whitelist for ALL endpoints and pages (including /login)
 # Can be configured via environment variable IP_WHITELIST (comma-separated)
