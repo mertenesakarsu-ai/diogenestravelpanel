@@ -48,11 +48,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # ==================== IP WHITELIST CONFIGURATION ====================
 # Whitelist for Admin Panel access
-ADMIN_IP_WHITELIST = [
-    "217.131.25.91",  # Authorized IP for admin panel
-    "127.0.0.1",      # Localhost for testing
-    "::1",            # IPv6 localhost
-]
+# Can be configured via environment variable ADMIN_IP_WHITELIST (comma-separated)
+default_whitelist = "217.131.25.91,127.0.0.1,::1"
+ADMIN_IP_WHITELIST = os.environ.get('ADMIN_IP_WHITELIST', default_whitelist).split(',')
+ADMIN_IP_WHITELIST = [ip.strip() for ip in ADMIN_IP_WHITELIST]  # Remove whitespace
 
 # Routes that require IP whitelisting (Admin Panel routes)
 ADMIN_RESTRICTED_PATHS = [
