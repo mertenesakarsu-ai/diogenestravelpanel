@@ -281,12 +281,50 @@ const Admin = () => {
     }
   };
 
+  // Load logs from MongoDB
+  const loadLogs = async () => {
+    try {
+      const response = await api.get('/api/logs', {
+        params: { limit: 100 }
+      });
+      
+      // Format logs for display
+      const formattedLogs = response.data.map(log => {
+        const timestamp = new Date(log.timestamp);
+        const formattedTime = timestamp.toLocaleString('tr-TR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return {
+          id: log.id,
+          user: log.user,
+          action: log.action,
+          entity: log.entity,
+          entityId: log.entityId || '',
+          details: log.details || '',
+          time: formattedTime,
+          timestamp: log.timestamp
+        };
+      });
+      
+      setLogs(formattedLogs);
+    } catch (error) {
+      console.error('Error loading logs:', error);
+      setLogs([]);
+    }
+  };
+
   React.useEffect(() => {
     loadUsers();
     loadDatabaseStatus();
     loadStatistics();
     loadTables();
     loadMongoCollections();
+    loadLogs(); // Load logs from MongoDB
   }, []);
 
   // Open modal for new user
