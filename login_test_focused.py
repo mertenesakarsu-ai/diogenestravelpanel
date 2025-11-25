@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://env-setup-tool-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://diogenes-admin.preview.emergentagent.com/api"
 
 def test_login_scenarios():
     """Test the specific login scenarios from the review request"""
