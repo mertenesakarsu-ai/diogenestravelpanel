@@ -945,11 +945,18 @@ async def delete_user(user_id: str, x_user_id: Optional[str] = Header(None)):
     if user_role not in PERMISSIONS or 'delete' not in PERMISSIONS[user_role].get('users', []):
         raise HTTPException(status_code=403, detail="You don't have permission to delete users")
     
+    # Get user info before deleting
+    deleted_user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    
     result = await db.users.delete_one({"id": user_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     
-    await log_action(current_user.get('email', 'admin'), "DELETE", "users", user_id, f"Deleted user {user_id}")
+    detail_msg = f"Kullanıcı silindi"
+    if deleted_user:
+        detail_msg += f" | Ad: {deleted_user.get('name')} | Email: {deleted_user.get('email')} | Rol: {deleted_user.get('role')}"
+    
+    await log_action(current_user.get('email', 'admin'), "USER_DELETED", "users", user_id, detail_msg)
     
     return {"message": "User deleted successfully"}
 
