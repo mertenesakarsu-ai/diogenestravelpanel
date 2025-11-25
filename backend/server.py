@@ -172,8 +172,16 @@ def get_db():
 # Create the main app without a prefix
 app = FastAPI()
 
-# Add IP Whitelist Middleware
-app.add_middleware(IPWhitelistMiddleware)
+# Add IP Whitelist Middleware (only if ENABLE_BACKEND_IP_CHECK is true)
+# When using Caddy as reverse proxy, set this to false in .env
+# Caddy handles IP whitelist at the proxy level
+ENABLE_BACKEND_IP_CHECK = os.environ.get('ENABLE_BACKEND_IP_CHECK', 'false').lower() == 'true'
+if ENABLE_BACKEND_IP_CHECK:
+    app.add_middleware(IPWhitelistMiddleware)
+    logger.info("🔒 Backend IP Whitelist Middleware ENABLED")
+else:
+    logger.info("🔓 Backend IP Whitelist Middleware DISABLED (using Caddy)")
+
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
