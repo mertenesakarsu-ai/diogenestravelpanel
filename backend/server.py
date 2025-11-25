@@ -33,6 +33,7 @@ client = AsyncIOMotorClient(
     connectTimeoutMS=30000
 )
 mongo_db = client[os.environ['DB_NAME']]
+db = mongo_db  # Alias for convenience in log operations
 
 # SQL Server connection - Used for all business data
 from sql_models import (
