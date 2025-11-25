@@ -53,6 +53,10 @@ function AppRoutes() {
         element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} 
       />
       <Route 
+        path="/access-denied" 
+        element={<AccessDenied />} 
+      />
+      <Route 
         path="/" 
         element={
           <ProtectedRoute>
