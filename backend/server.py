@@ -46,6 +46,105 @@ from sql_models import (
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# ==================== IP WHITELIST CONFIGURATION ====================
+# Whitelist for Admin Panel access
+ADMIN_IP_WHITELIST = [
+    "217.131.25.91",  # Authorized IP for admin panel
+    "127.0.0.1",      # Localhost for testing
+    "::1",            # IPv6 localhost
+]
+
+# Routes that require IP whitelisting (Admin Panel routes)
+ADMIN_RESTRICTED_PATHS = [
+    "/admin",  # Frontend admin panel route
+]
+
+# IP Whitelist Middleware
+class IPWhitelistMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Get client IP address
+        client_ip = request.client.host
+        
+        # Get the path
+        path = request.url.path
+        
+        # Check if this is an admin panel request
+        is_admin_request = any(path.startswith(admin_path) for admin_path in ADMIN_RESTRICTED_PATHS)
+        
+        # If admin request and IP not in whitelist, return Access Denied
+        if is_admin_request and client_ip not in ADMIN_IP_WHITELIST:
+            # Log the blocked access attempt
+            logger.warning(f"🚫 Access denied from IP: {client_ip} to path: {path}")
+            
+            # Return custom "Erişim yok" page
+            html_content = """
+            <!DOCTYPE html>
+            <html lang="tr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Erişim Yok</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    body {
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                        color: white;
+                    }
+                    .container {
+                        text-align: center;
+                        padding: 2rem;
+                        background: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(10px);
+                        border-radius: 20px;
+                        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+                        border: 1px solid rgba(255, 255, 255, 0.18);
+                    }
+                    h1 {
+                        font-size: 4rem;
+                        margin-bottom: 1rem;
+                        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                    }
+                    p {
+                        font-size: 1.5rem;
+                        margin-bottom: 0.5rem;
+                    }
+                    .icon {
+                        font-size: 5rem;
+                        margin-bottom: 1rem;
+                    }
+                    .ip-info {
+                        font-size: 0.9rem;
+                        margin-top: 2rem;
+                        opacity: 0.8;
+                        font-family: monospace;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">🔒</div>
+                    <h1>403</h1>
+                    <p>Erişim yok</p>
+                    <div class="ip-info">IP: """ + client_ip + """</div>
+                </div>
+            </body>
+            </html>
+            """
+            return HTMLResponse(content=html_content, status_code=403)
+        
+        # If allowed or not admin request, continue normally
+        response = await call_next(request)
+        return response
+
 # Dependency to get SQL database session
 def get_db():
     db = SessionLocal()
@@ -56,6 +155,9 @@ def get_db():
 
 # Create the main app without a prefix
 app = FastAPI()
+
+# Add IP Whitelist Middleware
+app.add_middleware(IPWhitelistMiddleware)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
