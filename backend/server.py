@@ -3278,8 +3278,21 @@ async def compare_flight_dept_with_et(
 
 # ===== MONGODB COLLECTIONS =====
 @api_router.get("/mongodb/collections")
-async def get_mongodb_collections():
+async def get_mongodb_collections(x_user_id: Optional[str] = Header(None)):
     """Get list of MongoDB Atlas collections with record counts"""
+    # Check authentication
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin and management can view MongoDB collections
+    user_role = user.get('role', '')
+    if user_role not in ['admin', 'management']:
+        raise HTTPException(status_code=403, detail="Only admin and management can view MongoDB collections")
+    
     try:
         # Get list of all collection names in the database
         collection_names = await mongo_db.list_collection_names()
@@ -3306,9 +3319,23 @@ async def get_mongodb_collections():
 async def get_mongodb_collection_data(
     collection_name: str,
     page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200)
+    page_size: int = Query(50, ge=1, le=200),
+    x_user_id: Optional[str] = Header(None)
 ):
     """Get data from a specific MongoDB collection with pagination"""
+    # Check authentication
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin and management can view MongoDB collection data
+    user_role = user.get('role', '')
+    if user_role not in ['admin', 'management']:
+        raise HTTPException(status_code=403, detail="Only admin and management can view MongoDB collection data")
+    
     try:
         # Calculate skip and limit
         skip = (page - 1) * page_size
