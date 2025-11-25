@@ -432,18 +432,13 @@ def get_current_user_sync(x_user_id: Optional[str], sql_db: Session) -> Optional
     return user
 
 async def get_current_user(x_user_id: Optional[str]) -> Optional[Dict]:
-    """Get current user from header - SQL Server (async wrapper)"""
+    """Get current user from header - MongoDB Atlas"""
     if not x_user_id:
         return None
     
-    # Use sync database session
-    db = SessionLocal()
-    try:
-        from sql_helpers import get_user_by_id_sql
-        user = get_user_by_id_sql(db, x_user_id)
-        return user
-    finally:
-        db.close()
+    # Find user in MongoDB by ID
+    user = await mongo_db.users.find_one({"id": x_user_id}, {"_id": 0, "password": 0})
+    return user
 
 
 def check_permission(resource: str, action: str):
