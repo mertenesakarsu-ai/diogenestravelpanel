@@ -883,7 +883,8 @@ async def create_user(user: UserCreate, x_user_id: Optional[str] = Header(None))
     doc['created_at'] = doc['created_at'].isoformat()
     await db.users.insert_one(doc)
     
-    await log_action(current_user.get('email', 'admin'), "CREATE", "users", user_obj.id, f"Created user {user_obj.email}")
+    detail_msg = f"Yeni kullanıcı oluşturuldu | Ad: {user_obj.name} | Email: {user_obj.email} | Rol: {user_obj.role} | Durum: {user_obj.status}"
+    await log_action(current_user.get('email', 'admin'), "USER_CREATED", "users", user_obj.id, detail_msg)
     
     return user_obj
 
