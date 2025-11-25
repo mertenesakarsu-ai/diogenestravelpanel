@@ -2921,12 +2921,23 @@ async def get_admin_packages(
 # ==================== MONGODB ATLAS ENDPOINTS ====================
 
 @api_router.get("/mongodb/collections")
-async def get_mongodb_collections(
-    current_user: dict = Depends(get_current_user)
-):
+async def get_mongodb_collections(x_user_id: Optional[str] = Header(None)):
     """
     Get list of all MongoDB collections with document counts
     """
+    # Check authentication
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user = await get_current_user(x_user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Only admin and management can view MongoDB collections
+    user_role = user.get('role', '')
+    if user_role not in ['admin', 'management']:
+        raise HTTPException(status_code=403, detail="Only admin and management can view MongoDB collections")
+    
     try:
         # Get all collection names
         collection_names = await mongo_db.list_collection_names()
