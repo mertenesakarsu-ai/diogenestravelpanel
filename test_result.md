@@ -1207,7 +1207,7 @@ agent_communication:
       YAPILAN DÜZELTMELER:
       
       1. ✅ Frontend .env URL Güncellemesi:
-         - REACT_APP_BACKEND_URL: https://envconfig-1.preview.emergentagent.com
+         - REACT_APP_BACKEND_URL: https://backend-access-1.preview.emergentagent.com
          - Backend URL frontend ile eşleştirildi
       
       2. ✅ Backend CORS Ayarları Düzeltildi:
