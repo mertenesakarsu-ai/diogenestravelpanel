@@ -152,16 +152,29 @@ const Admin = () => {
       });
     } catch (error) {
       console.error('Error loading database status:', error);
-      // Set error status immediately instead of keeping "Loading..."
+      
+      // Determine error message based on error type
+      let errorMessage = '❌ Bağlantı hatası';
+      if (error.response?.status === 401) {
+        errorMessage = '❌ Yetki gerekli - Lütfen giriş yapın';
+      } else if (error.response?.status === 403) {
+        errorMessage = '❌ Erişim reddedildi - Admin yetkisi gerekli';
+      } else if (error.response?.status === 500) {
+        errorMessage = '❌ Sunucu hatası - Veritabanı bağlantısı kurulamadı';
+      } else if (!error.response) {
+        errorMessage = '❌ Network hatası - API yanıt vermiyor';
+      }
+      
+      // Set error status with specific message
       setDbStatus(prev => ({
         mongodb: {
           ...prev.mongodb,
-          status: '❌ Bağlantı hatası - Yetki gerekli',
+          status: errorMessage,
           connected: false
         },
         sqlserver: {
           ...prev.sqlserver,
-          status: '❌ Bağlantı hatası - Yetki gerekli',
+          status: errorMessage,
           connected: false
         }
       }));
