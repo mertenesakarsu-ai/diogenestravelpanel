@@ -561,13 +561,34 @@ def get_current_user_sync(x_user_id: Optional[str], sql_db: Session) -> Optional
     return user
 
 async def get_current_user(x_user_id: Optional[str]) -> Optional[Dict]:
-    """Get current user from header - MongoDB Atlas"""
+    """Get current user from header - MongoDB Atlas (fallback to SQL if needed)"""
     if not x_user_id:
         return None
-    
-    # Find user in MongoDB by ID
+
+    # Prefer MongoDB Atlas users (primary source)
     user = await mongo_db.users.find_one({"id": x_user_id}, {"_id": 0, "password": 0})
-    return user
+    if user:
+        return user
+
+    # Fallback to SQL Server users when MongoDB does not have the record
+    try:
+        from sql_helpers import get_user_by_id_sql
+        sql_db = SessionLocal()
+        sql_user = get_user_by_id_sql(sql_db, x_user_id)
+        sql_db.close()
+
+        if sql_user:
+            return {
+                "id": sql_user.get("id"),
+                "name": sql_user.get("name"),
+                "email": sql_user.get("email"),
+                "role": sql_user.get("role"),
+                "status": sql_user.get("status", "inactive")
+            }
+    except Exception as e:
+        logger.warning(f"Fallback SQL user lookup failed: {e}")
+
+    return None
 
 
 def check_permission(resource: str, action: str):
