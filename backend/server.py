@@ -2235,88 +2235,80 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_db():
-    """Initialize SQL Server tables and users on startup"""
+    """Initialize MongoDB users on startup (SQL Server disabled temporarily)"""
     try:
-        # Test SQL Server connection
         print("\n" + "=" * 60)
-        print("  SQL SERVER INITIALIZATION")
+        print("  MONGODB INITIALIZATION")
         print("=" * 60)
+        print("✅ SQL Server is temporarily disabled")
+        print("✅ Using MongoDB Atlas for user management")
         
-        if not test_sql_connection():
-            print("❌ SQL Server connection failed!")
-            return
+        # Check if users exist in MongoDB
+        users_count = await mongo_db.users.count_documents({})
+        print(f"ℹ️  Found {users_count} users in MongoDB Atlas")
         
-        # Create tables if not exist
-        init_sql_db()
-        
-        # Check if users exist in SQL Server
-        sql_db = SessionLocal()
-        try:
-            users_count = sql_db.query(SQLUser).count()
+        if users_count == 0:
+            print("⚠️  No users found in MongoDB. Initializing default users...")
             
-            if users_count == 0:
-                print("⚠️  No users found in SQL Server. Initializing default users...")
-                
-                default_users = [
-                    SQLUser(
-                        id=str(uuid.uuid4()),
-                        name="Admin User",
-                        email="admin@diogenestravel.com",
-                        password=pwd_context.hash("admin123"),
-                        role="admin",
-                        status="active",
-                        profile_picture=None,
-                        created_at=datetime.now(timezone.utc)
-                    ),
-                    SQLUser(
-                        id=str(uuid.uuid4()),
-                        name="Reservation Manager",
-                        email="reservation@diogenestravel.com",
-                        password=pwd_context.hash("reservation123"),
-                        role="reservation",
-                        status="active",
-                        profile_picture=None,
-                        created_at=datetime.now(timezone.utc)
-                    ),
-                    SQLUser(
-                        id=str(uuid.uuid4()),
-                        name="Operation Manager",
-                        email="operation@diogenestravel.com",
-                        password=pwd_context.hash("operation123"),
-                        role="operation",
-                        status="active",
-                        profile_picture=None,
-                        created_at=datetime.now(timezone.utc)
-                    ),
-                    SQLUser(
-                        id=str(uuid.uuid4()),
-                        name="Flight Manager",
-                        email="flight@diogenestravel.com",
-                        password=pwd_context.hash("flight123"),
-                        role="flight",
-                        status="active",
-                        profile_picture=None,
-                        created_at=datetime.now(timezone.utc)
-                    ),
-                    SQLUser(
-                        id=str(uuid.uuid4()),
-                        name="Management User",
-                        email="management@diogenestravel.com",
-                        password=pwd_context.hash("management123"),
-                        role="management",
-                        status="active",
-                        profile_picture=None,
-                        created_at=datetime.now(timezone.utc)
-                    )
-                ]
-                
-                sql_db.add_all(default_users)
-                sql_db.commit()
-                print(f"✅ Successfully initialized {len(default_users)} default users in SQL Server")
-            else:
-                print(f"ℹ️  Found {users_count} users in SQL Server")
-        finally:
-            sql_db.close()
+            default_users = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Admin User",
+                    "email": "admin@diogenestravel.com",
+                    "password": pwd_context.hash("admin123"),
+                    "role": "admin",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Reservation Manager",
+                    "email": "reservation@diogenestravel.com",
+                    "password": pwd_context.hash("reservation123"),
+                    "role": "reservation",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Operation Manager",
+                    "email": "operation@diogenestravel.com",
+                    "password": pwd_context.hash("operation123"),
+                    "role": "operation",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Flight Manager",
+                    "email": "flight@diogenestravel.com",
+                    "password": pwd_context.hash("flight123"),
+                    "role": "flight",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Management User",
+                    "email": "management@diogenestravel.com",
+                    "password": pwd_context.hash("management123"),
+                    "role": "management",
+                    "status": "active",
+                    "profile_picture": None,
+                    "created_at": datetime.now(timezone.utc)
+                }
+            ]
+            
+            await mongo_db.users.insert_many(default_users)
+            print(f"✅ Successfully initialized {len(default_users)} default users in MongoDB")
+        
+        print("=" * 60)
+        print("✅ MongoDB initialization complete!")
+        print("=" * 60 + "\n")
             
     except Exception as e:
         print(f"❌ Error during startup initialization: {e}")
