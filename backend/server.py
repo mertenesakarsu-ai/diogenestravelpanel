@@ -2250,10 +2250,10 @@ async def log_action(user: str, action: str, entity: str, entity_id: str, detail
 
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=False,
 )
 
 @app.on_event("startup")
