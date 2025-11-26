@@ -2125,18 +2125,16 @@ async def get_source_agencies():
 
 # ===== HEALTH CHECK =====
 @api_router.get("/health", response_model=HealthStatus)
-async def health_check(sql_db: Session = Depends(get_db)):
+async def health_check():
     try:
-        # Count from SQL Server (business data)
-        total_flights = sql_db.query(func.count(SQLFlight.id)).scalar()
-        total_reservations = sql_db.query(func.count(SQLReservation.id)).scalar()
-        total_users = sql_db.query(func.count(SQLUser.id)).scalar()
-        
-        # Count from MongoDB (logs only)
+        # Count from MongoDB Atlas (all data)
+        total_flights = 0  # No flights in MongoDB yet
+        total_reservations = 0  # No reservations in MongoDB yet
+        total_users = await mongo_db.users.count_documents({})
         total_logs = await mongo_db.logs.count_documents({})
         
         return HealthStatus(
-            database="SQL Server + MongoDB (logs)",
+            database="MongoDB Atlas (Users + Logs)",
             total_flights=total_flights,
             total_reservations=total_reservations,
             total_users=total_users,
