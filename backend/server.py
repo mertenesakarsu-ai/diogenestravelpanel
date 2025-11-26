@@ -61,6 +61,8 @@ IP_WHITELIST = os.environ.get('IP_WHITELIST', default_whitelist).split(',')
 IP_WHITELIST = [ip.strip() for ip in IP_WHITELIST]  # Remove whitespace
 
 # IP Whitelist Middleware - APPLIES TO ALL ENDPOINTS
+# NOTE: This is DISABLED when using Nginx reverse proxy
+# Nginx handles IP whitelist at the proxy level (more efficient)
 class IPWhitelistMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Get real client IP address (behind proxy/nginx/kubernetes)
@@ -173,14 +175,14 @@ def get_db():
 app = FastAPI()
 
 # Add IP Whitelist Middleware (only if ENABLE_BACKEND_IP_CHECK is true)
-# When using Caddy as reverse proxy, set this to false in .env
-# Caddy handles IP whitelist at the proxy level
+# When using Nginx as reverse proxy, set this to false in .env
+# Nginx handles IP whitelist at the proxy level (more secure and efficient)
 ENABLE_BACKEND_IP_CHECK = os.environ.get('ENABLE_BACKEND_IP_CHECK', 'false').lower() == 'true'
 if ENABLE_BACKEND_IP_CHECK:
     app.add_middleware(IPWhitelistMiddleware)
     logger.info("🔒 Backend IP Whitelist Middleware ENABLED")
 else:
-    logger.info("🔓 Backend IP Whitelist Middleware DISABLED (using Caddy)")
+    logger.info("🔓 Backend IP Whitelist Middleware DISABLED (Nginx handles IP whitelist)")
 
 
 # Create a router with the /api prefix
