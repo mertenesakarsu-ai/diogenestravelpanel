@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>Erişim Yetkisi Yok</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+          sans-serif;
+        background: radial-gradient(circle at top, #7c3aed, #4c1d95 45%, #1e1b4b);
+        color: #fff;
+      }
+      .card {
+        width: min(420px, calc(100% - 2.5rem));
+        padding: 2.5rem 2.25rem;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(17, 17, 32, 0.65);
+        backdrop-filter: blur(18px);
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(15, 6, 35, 0.65);
+      }
+      .lock {
+        font-size: 4rem;
+        margin-bottom: 1.75rem;
+        display: inline-block;
+        animation: pulse 1.8s ease-in-out infinite;
+      }
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: 3.5rem;
+        letter-spacing: 0.1em;
+      }
+      h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1.65rem;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 0.65rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .divider {
+        margin: 1.75rem auto;
+        width: 40%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.35),
+          rgba(255, 255, 255, 0)
+        );
+      }
+      button {
+        margin-top: 1.25rem;
+        padding: 0.85rem 2.75rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateY(-1px);
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.75;
+          transform: scale(0.98);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.02);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card" role="alert" aria-live="assertive">
+      <div class="lock" aria-hidden="true">🔒</div>
+      <h1>403</h1>
+      <h2>Erişim yok</h2>
+      <p>Bu kaynağa erişim izniniz bulunmuyor.</p>
+      <p>IP adresiniz yetkili listesinde değil.</p>
+      <div class="divider"></div>
+      <p style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 0;">
+        Erişim talebi için sistem yöneticinizle iletişime geçebilirsiniz.
+      </p>
+      <button type="button" onclick="window.location.href='/'">
+        Ana sayfaya dön
+      </button>
+    </main>
+  </body>
+</html>
+

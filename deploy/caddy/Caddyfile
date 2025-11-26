@@ -1,0 +1,103 @@
+# Caddy reverse proxy for Diogenes Travel Panel
+# Mirrors the Nginx behaviour with IP whitelisting and separate backend/frontend routes.
+
+{
+	# Force HTTP on port 80 (TLS can be added via automatic HTTPS later)
+	http_port 80
+}
+
+:80 {
+	# Shared headers to preserve original client info
+	header {
+		X-Forwarded-For "{http.request.remote}"
+		X-Real-IP "{http.request.remote}"
+	}
+
+	# Matcher for allowed IP addresses
+	@allowed remote_ip 217.131.25.91 127.0.0.1 ::1
+
+	# Requests from allowed IPs
+	handle @allowed {
+		# Backend API
+		@api path /api/*
+		handle @api {
+			reverse_proxy 127.0.0.1:8001 {
+				header_up Host {http.request.host}
+				header_up X-Forwarded-For {http.request.remote}
+				header_up X-Real-IP {http.request.remote}
+			}
+		}
+
+		# Frontend React app (includes /login)
+		handle {
+			reverse_proxy 127.0.0.1:3000 {
+				header_up Host {http.request.host}
+				header_up X-Forwarded-For {http.request.remote}
+				header_up X-Real-IP {http.request.remote}
+			}
+		}
+	}
+
+	# All other IPs → custom 403 response (no extra asset calls)
+	handle {
+		encode zstd gzip
+		header Content-Type "text/html; charset=utf-8"
+		respond <<-EOF 403
+		<!doctype html>
+		<html lang="tr">
+		  <head>
+		    <meta charset="utf-8" />
+		    <meta name="viewport" content="width=device-width, initial-scale=1" />
+		    <title>Erişim Yetkisi Yok</title>
+		    <style>
+		      body {
+		        margin: 0;
+		        min-height: 100vh;
+		        display: flex;
+		        align-items: center;
+		        justify-content: center;
+		        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+		        background: radial-gradient(circle at top, #7c3aed, #4c1d95 45%, #1e1b4b);
+		        color: #fff;
+		      }
+		      .card {
+		        width: min(420px, calc(100% - 2.5rem));
+		        padding: 2.5rem 2.25rem;
+		        border-radius: 28px;
+		        border: 1px solid rgba(255, 255, 255, 0.25);
+		        background: rgba(17, 17, 32, 0.65);
+		        backdrop-filter: blur(18px);
+		        text-align: center;
+		      }
+		      button {
+		        margin-top: 1.25rem;
+		        padding: 0.85rem 2.75rem;
+		        border-radius: 999px;
+		        border: 1px solid rgba(255, 255, 255, 0.35);
+		        background: rgba(255, 255, 255, 0.08);
+		        color: #fff;
+		        cursor: pointer;
+		      }
+		      button:hover { background: rgba(255, 255, 255, 0.18); }
+		    </style>
+		  </head>
+		  <body>
+		    <main class="card">
+		      <div style="font-size:4rem;margin-bottom:1.5rem;">🔒</div>
+		      <h1 style="margin:0 0 0.5rem;font-size:3.5rem;">403</h1>
+		      <h2 style="margin:0 0 0.75rem;">Erişim yok</h2>
+		      <p>IP adresiniz yetkili listesinde değil.</p>
+		      <button type="button" onclick="window.location.href='/'">Ana sayfaya dön</button>
+		    </main>
+		  </body>
+		</html>
+		EOF
+	}
+
+	# Basic access/error logging (adjust paths for your server)
+	log {
+		output file /var/log/caddy/diogenes-access.log
+		format single_field common_log
+	}
+}
+
