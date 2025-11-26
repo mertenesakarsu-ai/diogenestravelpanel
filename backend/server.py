@@ -2774,16 +2774,15 @@ async def get_diogenes_reservation_details(
 # ==================== ADMIN PANEL ENDPOINTS ====================
 
 @api_router.get("/database/status")
-async def get_database_status(x_user_id: Optional[str] = Header(None), sql_db: Session = Depends(get_db)):
+async def get_database_status(x_user_id: Optional[str] = Header(None)):
     """
     Get comprehensive database status - MongoDB Atlas as primary database (Admin only)
     """
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
-    # Get current user from SQL Server (users are in SQL now)
-    from sql_helpers import get_user_by_id_sql
-    current_user = get_user_by_id_sql(sql_db, x_user_id)
+    # Get current user from MongoDB Atlas
+    current_user = await mongo_db.users.find_one({"id": x_user_id}, {"_id": 0})
     if not current_user:
         raise HTTPException(status_code=401, detail="User not found")
     
