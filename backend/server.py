@@ -2771,8 +2771,8 @@ async def get_database_status(x_user_id: Optional[str] = Header(None)):
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
-    # Get current user from MongoDB Atlas
-    current_user = await mongo_db.users.find_one({"id": x_user_id}, {"_id": 0})
+    # Get current user from MongoDB Atlas using get_current_user function
+    current_user = await get_current_user(x_user_id)
     if not current_user:
         raise HTTPException(status_code=401, detail="User not found")
     
